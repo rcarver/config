@@ -282,6 +282,9 @@ Pass a second argument to `attr` or `key` to set a default value.
 
     attr :content, "Hello"
 
+**Important** All attributes of a Pattern must have a non-nil value. If
+an attribute of your Pattern is optional, it must have a default value.
+
 #### Keys
 
 A Pattern's Key attributes describe what it means to be a unique
