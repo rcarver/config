@@ -16,11 +16,11 @@ A modern server maintenance tool.
 * __Node__ A server. A Node has a Blueprint and belongs to a Cluster.
 * __Blueprint__ The complete set of Patterns that describe a Node.
 * __Cluster__ A collection of Nodes that work together.
-* __Pattern__ A reusable concept that makes up a Blueprint or another Pattern. A Pattern supports at least two operations: `create` and `destroy`. All Patterns operations are idempotent.
+* __Pattern__ A reusable concept that makes up a Blueprint or another Pattern. All Patterns operations are idempotent.
 * __Fact__ A bit of information about a Node that cannot be changed such as memory or IP address.
 * __Variable__ A part of a Blueprint that may be changed. Variables may be set on either the Node or Blueprint.
 * __Service__ A long running application, generally managed by Upstart. A Service may be notified that something it depends on has changed, when that happens the Service typically restarts.
-* __TODO__ is monitoring/alerting a core concept?`
+* __TODO__ is monitoring/alerting a core concept?
 
 ### Patterns
 
@@ -28,41 +28,16 @@ Config comes with a set of useful Patterns built in. These Patterns form the
 building blocks for your own higher level Patterns and the Blueprints that use
 them.
 
-* __File__ A file on disk. The contents may come from an ERB template, a static string or the output of a script.
-
-        create: Create and/or update the attributes of the file on disk
-        destroy: Remove the file from disk
-
 * __Directory__ A directory on disk.
-
-        create: Create and/or update the attributes of the directory on disk.
-        destroy: Remove the directory from disk.
-
+* __File__ A file on disk. The contents may come from an ERB template, or a string.
 * __Link__ A symbolic (or hard) link.
-
-        create: Create the link.
-        destroy: Delete the link.
-
-* __Script__ Any executable code.
-
-        create: Run the code
-        destroy: Noop
-
-* __Service__ An upstart service that starts and stops something
-
-        create: Start the service if it is not running
-        destroy: Stop the service if it is running
-        notify: Start or restart the service
-
 * __Package__ Install a 3rd party library via apt
-
-        create: Install the package
-        destroy: Uninstall the package
+* __Script__ Any executable code.
 
 ## Basic Use
 
 Config stores everything in a git repository. And by everything we mean both
-the Patterns an Blueprints that describe how we want a Node to behave, and the
+the Patterns and Blueprints that describe how we want a Node to behave, and the
 Nodes themselves.
 
 To generate a new project
@@ -137,8 +112,8 @@ This Blueprint uses two Patterns. Those Patterns might look something like this
           file "/etc/nginx/sites-available/#{host}" do |f|
             f.template = "site.erb"
           end
-          link "/etc/nginx/sites-available/#{host}" => "/etc/nginx/sites-enabled/#{host}" do |f|
-            f.exists = enabled
+          if enabled
+            link "/etc/nginx/sites-available/#{host}" => "/etc/nginx/sites-enabled/#{host}"
           end
           notify "nginx"
         end
