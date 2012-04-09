@@ -2,16 +2,16 @@ require 'helper'
 
 describe Config::Core::Executor do
 
-  let(:accumulator) { MiniTest::Mock.new }
+  let(:accumulation) { MiniTest::Mock.new }
   let(:patterns)    { [] }
 
   before do
-    accumulator.expect(:patterns, patterns)
+    accumulation.expect(:patterns, patterns)
   end
 
-  subject { Config::Core::Executor.new(accumulator) }
+  subject { Config::Core::Executor.new(accumulation) }
 
-  describe "#call" do
+  describe "#accumulate" do
     it "recursively calls patterns until all are found" do
       called = []
 
@@ -24,7 +24,7 @@ describe Config::Core::Executor do
 
       patterns.concat [e, f]
 
-      subject.call
+      subject.accumulate
 
       called.must_equal %w(e f d c b a)
       patterns.must_equal [e, f, d, c, b, a]

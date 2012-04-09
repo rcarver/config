@@ -1,6 +1,6 @@
 module Config
   module Core
-    class Accumulator
+    class Accumulation
 
       class ValidationError < StandardError
 
@@ -30,15 +30,31 @@ module Config
         end
       end
 
+      include Enumerable
+
       def initialize
         @current = nil
         @patterns = []
       end
 
-      # Internal: Get the accumulated patterns.
-      #
-      # Returns an Array of Config::Pattern.
-      attr_reader :patterns
+      # Internal: Add a Pattern.
+      def <<(pattern)
+        @patterns << pattern
+      end
+
+      # Internal: Get the Patterns.
+      def to_a
+        @patterns
+      end
+
+      # Internal: The number of Patterns.
+      def size
+        @patterns.size
+      end
+
+      def each(&block)
+        @patterns.each(&block)
+      end
 
       # Internal: Set the current parent pattern. This
       # pattern will be passed to newly added patterns
@@ -56,13 +72,13 @@ module Config
         pattern = klass.new(self)
         yield pattern if block_given?
         pattern.parent = @current
-        @patterns << pattern
+        self << pattern
         pattern
       end
 
       def validate!
         errors = []
-        patterns.each do |pattern|
+        each do |pattern|
           errors.concat pattern.error_messages
         end
         raise ValidationError, errors if errors.any?
@@ -72,7 +88,7 @@ module Config
         group = Hash.new { |h, k| h[k] = [] }
 
         # Group patterns with equivalent keys.
-        patterns.each do |pattern|
+        each do |pattern|
           group[pattern] << pattern
         end
 

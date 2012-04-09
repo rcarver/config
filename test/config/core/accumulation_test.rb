@@ -1,8 +1,8 @@
 require 'helper'
 
-describe Config::Core::Accumulator do
+describe Config::Core::Accumulation do
 
-  subject { Config::Core::Accumulator.new }
+  subject { Config::Core::Accumulation.new }
 
   describe "#add" do
 
@@ -34,7 +34,7 @@ describe Config::Core::Accumulator do
 
     it "stores the instantiated pattern" do
       subject.add(pattern_class)
-      subject.patterns.must_equal [pattern]
+      subject.to_a.must_equal [pattern]
     end
   end
 
@@ -43,7 +43,7 @@ describe Config::Core::Accumulator do
     let(:pattern) { MiniTest::Mock.new }
 
     before do
-      subject.patterns << pattern
+      subject << pattern
     end
 
     after do
@@ -59,7 +59,7 @@ describe Config::Core::Accumulator do
       pattern.expect(:error_messages, ["boo"])
       proc {
         subject.validate!
-      }.must_raise Config::Core::Accumulator::ValidationError
+      }.must_raise Config::Core::Accumulation::ValidationError
     end
   end
 end
