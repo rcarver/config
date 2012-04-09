@@ -58,6 +58,10 @@ describe Config::Pattern do
     it "assigns itself to the child pattern" do
       child_pattern.parent.must_equal subject
     end
+    it "configures the child pattern" do
+      child_pattern.name.must_equal "sub-test"
+      child_pattern.value.must_equal "sub-123"
+    end
   end
 
   describe "#execute" do
