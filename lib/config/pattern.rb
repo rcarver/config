@@ -42,19 +42,5 @@ module Config
       errors
     end
 
-    # Internal
-    attr_accessor :parent
-
-    # Internal
-    def parents
-      parents = []
-      ref = self
-      while parent = ref.parent
-        ref = parent
-        parents << parent
-      end
-      parents
-    end
-
   end
 end
