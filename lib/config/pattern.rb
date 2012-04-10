@@ -16,7 +16,7 @@ module Config
 
     # Public
     def call
-      raise NotImplementedError
+      # noop
     end
 
     # Public
