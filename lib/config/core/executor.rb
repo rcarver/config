@@ -2,34 +2,6 @@ module Config
   module Core
     class Executor
 
-      class ValidationError < StandardError
-
-        def initialize(errors)
-          @errors = errors
-        end
-
-        attr_reader :errors
-
-        def message
-          @errors.join(", ")
-        end
-      end
-
-      class ConflictError < StandardError
-
-        def initialize(a, b)
-          @pattern1 = a
-          @pattern2 = b
-        end
-
-        attr_reader :pattern1
-        attr_reader :pattern2
-
-        def message
-          "#{pattern1}: #{pattern1.attributes.inspect} vs. #{pattern2}: #{pattern2.attributes.inspect}"
-        end
-      end
-
       def initialize(accumulation)
         @accumulation = accumulation
       end

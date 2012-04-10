@@ -131,8 +131,8 @@ describe Config::Core::Attributes do
 
     it "describes attribute errors" do
       subject.attribute_errors.must_equal [
-        "Test Class missing value for :name (The name)",
-        "Test Class missing value for :value (The value)"
+        "[Test Class] missing value for :name (The name)",
+        "[Test Class] missing value for :value (The value)"
       ]
     end
   end

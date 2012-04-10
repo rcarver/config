@@ -28,8 +28,12 @@ module BlueprintTest
     def log_string
       stream = StringIO.new
       subject.log = Config::Log.new(stream)
-      subject.accumulate
-      subject.execute
+      begin
+        subject.accumulate
+        subject.execute
+      rescue
+        # ignore
+      end
       stream.string
     end
 
@@ -93,7 +97,15 @@ Execute Blueprint test
 
       it "detects validation errors" do
         subject.accumulate
-        proc { subject.validate }.must_raise Config::Core::Executor::ValidationError
+        proc { subject.validate }.must_raise Config::Core::ValidationError
+      end
+
+      it "logs what happened" do
+        log_string.must_equal <<-STR
+Accumulate Blueprint test
+Validate Blueprint test
+  ERROR [BlueprintTest::Test name:the test] missing value for :value (The value)
+        STR
       end
     end
 
@@ -114,7 +126,16 @@ Execute Blueprint test
 
       it "detects conflict errors" do
         subject.accumulate
-        proc { subject.validate }.must_raise Config::Core::Executor::ConflictError
+        proc { subject.validate }.must_raise Config::Core::ConflictError
+      end
+
+      it "logs what happened" do
+        log_string.must_equal <<-STR
+Accumulate Blueprint test
+Validate Blueprint test
+Resolve Blueprint test
+  CONFLICT [BlueprintTest::Test name:the test] {:name=>"the test", :value=>1} vs. BlueprintTest::Test name:the test: {:name=>"the test", :value=>2}
+        STR
       end
     end
 

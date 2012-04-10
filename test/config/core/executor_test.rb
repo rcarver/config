@@ -49,7 +49,7 @@ describe Config::Core::Executor do
       pattern.expect(:error_messages, ["boo"])
       proc {
         subject.validate!
-      }.must_raise Config::Core::Executor::ValidationError
+      }.must_raise Config::Core::ValidationError
     end
   end
 
@@ -94,7 +94,7 @@ describe Config::Core::Executor do
       accumulation << a
       accumulation << c
       accumulation << d
-      proc { subject.resolve! }.must_raise Config::Core::Executor::ConflictError
+      proc { subject.resolve! }.must_raise Config::Core::ConflictError
     end
 
     it "marks duplicate patterns as skipped" do
