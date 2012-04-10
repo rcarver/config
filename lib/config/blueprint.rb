@@ -10,7 +10,6 @@ module Config
     def initialize(name, &block)
       @name = name
       @block = block
-      #@pattern_class = pattern_class
       @accumulation = Config::Core::Accumulation.new
       @executor = Config::Core::Executor.new(@accumulation)
     end
