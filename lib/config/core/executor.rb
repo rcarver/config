@@ -65,11 +65,11 @@ module Config
 
         # If there are multiple patterns for a key, determine
         # if they are in conflict or duplicates.
-        group.each do |patterns|
+        group.values.each do |patterns|
           next if patterns.size == 1
 
           # Check the patterns against each other.
-          first, others = *patterns
+          first, *others = patterns
           others.each do |other|
 
             # If the two patterns are in conflict, abort.

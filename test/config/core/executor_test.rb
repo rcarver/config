@@ -102,7 +102,9 @@ describe Config::Core::Executor do
       accumulation << b
       accumulation << d
       subject.resolve!
+      a.run_mode.must_equal nil
       b.run_mode.must_equal :skip
+      d.run_mode.must_equal nil
     end
   end
 
