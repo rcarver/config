@@ -2,12 +2,7 @@ require 'helper'
 
 describe Config::Core::Executor do
 
-  let(:accumulation) { MiniTest::Mock.new }
-  let(:patterns)     { [] }
-
-  before do
-    accumulation.expect(:patterns, patterns)
-  end
+  let(:accumulation) { [] }
 
   subject { Config::Core::Executor.new(accumulation) }
 
@@ -16,19 +11,19 @@ describe Config::Core::Executor do
       called = []
 
       a = lambda { called << "a" }
-      b = lambda { called << "b"; patterns << a }
+      b = lambda { called << "b"; accumulation << a }
       c = lambda { called << "c" }
-      d = lambda { called << "d"; patterns << c; patterns << b }
+      d = lambda { called << "d"; accumulation << c; accumulation << b }
       e = lambda { called << "e" }
-      f = lambda { called << "f"; patterns << d }
-      g = lambda { called << "g"; patterns << e }
+      f = lambda { called << "f"; accumulation << d }
+      g = lambda { called << "g"; accumulation << e }
 
-      patterns.concat [f, g]
+      accumulation.concat [f, g]
 
       subject.accumulate
 
       called.must_equal %w(f g d e c b a)
-      patterns.must_equal [f, g, d, e, c, b, a]
+      accumulation.must_equal [f, g, d, e, c, b, a]
     end
   end
 
@@ -37,7 +32,7 @@ describe Config::Core::Executor do
       a = MiniTest::Mock.new
       b = MiniTest::Mock.new
 
-      patterns.concat [a, b]
+      accumulation.concat [a, b]
 
       a.expect(:execute, nil)
       b.expect(:execute, nil)
