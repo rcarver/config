@@ -90,6 +90,23 @@ describe Config::Core::Executable do
       subject.result.must_equal nil
       log.must_equal ["[skip] Test"]
     end
+    it "skips if a parent is skipped" do
+      parent = klass.new
+      parent.run_mode = :skip
+      subject.parent = parent
+      subject.execute
+      subject.result.must_equal nil
+      log.must_equal ["[skip][create] Test"]
+    end
+    it "describes both a parent skip and its own skip" do
+      parent = klass.new
+      parent.run_mode = :skip
+      subject.parent = parent
+      subject.run_mode = :skip
+      subject.execute
+      subject.result.must_equal nil
+      log.must_equal ["[skip][skip] Test"]
+    end
     it "does not support other run modes" do
       subject.run_mode = :foobar
       proc { subject.execute }.must_raise RuntimeError

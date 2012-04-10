@@ -21,14 +21,11 @@ module Config
           when :create
             log << "[create] #{self}"
             create unless noop?
-
           when :destroy
             log << "[destroy] #{self}"
             destroy unless noop?
-
           when :skip
             log << "[skip] #{self}"
-
           else
             raise "Unknown run_mode #{run_mode.inspect}"
           end
