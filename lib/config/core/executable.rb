@@ -14,7 +14,7 @@ module Config
         case run_mode
         when :create  then create
         when :destroy then destroy
-        when :noop    # noop
+        when :skip    # noop
         else raise ArgumentError, "Unknown run_mode #{run_mode.inspect}"
         end
       end

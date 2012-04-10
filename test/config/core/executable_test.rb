@@ -39,8 +39,8 @@ describe Config::Core::Executable do
       subject.result.must_equal "destroyed"
     end
 
-    it "does nothing" do
-      subject.run_mode = :noop
+    it "skips" do
+      subject.run_mode = :skip
       subject.execute
       subject.result.must_equal nil
     end
