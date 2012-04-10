@@ -9,42 +9,121 @@ module BlueprintTest
   # A pattern that sets a variable.
   class Test < Config::Pattern
     desc "The name"
-    attr :name
+    key  :name
+    desc "The value"
+    attr :value
     def create
-      BlueprintTest.value = name
+      BlueprintTest.value << [name, value]
     end
   end
 
   describe Config::Blueprint do
 
     before do
-      BlueprintTest.value = nil
+      BlueprintTest.value = []
     end
 
-    let(:definition) {
-      <<-STR
-        add BlueprintTest::Test do |t|
-          t.name = "the test"
-        end
-      STR
-    }
+    subject { Config::Blueprint.from_string("test", code) }
 
-    subject { Config::Blueprint.from_string("test", definition) }
+    describe "in general" do
 
-    it "has a name" do
-      subject.to_s.must_equal "Blueprint test"
+      let(:code) {
+        <<-STR
+          add BlueprintTest::Test do |t|
+            t.name = "one"
+            t.value = 1
+          end
+          add BlueprintTest::Test do |t|
+            t.name = "two"
+            t.value = 2
+          end
+        STR
+      }
+
+      it "has a name" do
+        subject.to_s.must_equal "Blueprint test"
+      end
+
+      it "accumulates the patterns" do
+        accumulation = subject.accumulate
+        accumulation.size.must_equal 2
+      end
+
+      it "executes the patterns" do
+        subject.accumulate
+        subject.validate
+        BlueprintTest.value.must_equal []
+        subject.execute
+        BlueprintTest.value.must_equal [
+          ["one", 1],
+          ["two", 2]
+        ]
+      end
     end
 
-    it "accumulates the patterns" do
-      subject.call
-      subject.accumulation.size.must_equal 1
+    describe "with invalid patterns" do
+
+      let(:code) {
+        <<-STR
+          add BlueprintTest::Test do |t|
+            t.name = "the test"
+            # no value set
+          end
+        STR
+      }
+
+      it "detects validation errors" do
+        subject.accumulate
+        proc { subject.validate }.must_raise Config::Core::Executor::ValidationError
+      end
     end
 
-    it "executes the patterns" do
-      subject.call
-      BlueprintTest.value.must_equal nil
-      subject.execute
-      BlueprintTest.value.must_equal "the test"
+    describe "with conflicting patterns" do
+
+      let(:code) {
+        <<-STR
+          add BlueprintTest::Test do |t|
+            t.name = "the test"
+            t.value = 1
+          end
+          add BlueprintTest::Test do |t|
+            t.name = "the test"
+            t.value = 2
+          end
+        STR
+      }
+
+      it "detects conflict errors" do
+        subject.accumulate
+        proc { subject.validate }.must_raise Config::Core::Executor::ConflictError
+      end
+    end
+
+    describe "with duplicate patterns" do
+
+      let(:code) {
+        <<-STR
+          add BlueprintTest::Test do |t|
+            t.name = "the test"
+            t.value = "ok"
+          end
+          add BlueprintTest::Test do |t|
+            t.name = "the test"
+            t.value = "ok"
+          end
+        STR
+      }
+
+      it "only runs one pattern" do
+        subject.accumulate
+        subject.validate
+        BlueprintTest.value.must_equal []
+        subject.execute
+        BlueprintTest.value.must_equal [
+          ["the test", "ok"]
+        ]
+      end
+
     end
   end
 end

@@ -18,18 +18,22 @@ module Config
       "Blueprint #{@name}"
     end
 
-    def call
+    def accumulate
       root = Config::Pattern.new(@accumulation)
       root.instance_eval(&@block)
       @executor.accumulate
+      @accumulation
+    end
+
+    def validate
+      @executor.validate!
+      @executor.resolve!
     end
 
     def execute
+      validate
       @executor.execute
     end
-
-    # Internal
-    attr_reader :accumulation
 
   end
 end
