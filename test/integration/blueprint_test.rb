@@ -25,6 +25,12 @@ module BlueprintTest
 
     subject { Config::Blueprint.from_string("test", code) }
 
+    def log_string
+      subject.accumulate
+      subject.execute
+      subject.log.join("\n")
+    end
+
     describe "in general" do
 
       let(:code) {
@@ -58,6 +64,14 @@ module BlueprintTest
           ["one", 1],
           ["two", 2]
         ]
+      end
+
+      it "logs what happened" do
+        log_string.must_equal <<-STR.chomp
+[begin] Blueprint test
+[create] BlueprintTest::Test name:one
+[create] BlueprintTest::Test name:two
+        STR
       end
     end
 
@@ -124,6 +138,13 @@ module BlueprintTest
         ]
       end
 
+      it "logs what happened" do
+        log_string.must_equal <<-STR.chomp
+[begin] Blueprint test
+[create] BlueprintTest::Test name:the test
+[skip] BlueprintTest::Test name:the test
+        STR
+      end
     end
   end
 end
