@@ -26,9 +26,11 @@ module BlueprintTest
     subject { Config::Blueprint.from_string("test", code) }
 
     def log_string
+      stream = StringIO.new
+      subject.log = Config::Log.new(stream)
       subject.accumulate
       subject.execute
-      subject.log.join("\n")
+      stream.string
     end
 
     describe "in general" do
@@ -67,10 +69,10 @@ module BlueprintTest
       end
 
       it "logs what happened" do
-        log_string.must_equal <<-STR.chomp
+        log_string.must_equal <<-STR
 [begin] Blueprint test
-[create] BlueprintTest::Test name:one
-[create] BlueprintTest::Test name:two
+  [create] BlueprintTest::Test name:one
+  [create] BlueprintTest::Test name:two
         STR
       end
     end
@@ -139,10 +141,10 @@ module BlueprintTest
       end
 
       it "logs what happened" do
-        log_string.must_equal <<-STR.chomp
+        log_string.must_equal <<-STR
 [begin] Blueprint test
-[create] BlueprintTest::Test name:the test
-[skip] BlueprintTest::Test name:the test
+  [create] BlueprintTest::Test name:the test
+  [skip] BlueprintTest::Test name:the test
         STR
       end
     end

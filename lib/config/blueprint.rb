@@ -1,5 +1,6 @@
 module Config
   class Blueprint
+    include Config::Core::Loggable
 
     def self.from_string(name, string)
       new(name) do
@@ -12,10 +13,7 @@ module Config
       @block = block
       @accumulation = Config::Core::Accumulation.new
       @executor = Config::Core::Executor.new(@accumulation)
-      @log = []
     end
-
-    attr_reader :log
 
     def to_s
       "Blueprint #{@name}"
@@ -36,7 +34,9 @@ module Config
     def execute
       validate
       log << "[begin] #{to_s}"
-      @executor.execute(log)
+      log.indent do
+        @executor.execute(log)
+      end
     end
 
   end

@@ -3,6 +3,7 @@ module Config
     include Config::Core::Attributes
     include Config::Core::Executable
     include Config::Core::Changeable
+    include Config::Core::Loggable
 
     def initialize(accumulation)
       @accumulation = accumulation

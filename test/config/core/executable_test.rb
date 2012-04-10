@@ -5,6 +5,7 @@ describe Config::Core::Executable do
   let(:klass) {
     Class.new do
       include Config::Core::Executable
+      include Config::Core::Loggable
 
       attr_reader :result
 
@@ -23,6 +24,16 @@ describe Config::Core::Executable do
   }
 
   subject { klass.new }
+
+  let(:stream) { StringIO.new }
+
+  before do
+    subject.log =Config::Log.new(stream)
+  end
+
+  def log
+    stream.string.chomp
+  end
 
   describe "pattern hierarchy" do
 
@@ -62,12 +73,6 @@ describe Config::Core::Executable do
 
   describe "#execute" do
 
-    let(:log) { [] }
-
-    before do
-      subject.log = log
-    end
-
     it "creates by default" do
       subject.execute
       subject.result.must_equal "created"
@@ -76,19 +81,19 @@ describe Config::Core::Executable do
       subject.run_mode = :create
       subject.execute
       subject.result.must_equal "created"
-      log.must_equal ["[create] Test"]
+      log.must_equal "[create] Test"
     end
     it "destroys" do
       subject.run_mode = :destroy
       subject.execute
       subject.result.must_equal "destroyed"
-      log.must_equal ["[destroy] Test"]
+      log.must_equal "[destroy] Test"
     end
     it "skips" do
       subject.run_mode = :skip
       subject.execute
       subject.result.must_equal nil
-      log.must_equal ["[skip] Test"]
+      log.must_equal "[skip] Test"
     end
     it "skips if a parent is skipped" do
       parent = klass.new
@@ -96,7 +101,7 @@ describe Config::Core::Executable do
       subject.parent = parent
       subject.execute
       subject.result.must_equal nil
-      log.must_equal ["[skip][create] Test"]
+      log.must_equal "[skip][create] Test"
     end
     it "describes both a parent skip and its own skip" do
       parent = klass.new
@@ -105,7 +110,7 @@ describe Config::Core::Executable do
       subject.run_mode = :skip
       subject.execute
       subject.result.must_equal nil
-      log.must_equal ["[skip][skip] Test"]
+      log.must_equal "[skip][skip] Test"
     end
     it "does not support other run modes" do
       subject.run_mode = :foobar
@@ -122,13 +127,13 @@ describe Config::Core::Executable do
         subject.run_mode = :create
         subject.execute
         subject.result.must_equal nil
-        log.must_equal ["[create] Test"]
+        log.must_equal "[create] Test"
       end
       it "logs destroy but does not execute" do
         subject.run_mode = :destroy
         subject.execute
         subject.result.must_equal nil
-        log.must_equal ["[destroy] Test"]
+        log.must_equal "[destroy] Test"
       end
     end
   end

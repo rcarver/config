@@ -2,13 +2,6 @@ module Config
   module Core
     module Executable
 
-      # Public: Get the logger.
-      #
-      # Returns an appendable object.
-      def log
-        @log ||= []
-      end
-
       # Public: Execute this pattern. The result of this method depends
       # on the value of `run_mode`, `skip_parent?` and `noop?`
       #
@@ -35,11 +28,6 @@ module Config
       #
       # Internal API
       #
-
-      # Internal: Set the logger.
-      def log=(log)
-        @log = log
-      end
 
       # Internal: Set the run mode.
       #
