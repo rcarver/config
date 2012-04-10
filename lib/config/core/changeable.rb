@@ -4,7 +4,7 @@ module Config
 
       def changed!(msg)
         @changed = true
-        log << "  [#{to_s}] #{msg}"
+        log << "  #{msg}"
       end
 
       def changed?

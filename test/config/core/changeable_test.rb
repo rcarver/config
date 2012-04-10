@@ -20,8 +20,8 @@ describe Config::Core::Changeable do
     subject.changed! "first thing"
     subject.changed! "second thing"
     subject.log.must_equal [
-      "  [Test Class] first thing",
-      "  [Test Class] second thing"
+      "  first thing",
+      "  second thing"
     ]
   end
 
