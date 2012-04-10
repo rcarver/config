@@ -10,11 +10,7 @@ module Config
     attr_accessor :indent_string
 
     def <<(input)
-      if @stream.is_a?(Array)
-        @stream << "[i#{@indent_level}] #{input}"
-      else
-        @stream.puts "#{current_indent}#{input}"
-      end
+      @stream.puts "#{current_indent}#{input}"
     end
 
     def indent
