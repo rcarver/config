@@ -207,6 +207,25 @@ something like this, showing the hierarchy of patterns used and their results.
       Created /etc/nginx/sites-available/example.com => /etc/nginx/sites-enabled/example.com
     Notify nginx
 
+## What is a Blueprint
+
+A Blueprint uses one or more Patterns to describe a server. It has
+the Facts about the current Node available when it runs.
+
+### How a Blueprint is executed
+
+Blueprint execution occurs in a few steps:
+
+1. **Accumulate** Recursively traverse all Patterns.
+1. **Validate** Ensure that all Patterns have been defined correctly and
+   that all Attributes have been set.
+1. **Resolve** Detect conflicting Patterns. Mark duplicate Patterns to
+   execute in *skip* mode.
+1. **Cleanup** If a previous execution exists, find any Patterns that
+   executed previously but would not execute now. Mark those Patterns
+   to execute in *destroy* mode.
+1. **Execute** Execute all Patterns.
+
 ## What is a Pattern
 
 A Pattern is a reusable bit of configuration. Patterns are composable,
