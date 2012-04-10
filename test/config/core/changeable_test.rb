@@ -5,6 +5,9 @@ describe Config::Core::Changeable do
   let(:klass) {
     Class.new do
       include Config::Core::Changeable
+      def log
+        @log ||= []
+      end
       def to_s
         "Test Class"
       end
@@ -16,9 +19,9 @@ describe Config::Core::Changeable do
   it "accumulates messages when a change occurs" do
     subject.changed! "first thing"
     subject.changed! "second thing"
-    subject.change_messages.must_equal [
-      "Test Class: first thing",
-      "Test Class: second thing"
+    subject.log.must_equal [
+      "  [Test Class] first thing",
+      "  [Test Class] second thing"
     ]
   end
 
