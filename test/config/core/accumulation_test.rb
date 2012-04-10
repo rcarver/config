@@ -14,6 +14,7 @@ describe Config::Core::Accumulation do
       subject.current = parent
       pattern_class.expect(:new, pattern, [subject])
       pattern.expect(:parent=, nil, [parent])
+      pattern.expect(:log=, nil, [subject.log])
     end
 
     after do

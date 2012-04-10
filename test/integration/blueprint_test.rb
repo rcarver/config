@@ -70,7 +70,10 @@ module BlueprintTest
 
       it "logs what happened" do
         log_string.must_equal <<-STR
-[begin] Blueprint test
+Accumulate Blueprint test
+Validate Blueprint test
+Resolve Blueprint test
+Execute Blueprint test
   [create] BlueprintTest::Test name:one
   [create] BlueprintTest::Test name:two
         STR
@@ -142,7 +145,10 @@ module BlueprintTest
 
       it "logs what happened" do
         log_string.must_equal <<-STR
-[begin] Blueprint test
+Accumulate Blueprint test
+Validate Blueprint test
+Resolve Blueprint test
+Execute Blueprint test
   [create] BlueprintTest::Test name:the test
   [skip] BlueprintTest::Test name:the test
         STR

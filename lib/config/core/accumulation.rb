@@ -1,6 +1,7 @@
 module Config
   module Core
     class Accumulation
+      include Config::Core::Loggable
       include Enumerable
 
       def initialize
@@ -19,6 +20,7 @@ module Config
         pattern = klass.new(self)
         yield pattern if block_given?
         pattern.parent = @current
+        pattern.log = log
         self << pattern
         pattern
       end

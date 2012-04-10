@@ -20,6 +20,8 @@ module Config
     end
 
     def accumulate
+      log << "Accumulate #{self}"
+      @accumulation.log = log
       root = Config::Pattern.new(@accumulation)
       root.instance_eval(&@block)
       @executor.accumulate
@@ -27,15 +29,17 @@ module Config
     end
 
     def validate
+      log << "Validate #{self}"
       @executor.validate!
+      log << "Resolve #{self}"
       @executor.resolve!
     end
 
     def execute
       validate
-      log << "[begin] #{to_s}"
+      log << "Execute #{self}"
       log.indent do
-        @executor.execute(log)
+        @executor.execute
       end
     end
 

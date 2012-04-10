@@ -86,9 +86,8 @@ module Config
         end
       end
 
-      def execute(log=[])
+      def execute
         @accumulation.each do |p|
-          p.log = log
           p.execute
         end
       end

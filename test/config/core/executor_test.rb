@@ -114,17 +114,12 @@ describe Config::Core::Executor do
       a = MiniTest::Mock.new
       b = MiniTest::Mock.new
 
-      log = MiniTest::Mock.new
-
       accumulation.concat [a, b]
 
-      a.expect(:log=, nil, [log])
       a.expect(:execute, nil)
-
-      b.expect(:log=, nil, [log])
       b.expect(:execute, nil)
 
-      subject.execute log
+      subject.execute
 
       a.verify
       b.verify
