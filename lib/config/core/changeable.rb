@@ -4,7 +4,9 @@ module Config
 
       def changed!(msg)
         @changed = true
-        log << "  #{msg}"
+        log.indent do
+          log << msg
+        end
       end
 
       def changed?
