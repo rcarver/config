@@ -2,6 +2,34 @@ module Config
   module Core
     class Executor
 
+      class ValidationError < StandardError
+
+        def initialize(errors)
+          @errors = errors
+        end
+
+        attr_reader :errors
+
+        def message
+          @errors.join(", ")
+        end
+      end
+
+      class ConflictError < StandardError
+
+        def initialize(a, b)
+          @pattern1 = a
+          @pattern2 = b
+        end
+
+        attr_reader :pattern1
+        attr_reader :pattern2
+
+        def message
+          "#{pattern1}: #{pattern1.attributes.inspect} vs. #{pattern2}: #{pattern2.attributes.inspect}"
+        end
+      end
+
       def initialize(accumulation)
         @accumulation = accumulation
       end
@@ -16,6 +44,45 @@ module Config
           end
           break if size == @accumulation.size
           index = size
+        end
+      end
+
+      def validate!
+        errors = []
+        @accumulation.each do |pattern|
+          errors.concat pattern.error_messages
+        end
+        raise ValidationError, errors if errors.any?
+      end
+
+      def resolve!
+        group = Hash.new { |h, k| h[k] = [] }
+
+        # Group patterns with equivalent keys.
+        @accumulation.each do |pattern|
+          group[pattern] << pattern
+        end
+
+        # If there are multiple patterns for a key, determine
+        # if they are in conflict or duplicates.
+        group.each do |patterns|
+          next if patterns.size == 1
+
+          # Check the patterns against each other.
+          first, others = *patterns
+          others.each do |other|
+
+            # If the two patterns are in conflict, abort.
+            if first.conflict?(other)
+              raise ConflictError.new(first, other)
+            end
+
+            # If the two patterns are equivalent,
+            # skip the extra one.
+            if first == other
+              other.run_mode = :skip
+            end
+          end
         end
       end
 
