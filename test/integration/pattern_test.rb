@@ -86,4 +86,12 @@ describe Config::Pattern do
       subject.result.must_equal nil
     end
   end
+
+  describe "#error_messages" do
+
+    it "includes attribute errors" do
+      subject.value = nil
+      subject.error_messages.wont_be_empty
+    end
+  end
 end

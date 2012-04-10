@@ -36,6 +36,12 @@ module Config
       nil
     end
 
+    def error_messages
+      errors = []
+      errors.concat attribute_errors
+      errors
+    end
+
     # Internal
     attr_accessor :parent
 
