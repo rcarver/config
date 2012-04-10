@@ -28,7 +28,7 @@ describe Config::Core::Executable do
   let(:stream) { StringIO.new }
 
   before do
-    subject.log =Config::Log.new(stream)
+    subject.log = Config::Log.new(stream)
   end
 
   def log
