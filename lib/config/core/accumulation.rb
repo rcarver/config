@@ -19,7 +19,7 @@ module Config
 
         def initialize(a, b)
           @pattern1 = a
-          @pattern1 = b
+          @pattern2 = b
         end
 
         attr_reader :pattern1
@@ -98,12 +98,12 @@ module Config
           next if patterns.size == 1
 
           # Check the patterns against each other.
-          first, *others = patterns
-          others.each do |b|
+          first, others = *patterns
+          others.each do |other|
 
             # If the two patterns are in conflict, abort.
             if first.conflict?(other)
-              raise ConflictError, first, other
+              raise ConflictError.new(first, other)
             end
 
             # If the two patterns are equivalent,

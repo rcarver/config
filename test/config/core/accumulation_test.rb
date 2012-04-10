@@ -62,4 +62,57 @@ describe Config::Core::Accumulation do
       }.must_raise Config::Core::Accumulation::ValidationError
     end
   end
+
+  describe "#resolve!" do
+
+    let(:pattern_class) {
+      Class.new do
+
+        def initialize(key, value)
+          @key = key
+          @value = value
+        end
+
+        attr_reader :key, :value
+        attr_accessor :run_mode
+
+        def attributes
+          { :key => key, :value => value }
+        end
+
+        def eql?(other)
+          other.key == key
+        end
+        def ==(other)
+          other.key == key && other.value == value
+        end
+        def hash
+          key.hash
+        end
+        def conflict?(other)
+          other.key == key && other.value != value
+        end
+      end
+    }
+
+    let(:a) { pattern_class.new(:a, 1) }
+    let(:b) { pattern_class.new(:a, 1) }
+    let(:c) { pattern_class.new(:a, 2) }
+    let(:d) { pattern_class.new(:b, 1) }
+
+    it "raises a ConflictError if conflicting patterns are found" do
+      subject << a
+      subject << c
+      subject << d
+      proc { subject.resolve! }.must_raise Config::Core::Accumulation::ConflictError
+    end
+
+    it "marks duplicate patterns as skipped" do
+      subject << a
+      subject << b
+      subject << d
+      subject.resolve!
+      b.run_mode.must_equal :skip
+    end
+  end
 end
