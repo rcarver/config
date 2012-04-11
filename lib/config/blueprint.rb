@@ -20,6 +20,8 @@ module Config
     end
 
     def accumulate
+      return @accumulation if @accumulated
+      @accumulated = true
       log << "Accumulate #{self}"
       @accumulation.log = log
       root = Config::Pattern.new
@@ -32,6 +34,9 @@ module Config
     end
 
     def validate
+      return if @validated
+      @validated = true
+      accumulate
       begin
         log << "Validate #{self}"
         @executor.validate!

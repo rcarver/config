@@ -62,7 +62,6 @@ module BlueprintTest
       end
 
       it "executes the patterns" do
-        subject.accumulate
         subject.validate
         BlueprintTest.value.must_equal []
         subject.execute
@@ -125,7 +124,6 @@ Validate Blueprint test
       }
 
       it "detects conflict errors" do
-        subject.accumulate
         proc { subject.validate }.must_raise Config::Core::ConflictError
       end
 
@@ -155,7 +153,6 @@ Resolve Blueprint test
       }
 
       it "only runs one pattern" do
-        subject.accumulate
         subject.validate
         BlueprintTest.value.must_equal []
         subject.execute
