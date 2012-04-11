@@ -1,3 +1,5 @@
+require 'helper'
+
 module PatternIntegrationTest
   describe Config::Pattern do
 
