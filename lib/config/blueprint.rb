@@ -59,12 +59,17 @@ module Config
       end
     end
 
-    def execute
+    def execute(previous_accumulation=nil)
       validate
+      if previous_accumulation
+        previous_accumulation.log = log
+        @executor.previous_accumulation = previous_accumulation
+      end
       log << "Execute #{self}"
       log.indent do
         @executor.execute
       end
+      nil
     end
 
   end

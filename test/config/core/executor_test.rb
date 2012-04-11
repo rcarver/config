@@ -133,24 +133,19 @@ describe Config::Core::Executor do
 
         subject.execute
       end
-
-      it "returns an Execution" do
-        execution = subject.execute
-        execution.must_be_instance_of Config::Core::Execution
-      end
     end
 
-    describe "with a previous execution" do
+    describe "with a previous accumulation" do
 
       it "destroys the missing patterns" do
 
         # The current patterns are [a, b]
         accumulation.concat [a, b]
 
-        # The previous execution included [c], so we will now destroy it.
-        previous_execution = MiniTest::Mock.new
-        previous_execution.expect(:-, [c], [Config::Core::Execution])
-        subject.previous_execution = previous_execution
+        # The previous accumulation included [c], so we will now destroy it.
+        previous_accumulation = MiniTest::Mock.new
+        previous_accumulation.expect(:-, [c], [accumulation])
+        subject.previous_accumulation = previous_accumulation
 
         a.expect(:execute, nil)
         b.expect(:execute, nil)

@@ -15,6 +15,9 @@ module BlueprintTest
     def create
       BlueprintTest.value << [name, value]
     end
+    def destroy
+      BlueprintTest.value << [:destroy, name]
+    end
   end
 
   describe Config::Blueprint do
@@ -25,12 +28,11 @@ module BlueprintTest
 
     subject { Config::Blueprint.from_string("test", code) }
 
-    def log_string
+    def log_execute(*args)
       stream = StringIO.new
       subject.log = Config::Log.new(stream)
       begin
-        subject.accumulate
-        subject.execute
+        subject.execute(*args)
       rescue
         # ignore
       end
@@ -72,7 +74,7 @@ module BlueprintTest
       end
 
       it "logs what happened" do
-        log_string.must_equal <<-STR
+        log_execute.must_equal <<-STR
 Accumulate Blueprint test
 Validate Blueprint test
 Resolve Blueprint test
@@ -100,7 +102,7 @@ Execute Blueprint test
       end
 
       it "logs what happened" do
-        log_string.must_equal <<-STR
+        log_execute.must_equal <<-STR
 Accumulate Blueprint test
 Validate Blueprint test
   ERROR [BlueprintTest::Test name:"the test"] missing value for :value (The value)
@@ -128,7 +130,7 @@ Validate Blueprint test
       end
 
       it "logs what happened" do
-        log_string.must_equal <<-STR
+        log_execute.must_equal <<-STR
 Accumulate Blueprint test
 Validate Blueprint test
 Resolve Blueprint test
@@ -162,13 +164,67 @@ Resolve Blueprint test
       end
 
       it "logs what happened" do
-        log_string.must_equal <<-STR
+        log_execute.must_equal <<-STR
 Accumulate Blueprint test
 Validate Blueprint test
 Resolve Blueprint test
 Execute Blueprint test
   Create [BlueprintTest::Test name:"the test"]
   Skip [BlueprintTest::Test name:"the test"]
+        STR
+      end
+    end
+
+    describe "with a previous accumulation" do
+
+      let(:code1) {
+        <<-STR
+          add BlueprintTest::Test do |t|
+            t.name = "pattern1"
+            t.value = "ok"
+          end
+          add BlueprintTest::Test do |t|
+            t.name = "pattern2"
+            t.value = "ok"
+          end
+        STR
+      }
+
+      let(:code2) {
+        <<-STR
+          add BlueprintTest::Test do |t|
+            t.name = "pattern2"
+            t.value = "ok"
+          end
+        STR
+      }
+
+      let(:previous) { Config::Blueprint.from_string("test", code1) }
+      subject        { Config::Blueprint.from_string("test", code2) }
+
+      before do
+        @accumulation = previous.accumulate
+        previous.execute
+      end
+
+      it "destroys the removed pattern" do
+        subject.execute(@accumulation)
+        BlueprintTest.value.must_equal [
+          ["pattern1", "ok"],
+          ["pattern2", "ok"],
+          [:destroy, "pattern1"],
+          ["pattern2", "ok"]
+        ]
+      end
+
+      it "logs what happened" do
+        log_execute(@accumulation).must_equal <<-STR
+Accumulate Blueprint test
+Validate Blueprint test
+Resolve Blueprint test
+Execute Blueprint test
+  Destroy [BlueprintTest::Test name:"pattern1"]
+  Create [BlueprintTest::Test name:"pattern2"]
         STR
       end
     end
