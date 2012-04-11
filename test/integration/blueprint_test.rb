@@ -13,10 +13,10 @@ module BlueprintTest
     desc "The value"
     attr :value
     def create
-      BlueprintTest.value << [name, value]
+      BlueprintTest.value << [:create, name, value]
     end
     def destroy
-      BlueprintTest.value << [:destroy, name]
+      BlueprintTest.value << [:destroy, name, value]
     end
   end
 
@@ -68,8 +68,8 @@ module BlueprintTest
         BlueprintTest.value.must_equal []
         subject.execute
         BlueprintTest.value.must_equal [
-          ["one", 1],
-          ["two", 2]
+          [:create, "one", 1],
+          [:create, "two", 2]
         ]
       end
 
@@ -159,7 +159,7 @@ Resolve Blueprint test
         BlueprintTest.value.must_equal []
         subject.execute
         BlueprintTest.value.must_equal [
-          ["the test", "ok"]
+          [:create, "the test", "ok"]
         ]
       end
 
@@ -177,7 +177,8 @@ Execute Blueprint test
 
     describe "with a previous accumulation" do
 
-      let(:code1) {
+      # Previously we ran three simple patterns.
+      let(:previous_code) {
         <<-STR
           add BlueprintTest::Test do |t|
             t.name = "pattern1"
@@ -187,33 +188,44 @@ Execute Blueprint test
             t.name = "pattern2"
             t.value = "ok"
           end
-        STR
-      }
-
-      let(:code2) {
-        <<-STR
           add BlueprintTest::Test do |t|
-            t.name = "pattern2"
+            t.name = "pattern3"
             t.value = "ok"
           end
         STR
       }
 
-      let(:previous) { Config::Blueprint.from_string("test", code1) }
-      subject        { Config::Blueprint.from_string("test", code2) }
+      # Now we run again with changed patterns.
+      # 
+      # pattern1 is missing so it's destroyed.
+      # pattern2 is the same so it gets run again.
+      # pattern3 is changed and the new version is run.
+      let(:current_code) {
+        <<-STR
+          add BlueprintTest::Test do |t|
+            t.name = "pattern2"
+            t.value = "ok"
+          end
+          add BlueprintTest::Test do |t|
+            t.name = "pattern3"
+            t.value = "new"
+          end
+        STR
+      }
+
+      let(:previous) { Config::Blueprint.from_string("test", previous_code) }
+      subject        { Config::Blueprint.from_string("test", current_code) }
 
       before do
         @accumulation = previous.accumulate
-        previous.execute
       end
 
       it "destroys the removed pattern" do
         subject.execute(@accumulation)
         BlueprintTest.value.must_equal [
-          ["pattern1", "ok"],
-          ["pattern2", "ok"],
-          [:destroy, "pattern1"],
-          ["pattern2", "ok"]
+          [:destroy, "pattern1", "ok"],
+          [:create, "pattern2", "ok"],
+          [:create, "pattern3", "new"]
         ]
       end
 
@@ -225,6 +237,7 @@ Resolve Blueprint test
 Execute Blueprint test
   Destroy [BlueprintTest::Test name:"pattern1"]
   Create [BlueprintTest::Test name:"pattern2"]
+  Create [BlueprintTest::Test name:"pattern3"]
         STR
       end
     end
