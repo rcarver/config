@@ -1,4 +1,6 @@
-require "config/version"
+require 'json'
+
+require 'config/version'
 
 require 'config/core/loggable'
 
@@ -8,6 +10,7 @@ require 'config/core/changeable'
 require 'config/core/conflict_error'
 require 'config/core/executable'
 require 'config/core/executor'
+require 'config/core/marshalable'
 require 'config/core/stat'
 require 'config/core/validation_error'
 

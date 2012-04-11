@@ -138,4 +138,3 @@ describe Config::Core::Executable do
     end
   end
 end
-
