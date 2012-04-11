@@ -22,7 +22,10 @@ module Config
     def accumulate
       log << "Accumulate #{self}"
       @accumulation.log = log
-      root = Config::Pattern.new(@accumulation)
+      root = Config::Pattern.new
+      root.accumulation = @accumulation
+      root.parent = nil
+      root.log = log
       root.instance_eval(&@block)
       @executor.accumulate
       @accumulation

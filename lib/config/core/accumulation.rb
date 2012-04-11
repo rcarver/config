@@ -17,8 +17,9 @@ module Config
       #
       # Returns the instantiated Pattern.
       def add(klass)
-        pattern = klass.new(self)
+        pattern = klass.new
         yield pattern if block_given?
+        pattern.accumulation = self
         pattern.parent = @current
         pattern.log = log
         self << pattern

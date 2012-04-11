@@ -11,7 +11,7 @@ module Config
 
       module Dump
         def _dump(level)
-          JSON.generate attributes
+          JSON.generate(attributes)
         end
       end
 

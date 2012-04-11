@@ -4,10 +4,7 @@ module Config
     include Config::Core::Executable
     include Config::Core::Changeable
     include Config::Core::Loggable
-
-    def initialize(accumulation)
-      @accumulation = accumulation
-    end
+    include Config::Core::Marshalable
 
     def to_s
       "[#{describe}]"
@@ -44,6 +41,13 @@ module Config
       errors = []
       errors.concat attribute_errors
       errors
+    end
+
+    attr_accessor :accumulation
+
+    def inspect
+      attrs = JSON.generate(attributes)
+      "<#{self.class.name} #{attrs}>"
     end
 
   end

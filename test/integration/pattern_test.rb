@@ -33,15 +33,26 @@ module PatternIntegrationTest
 
     let(:accumulation) { Config::Core::Accumulation.new }
 
-    subject { TestPattern.new(accumulation) }
+    subject { TestPattern.new }
 
     before do
+      subject.accumulation = accumulation
       subject.name = "test"
       subject.value = 123
     end
 
     it "has a useful #to_s" do
       subject.to_s.must_equal %{[TestPattern:test]}
+    end
+
+    it "has a useful #inspect" do
+      subject.inspect.must_equal %(<PatternIntegrationTest::TestPattern {"name":"test","value":123}>)
+    end
+
+    it "can marshall" do
+      dump = Marshal.dump(subject)
+      restore = Marshal.restore(dump)
+      restore.must_equal subject
     end
 
     describe "#call" do
