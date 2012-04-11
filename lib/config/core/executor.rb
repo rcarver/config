@@ -58,10 +58,21 @@ module Config
         end
       end
 
+      attr_writer :previous_execution
+
       def execute
-        @accumulation.each do |p|
+        execution = Config::Core::Execution.new(@accumulation)
+        if @previous_execution
+          missing_patterns = @previous_execution - execution
+          missing_patterns.each do |p|
+            p.run_mode = :destroy
+            p.execute
+          end
+        end
+        execution.each do |p|
           p.execute
         end
+        execution
       end
 
     end

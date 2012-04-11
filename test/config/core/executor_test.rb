@@ -85,6 +85,8 @@ describe Config::Core::Executor do
       end
     }
 
+    # a & c are in conflict
+    # a & b are equal
     let(:a) { pattern_class.new(:a, 1) }
     let(:b) { pattern_class.new(:a, 1) }
     let(:c) { pattern_class.new(:a, 2) }
@@ -110,19 +112,54 @@ describe Config::Core::Executor do
 
   describe "#execute" do
 
-    it "sets the log and then executes each pattern" do
-      a = MiniTest::Mock.new
-      b = MiniTest::Mock.new
+    let(:a) { MiniTest::Mock.new }
+    let(:b) { MiniTest::Mock.new }
+    let(:c) { MiniTest::Mock.new }
 
-      accumulation.concat [a, b]
-
-      a.expect(:execute, nil)
-      b.expect(:execute, nil)
-
-      subject.execute
-
+    after do
       a.verify
       b.verify
+      c.verify
+    end
+
+    describe "in general" do
+
+      it "executes each pattern" do
+        accumulation.concat [a, b, c]
+
+        a.expect(:execute, nil)
+        b.expect(:execute, nil)
+        c.expect(:execute, nil)
+
+        subject.execute
+      end
+
+      it "returns an Execution" do
+        execution = subject.execute
+        execution.must_be_instance_of Config::Core::Execution
+      end
+    end
+
+    describe "with a previous execution" do
+
+      it "destroys the missing patterns" do
+
+        # The current patterns are [a, b]
+        accumulation.concat [a, b]
+
+        # The previous execution included [c], so we will now destroy it.
+        previous_execution = MiniTest::Mock.new
+        previous_execution.expect(:-, [c], [Config::Core::Execution])
+        subject.previous_execution = previous_execution
+
+        a.expect(:execute, nil)
+        b.expect(:execute, nil)
+
+        c.expect(:run_mode=, nil, [:destroy])
+        c.expect(:execute, nil)
+
+        subject.execute
+      end
     end
   end
 end
