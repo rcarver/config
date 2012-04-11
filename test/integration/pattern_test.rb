@@ -1,16 +1,17 @@
-describe Config::Pattern do
+module PatternIntegrationTest
+  describe Config::Pattern do
 
-  let(:pattern_class) {
-    Class.new(Config::Pattern) do
-
-      # give this temporary class a name.
-      def self.name; "TheClass" end
+    class TestPattern < Config::Pattern
 
       desc "The name"
       key :name
 
       desc "The value"
       attr :value
+
+      def describe
+        "TestPattern:#{name}"
+      end
 
       def call
         add self.class do |x|
@@ -29,69 +30,69 @@ describe Config::Pattern do
         @result = "destroyed"
       end
     end
-  }
 
-  let(:accumulation) { Config::Core::Accumulation.new }
+    let(:accumulation) { Config::Core::Accumulation.new }
 
-  subject { pattern_class.new(accumulation) }
-
-  before do
-    subject.name = "test"
-    subject.value = 123
-  end
-
-  it "has a useful #to_s" do
-    subject.to_s.must_equal %{[TheClass name:"test"]}
-  end
-
-  describe "#call" do
+    subject { TestPattern.new(accumulation) }
 
     before do
-      subject.call
+      subject.name = "test"
+      subject.value = 123
     end
 
-    let(:child_pattern) { accumulation.to_a.first }
+    it "has a useful #to_s" do
+      subject.to_s.must_equal %{[TestPattern:test]}
+    end
 
-    it "accumulates the child patterns" do
-      accumulation.size.must_equal 1
-    end
-    it "assigns itself to the child pattern" do
-      child_pattern.parent.must_equal subject
-    end
-    it "configures the child pattern" do
-      child_pattern.name.must_equal "sub-test"
-      child_pattern.value.must_equal "sub-123"
-    end
-  end
+    describe "#call" do
 
-  describe "#execute" do
+      before do
+        subject.call
+      end
 
-    it "creates by default" do
-      subject.execute
-      subject.result.must_equal "created"
-    end
-    it "creates" do
-      subject.run_mode = :create
-      subject.execute
-      subject.result.must_equal "created"
-    end
-    it "destroys" do
-      subject.run_mode = :destroy
-      subject.execute
-      subject.result.must_equal "destroyed"
-    end
-    it "skips" do
-      subject.run_mode = :skip
-      subject.execute
-      subject.result.must_equal nil
-    end
-  end
+      let(:child_pattern) { accumulation.to_a.first }
 
-  describe "#error_messages" do
+      it "accumulates the child patterns" do
+        accumulation.size.must_equal 1
+      end
+      it "assigns itself to the child pattern" do
+        child_pattern.parent.must_equal subject
+      end
+      it "configures the child pattern" do
+        child_pattern.name.must_equal "sub-test"
+        child_pattern.value.must_equal "sub-123"
+      end
+    end
 
-    it "includes attribute errors" do
-      subject.value = nil
-      subject.error_messages.wont_be_empty
+    describe "#execute" do
+
+      it "creates by default" do
+        subject.execute
+        subject.result.must_equal "created"
+      end
+      it "creates" do
+        subject.run_mode = :create
+        subject.execute
+        subject.result.must_equal "created"
+      end
+      it "destroys" do
+        subject.run_mode = :destroy
+        subject.execute
+        subject.result.must_equal "destroyed"
+      end
+      it "skips" do
+        subject.run_mode = :skip
+        subject.execute
+        subject.result.must_equal nil
+      end
+    end
+
+    describe "#error_messages" do
+
+      it "includes attribute errors" do
+        subject.value = nil
+        subject.error_messages.wont_be_empty
+      end
     end
   end
 end
