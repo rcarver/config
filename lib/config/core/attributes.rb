@@ -141,7 +141,7 @@ module Config
         errors = []
         self.class.all_attrs.each do |attr|
           attr.error_messages(attributes[attr.name]).each do |message|
-            errors << "[#{to_s}] #{message}"
+            errors << "#{to_s} #{message}"
           end
         end
         errors

@@ -8,20 +8,20 @@ module Config
       # Returns nothing.
       def execute
         if skip_parent?
-          log << "[skip][#{run_mode}] #{self}"
+          prefix = "Skip "
+          skip = true
+        end
+        case run_mode
+        when :create
+          log << "#{prefix}Create #{self}"
+          create unless skip or noop?
+        when :destroy
+          log << "#{prefix}Destroy #{self}"
+          destroy unless skip or noop?
+        when :skip
+          log << "Skip #{self}"
         else
-          case run_mode
-          when :create
-            log << "[create] #{self}"
-            create unless noop?
-          when :destroy
-            log << "[destroy] #{self}"
-            destroy unless noop?
-          when :skip
-            log << "[skip] #{self}"
-          else
-            raise "Unknown run_mode #{run_mode.inspect}"
-          end
+          raise "Unknown run_mode #{run_mode.inspect}"
         end
       end
 

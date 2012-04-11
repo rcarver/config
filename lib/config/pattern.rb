@@ -9,9 +9,12 @@ module Config
       @accumulation = accumulation
     end
 
-    # Public
     def to_s
-      attrs = key_attributes.map { |k, v| "#{k}:#{v}" }.join(",")
+      "[#{describe}]"
+    end
+
+    def describe
+      attrs = key_attributes.map { |k, v| "#{k}:#{v.inspect}" }.join(",")
       "#{self.class.name} #{attrs}"
     end
 

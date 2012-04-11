@@ -233,16 +233,9 @@ and so therefore may be of any size and scope. Low level patterns such
 as `File` and `Package` are provided by Config. You can use these
 patterns to create your own, higher level patterns.
 
-### The Pattern API
-
-All patterns inherit from `Config::Pattern`. Your pattern must implement
-at least two methods: `to_s` and `call`. A trivial example.
+All patterns inherit from `Config::Pattern`. A trivial example.
 
     class LastRunAt < Config::Pattern
-
-      def to_s
-        "Last Run At"
-      end
 
       def call
         file "/etc/config_was_run" do |f|
@@ -252,11 +245,9 @@ at least two methods: `to_s` and `call`. A trivial example.
     end
 
 This Pattern simply stores the last time that Config was run at
-`/etc/config_was_run`. We defined `to_s` to describe the pattern
-itself. This string is used extensivly when logging what Config has
-done. We then defined `call` to use the builtin `File` pattern via the
-`file` helper. To expose what's going on here, let's rewrite it without
-the helper.
+`/etc/config_was_run`. We defined `call` to use the builtin `File`
+pattern via the `file` helper. To expose what's going on here, let's
+rewrite it without the helper.
 
     def call
       add Config::Patterns::File do |f|
@@ -317,43 +308,66 @@ An instance of a Pattern class is said to be *unique* if the value of its
 keys is different from another. These two files are unique because they
 are at different paths.
 
-      add Config::Patterns::File do |f|
-        f.path = "/tmp/file_1"
-      end
-      add Config::Patterns::File do |f|
-        f.path = "/tmp/file_2"
-      end
+    add Config::Patterns::File do |f|
+      f.path = "/tmp/file_1"
+    end
+    add Config::Patterns::File do |f|
+      f.path = "/tmp/file_2"
+    end
 
 On the other hand, these two files are in *conflict* because they have
 identical keys, but the rest of their attributes are not identical.
 Config will not allow you to execute a set of patterns that are in
 conflict.
 
-      add Config::Patterns::File do |f|
-        f.path = "/tmp/file"
-        f.content = "hello"
-      end
-      add Config::Patterns::File do |f|
-        f.path = "/tmp/file"
-        f.content = "world"
-      end
+    add Config::Patterns::File do |f|
+      f.path = "/tmp/file"
+      f.content = "hello"
+    end
+    add Config::Patterns::File do |f|
+      f.path = "/tmp/file"
+      f.content = "world"
+    end
 
 Two instances of a Pattern are said to be *equal* if all of their
 attributes are equal. Config will only execute the first of these
 patterns, noting explicitly that the second was skipped.
 
-      add Config::Patterns::File do |f|
-        f.path = "/tmp/file"
-        f.content = "hello"
-      end
-      add Config::Patterns::File do |f|
-        f.path = "/tmp/file"
-        f.content = "hello"
-      end
+    add Config::Patterns::File do |f|
+      f.path = "/tmp/file"
+      f.content = "hello"
+    end
+    add Config::Patterns::File do |f|
+      f.path = "/tmp/file"
+      f.content = "hello"
+    end
 
 It's worth noting that if a Pattern defines no keys, it is always unique
 among other instances of that Pattern. Be careful if your Pattern has
 this quality as it may indicate a deeper problem with the design.
+
+### Describe & Logging
+
+Config's logging is one the most important tools to understand what's
+happening on your nodes. The Pattern API allows you to specify a name
+for your pattern via either the `describe` method or the `to_s` method.
+`to_s` is used to identify the pattern when it's logged.
+
+    # The default implementation of #to_s includes the class name
+    # and the key attributes.
+    # => "[File path:\"/var/log/nginx.log\"]"
+
+    # Override `describe` to change what's within the square brackets.
+    def describe
+      "A file at #{path}"
+    end
+    # => "[A file at /var/log/nginx.log]"
+
+    # Override `to_s` to change the full description
+    def to_s
+      "<#{path}>
+    end
+    # => "</var/log/nginx.log>"
 
 ### Create & Destroy
 
@@ -403,6 +417,33 @@ Something here about a workflow like this:
 * Merging this to master would be weird, right?
 * Should a Cluster indicate the branch(es) that are valid to boot from?
 * Is this how one might do development?
+
+## Reference
+
+A brief overview of Config's APIs and tools.
+
+### The Pattern API
+
+Class methods DSL.
+
+* `desc` Describe an attribute.
+* `key` Define a key attribute.
+* `attr` Define an attribute.
+
+Methods you may override in your Pattern subclass.
+
+* `call` Add other Patterns. Don't perform any operations that alter the
+  node, do that in `create`.
+* `create` Perform operations that alter the Node.
+* `destroy` Perform operations that undo the alteration of the Node.
+* `describe` Change the string representation of your Pattern.
+* `to_s` Change the full string representation of your Pattern.
+
+Helpers available during Pattern execution.
+
+* `log` A `Config::Log` object. Write to it with `<<`.
+* `add(klass, &block)` Add a sub-pattern. Provide a block to set
+  attributes on the instantiated pattern.
 
 ## Authors
 

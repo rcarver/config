@@ -78,8 +78,8 @@ Accumulate Blueprint test
 Validate Blueprint test
 Resolve Blueprint test
 Execute Blueprint test
-  [create] BlueprintTest::Test name:one
-  [create] BlueprintTest::Test name:two
+  Create [BlueprintTest::Test name:"one"]
+  Create [BlueprintTest::Test name:"two"]
         STR
       end
     end
@@ -104,7 +104,7 @@ Execute Blueprint test
         log_string.must_equal <<-STR
 Accumulate Blueprint test
 Validate Blueprint test
-  ERROR [BlueprintTest::Test name:the test] missing value for :value (The value)
+  ERROR [BlueprintTest::Test name:"the test"] missing value for :value (The value)
         STR
       end
     end
@@ -134,7 +134,7 @@ Validate Blueprint test
 Accumulate Blueprint test
 Validate Blueprint test
 Resolve Blueprint test
-  CONFLICT [BlueprintTest::Test name:the test] {:name=>"the test", :value=>1} vs. BlueprintTest::Test name:the test: {:name=>"the test", :value=>2}
+  CONFLICT [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>1} vs. [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>2}
         STR
       end
     end
@@ -170,8 +170,8 @@ Accumulate Blueprint test
 Validate Blueprint test
 Resolve Blueprint test
 Execute Blueprint test
-  [create] BlueprintTest::Test name:the test
-  [skip] BlueprintTest::Test name:the test
+  Create [BlueprintTest::Test name:"the test"]
+  Skip [BlueprintTest::Test name:"the test"]
         STR
       end
     end

@@ -41,7 +41,7 @@ describe Config::Pattern do
   end
 
   it "has a useful #to_s" do
-    subject.to_s.must_equal "TheClass name:test"
+    subject.to_s.must_equal %{[TheClass name:"test"]}
   end
 
   describe "#call" do
