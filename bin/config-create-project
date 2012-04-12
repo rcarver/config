@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+
+%w(patterns blueprints clusters facts).each do |dir|
+  FileUtils.mkdir dir
+end
