@@ -2,6 +2,13 @@
 
 require 'fileutils'
 
+class String
+  # TODO: implement camelize or require activesupport.
+  def camelize
+    self
+  end
+end
+
 qualified_name = ARGV.shift 
 
 qualified_name or abort "usage: config-create-pattern NAME"
