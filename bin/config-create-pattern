@@ -1,49 +1,19 @@
 #!/usr/bin/env ruby
 
-require 'fileutils'
-
-class String
-  # TODO: implement camelize or require activesupport.
-  def camelize
-    self
-  end
-end
+require 'config/meta'
 
 qualified_name = ARGV.shift 
 
 qualified_name or abort "usage: config-create-pattern NAME"
 
-group, name = qualified_name.split("/")
-(group && name) or abort "Name must contain two parts separated by a slash"
+category, name = qualified_name.split("/")
+(category && name) or abort "Name must contain two parts separated by a slash"
 
-dir = File.join("patterns", group)
-unless File.exist?(dir)
-  FileUtils.mkdir(dir)
-end
-
-templates = File.join(dir, "templates")
-unless File.exist?(templates)
-  FileUtils.mkdir(templates)
-end
-
-file = File.join(dir, "#{name}.rb")
-unless File.exist?(file)
-  File.open(file, "w") do |f|
-    f.puts "class #{qualified_name.camelize}"
-    f.puts
-    f.puts "end"
-  end
-end
-
-readme = File.join(dir, "README.md")
-unless File.exist?(readme)
-  File.open(readme, "w") do |f|
-    f.puts "# #{group.camelize}"
-    f.puts
-    f.puts "**TODO** Describe the purpose of this group."
-    f.puts
-    f.puts "## #{name.camelize}"
-    f.puts
-    f.puts "**TODO** Describe the purpose of this pattern."
+Config.log_to $stdout
+Config.blueprint do
+  add Config::Meta::Pattern do |p|
+    p.root = File.expand_path(".")
+    p.category = category
+    p.name = name
   end
 end

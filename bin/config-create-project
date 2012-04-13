@@ -1,22 +1,10 @@
 #!/usr/bin/env ruby
 
-require 'fileutils'
+require 'config/meta'
 
-unless File.exist?(".git")
-  `git init`
-end
-
-unless File.exist?("README.md")
-  File.open("README.md", "w") do |f|
-    f.puts "# My Project"
-    f.puts
-    f.puts "This project uses [Config](https://github.com/rcarver/config)"
-  end
-end
-
-%w(patterns blueprints clusters facts).each do |dir|
-  unless File.exist?(dir)
-    FileUtils.mkdir dir
-    File.open(File.join(dir, ".gitkeep"), "w")
+Config.log_to $stdout
+Config.blueprint do
+  add Config::Meta::Project do |p|
+    p.root = File.expand_path(".")
   end
 end
