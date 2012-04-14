@@ -46,10 +46,11 @@ describe "filesystem", Config::Patterns::Directory do
     end
 
     it "does not create recursively" do
-      # Rationale: The rules of ownership are unclear
-      # when you `mkdir -p`. `man mkdir` explains what
-      # happens but we would prefer more explicit code
-      # unless a clear dsl is created.
+      # Rationale: The rules of ownership are unclear when you `mkdir
+      # -p`. `man mkdir` explains what happens but we would prefer more
+      # explicit code.  More importantly, it's unclear which part of the
+      # path is expected to exist previously and therefore which parts
+      # you are creating.
       subject.path = path + "foo"
       proc { subject.create }.must_raise Errno::ENOENT
     end
