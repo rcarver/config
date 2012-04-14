@@ -1,4 +1,6 @@
 require 'json'
+require 'active_support'
+require 'active_support/inflector'
 
 require 'config/version'
 
