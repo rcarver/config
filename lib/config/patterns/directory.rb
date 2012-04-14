@@ -2,20 +2,24 @@ require 'fileutils'
 
 module Config
   module Patterns
-    class Directory
-      include Config::Changable
+    class Directory < Config::Pattern
 
-      attr :path
-      attr :owner
-      attr :group
-      attr :mode
-      attr :touch
+      desc "The full path of the directory"
+      key :path
 
-      def call
-        # noop
-      end
+      desc "The user that owns the directory"
+      attr :owner, nil
 
-      def to_s
+      desc "The group that owns the directory"
+      attr :group, nil
+
+      desc "The octal mode of the directory, such as 0755"
+      attr :mode, nil
+
+      desc "Set the mtime of the directory to now"
+      attr :touch, false
+
+      def describe
         "Directory #{@path}"
       end
 
@@ -35,7 +39,7 @@ module Config
       def destroy
         if File.exist?(path)
           File.rm_rf(path)
-          changed! "destroyed"
+          changed! "deleted"
         end
       end
 

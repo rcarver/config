@@ -17,6 +17,8 @@ require 'config/blueprint'
 require 'config/pattern'
 require 'config/log'
 
+require 'config/patterns'
+
 module Config
 
 end
