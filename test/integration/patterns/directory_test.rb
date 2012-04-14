@@ -35,14 +35,14 @@ describe "filesystem", Config::Patterns::Directory do
       path.wont_be :exist?
       subject.create
       path.must_be :exist?
-      log_lines.must_include "  created"
+      subject.changes.must_include "created"
     end
 
     it "does nothing if the directory exists" do
       path.mkdir
       subject.create
       path.must_be :exist?
-      log_lines.must_be_empty
+      subject.wont_be :changed?
     end
 
     it "does not create recursively" do
@@ -61,7 +61,7 @@ describe "filesystem", Config::Patterns::Directory do
     it "does nothing if the directory does not exist" do
       subject.destroy
       tmpdir.must_be :exist?
-      log_lines.must_be_empty
+      subject.wont_be :changed?
     end
 
     it "deletes the directory" do
@@ -69,7 +69,7 @@ describe "filesystem", Config::Patterns::Directory do
       subject.destroy
       path.wont_be :exist?
       tmpdir.must_be :exist?
-      log_lines.must_include "  deleted"
+      subject.changes.must_include "deleted"
     end
 
     it "deletes recursively" do

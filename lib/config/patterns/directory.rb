@@ -21,7 +21,7 @@ module Config
       def create
         unless pn.exist?
           pn.mkdir
-          changed! "created"
+          changes << "created"
         end
 
         #stat = Config::Core::Stat.new(self, path)
@@ -34,7 +34,7 @@ module Config
       def destroy
         if pn.exist?
           pn.rmtree
-          changed! "deleted"
+          changes << "deleted"
         end
       end
 

@@ -51,19 +51,19 @@ describe "filesystem", Config::Patterns::File do
       it "writes the file" do
         subject.create
         path.read.must_equal "hello world"
-        log_lines.must_include "  created"
+        subject.changes.must_include "created"
       end
 
       it "does not change the file if it exists and is equivalent" do
         path.open("w") { |f| f.print "hello world" }
         subject.create
-        log_lines.must_be_empty
+        subject.wont_be :changed?
       end
 
       it "changes the file if the content is different" do
         path.open("w") { |f| f.print "goodbye" }
         subject.create
-        log_lines.must_include "  updated"
+        subject.changes.must_include "updated"
       end
     end
 
@@ -80,19 +80,19 @@ describe "filesystem", Config::Patterns::File do
       it "renders the file" do
         subject.create
         path.read.must_equal "bob"
-        log_lines.must_include "  created"
+        subject.changes.must_include "created"
       end
 
       it "does not change the file if it exists and is equivalent" do
         path.open("w") { |f| f.print "bob" }
         subject.create
-        log_lines.must_be_empty
+        subject.wont_be :changed?
       end
 
       it "changes the file if the content is different" do
         path.open("w") { |f| f.print "joe" }
         subject.create
-        log_lines.must_include "  updated"
+        subject.changes.must_include "updated"
       end
 
       # TODO: validate attrs
@@ -104,7 +104,7 @@ describe "filesystem", Config::Patterns::File do
     it "does nothing if the file does not exist" do
       subject.destroy
       tmpdir.must_be :exist?
-      log_lines.must_be_empty
+      subject.wont_be :changed?
     end
 
     it "deletes the file" do
@@ -112,7 +112,7 @@ describe "filesystem", Config::Patterns::File do
       subject.destroy
       path.wont_be :exist?
       tmpdir.must_be :exist?
-      log_lines.must_include "  deleted"
+      subject.changes.must_include "deleted"
     end
   end
 end

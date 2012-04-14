@@ -61,7 +61,7 @@ module Config
 
         if change_status
           pn.open("w") { |f| f.print new_content }
-          changed! change_status
+          changes << change_status
         end
         #stat = Config::Core::Stat.new(self, path)
         #stat.owner = owner if owner
@@ -73,7 +73,7 @@ module Config
       def destroy
         if pn.exist?
           pn.delete
-          changed! "deleted"
+          changes << "deleted"
         end
       end
 
