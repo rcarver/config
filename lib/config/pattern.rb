@@ -5,6 +5,7 @@ module Config
     include Config::Core::Changeable
     include Config::Core::Loggable
     include Config::Core::Marshalable
+    include Config::Patterns
 
     def to_s
       "[#{describe}]"

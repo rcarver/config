@@ -5,24 +5,16 @@ module Config
     autoload :File, 'config/patterns/file'
 
     def file(path)
-      add Config::Patterns::File do |f|
-        f.path = path
-        yield f
+      add Config::Patterns::File do |p|
+        p.path = path
+        yield p if block_given?
       end
     end
 
     def dir(path, &block)
-      add Config::Patterns::Directory do |d|
-        d.path = path
-        block.call(d)
-      end
-    end
-
-    def dirp(path, &block)
-      add Config::Patterns::Directory do |d|
-        d.path = path
-        d.recursive = true
-        block.call(d)
+      add Config::Patterns::Directory do |p|
+        p.path = path
+        yield p if block_given?
       end
     end
   end
