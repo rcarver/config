@@ -1,5 +1,3 @@
-require 'fileutils'
-
 module Config
   module Patterns
     class Directory < Config::Pattern
@@ -20,27 +18,33 @@ module Config
       attr :touch, false
 
       def describe
-        "Directory #{@path}"
+        "Directory #{pn}"
       end
 
       def create
-        unless File.exist?(@path)
-          FileUtils.mkdir_p(@path)
+        unless pn.exist?
+          pn.mkdir
           changed! "created"
         end
 
-        stat = Config::Core::Stat.new(self, @path)
-        stat.owner = owner if owner
-        stat.group = group if group
-        stat.mode = mode if mode
-        stat.touch if touch
+        #stat = Config::Core::Stat.new(self, path)
+        #stat.owner = owner if owner
+        #stat.group = group if group
+        #stat.mode = mode if mode
+        #stat.touch if touch
       end
 
       def destroy
-        if File.exist?(path)
-          File.rm_rf(path)
+        if pn.exist?
+          pn.rmtree
           changed! "deleted"
         end
+      end
+
+    protected
+
+      def pn
+        @pn ||= Pathname.new(path).cleanpath
       end
 
     end
