@@ -11,6 +11,22 @@ class ConfigSpec < MiniTest::Spec
 
   register_spec_type(self) { |desc| true }
 
+  def execute_pattern(pattern=subject)
+    # Accumulate patterns
+    accumulation = Config::Core::Accumulation.new
+    pattern.accumulation = accumulation
+
+    # Call the pattern under test.
+    pattern.call
+
+    # Now execute the result.
+    executor = Config::Core::Executor.new(accumulation)
+    executor.accumulate
+    executor.validate!
+    executor.resolve!
+    executor.execute
+  end
+
   def log_string(loggable=subject)
     subject.log.stream.string
   end

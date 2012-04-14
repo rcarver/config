@@ -10,12 +10,12 @@ class Config::Meta::Pattern < Config::Pattern
   key :name
 
   def call
-    dirp "#{root}/patterns/#{category}"
+    dir  "#{root}/patterns/#{category}"
     file "#{root}/patterns/#{category}/#{name}.rb" do |f|
       f.template = "pattern.rb.erb"
     end
     file "#{root}/patterns/#{category}/README.md" do |f|
-      f.append!
+      #f.append!
       f.template = "pattern_readme.md.erb"
     end
   end

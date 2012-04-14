@@ -51,5 +51,9 @@ module Config
       "<#{self.class.name} #{attrs}>"
     end
 
+    def get_binding
+      binding
+    end
+
   end
 end
