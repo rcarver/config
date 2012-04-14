@@ -11,16 +11,8 @@ class ConfigSpec < MiniTest::Spec
 
   register_spec_type(self) { |desc| true }
 
-  def log_clear(loggable=subject)
-    subject.log.stream = StringIO.new
-  end
-
   def log_string(loggable=subject)
     subject.log.stream.string
-  end
-
-  def log_lines(loggable=subject)
-    log_string.split("\n")
   end
 end
 
@@ -45,6 +37,5 @@ class FilesystemSpec < ConfigSpec
   after do
     @tmpdirs.values.each { |dir| FileUtils.rm_rf dir.to_s }
   end
-
 end
 
