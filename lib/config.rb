@@ -11,7 +11,6 @@ require 'config/core/conflict_error'
 require 'config/core/executable'
 require 'config/core/executor'
 require 'config/core/marshalable'
-require 'config/core/stat'
 require 'config/core/validation_error'
 
 require 'config/blueprint'
