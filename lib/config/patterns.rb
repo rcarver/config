@@ -2,6 +2,7 @@ module Config
   module Patterns
 
     autoload :Directory, 'config/patterns/directory'
+    autoload :File, 'config/patterns/file'
 
     def file(path)
       add Config::Patterns::File do |f|

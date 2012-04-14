@@ -14,9 +14,6 @@ module Config
       desc "The octal mode of the directory, such as 0755"
       attr :mode, nil
 
-      desc "Set the mtime of the directory to now"
-      attr :touch, false
-
       def describe
         "Directory #{pn}"
       end
