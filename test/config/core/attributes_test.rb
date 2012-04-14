@@ -6,12 +6,18 @@ describe Config::Core::Attributes do
     Class.new do
       include Config::Core::Attributes
 
+      # This attribute has no default, so it must
+      # be defined and may not be nil.
       desc "The name"
       key  :name
 
+      # This attribute has a default of nil, so it
+      # does not need to be defined and may be nil.
       desc "The value"
-      attr :value
+      attr :value, nil
 
+      # This attribute has a default value, so it
+      # does not need to be defined but may not be nil.
       desc "Another value"
       attr :other, "ok"
 
@@ -26,13 +32,13 @@ describe Config::Core::Attributes do
     subject { klass }
 
     it "has key attrs" do
-      subject.key_attrs.must_equal [
-        Config::Core::Attributes::ClassMethods::Attr.new(:name, nil, "The name")
+      subject.key_attrs.values.must_equal [
+        Config::Core::Attributes::ClassMethods::Attr.new(:name, :undefined, "The name")
       ]
     end
 
     it "has other attrs" do
-      subject.other_attrs.must_equal [
+      subject.other_attrs.values.must_equal [
         Config::Core::Attributes::ClassMethods::Attr.new(:value, nil, "The value"),
         Config::Core::Attributes::ClassMethods::Attr.new(:other, "ok", "Another value")
       ]
@@ -40,48 +46,75 @@ describe Config::Core::Attributes do
 
     it "allows key to be defined without a description" do
       klass.key :foo
-      attr = klass.key_attrs.last
+      attr = klass.key_attrs[:foo]
       attr.name.must_equal :foo
       attr.description.must_equal nil
     end
 
     it "allows an attr to be defined without a description" do
       klass.attr :foo
-      attr = klass.other_attrs.last
+      attr = klass.other_attrs[:foo]
       attr.name.must_equal :foo
       attr.description.must_equal nil
     end
 
-    describe "errors" do
+    describe "#error_messages" do
 
-      subject { klass.other_attrs.first }
+      describe "when the attribute has no default value" do
 
-      it "is an error for the value to be nil" do
-        subject.error_messages(nil).must_equal [
-          "missing value for :value (The value)"
-        ]
-      end
+        subject { klass.key_attrs[:name] }
 
-      it "is an error for the value to be an empty string" do
-        ["", "  "].each do |str|
-          subject.error_messages(str).must_equal [
-            "#{str.inspect} is an invalid value for :value (The value)"
+        it "is an error for the value to be nil" do
+          subject.error_messages(nil).must_equal [
+            "missing value for :name (The name)"
           ]
         end
       end
 
-      specify "any other value is ok" do
-        ["yay", 123, 5.5, Object.new].each do |value|
-          subject.error_messages(value).must_equal []
+      describe "when the attribute has a default of nil" do
+
+        subject { klass.other_attrs[:value] }
+
+        it "is ok for the value to be nil" do
+          subject.error_messages(nil).must_equal []
         end
       end
 
-      it "is an error to not have a description" do
-        klass.attr :foo
-        attr = klass.other_attrs.last
-        attr.error_messages("ok").must_equal [
-          "missing description for :foo"
-        ]
+      describe "when the attribute has a default of NOT nil" do
+
+        subject { klass.other_attrs[:other] }
+
+        it "is an error for the value to be nil" do
+          subject.error_messages(nil).must_equal [
+            "missing value for :other - default: \"ok\" (Another value)"
+          ]
+        end
+      end
+
+      describe "in general" do
+
+        subject { klass.key_attrs[:name] }
+
+        it "is an error for the value to be an empty string" do
+          ["", "  "].each do |str|
+            subject.error_messages(str).must_equal [
+              "#{str.inspect} is an invalid value for :name (The name)"
+            ]
+          end
+        end
+
+        specify "any other value is ok" do
+          ["yay", 123, 5.5, Object.new].each do |value|
+            subject.error_messages(value).must_equal []
+          end
+        end
+
+        it "is an error to not have a description" do
+          subject.description = nil
+          subject.error_messages("ok").must_equal [
+            "missing description for :name"
+          ]
+        end
       end
     end
   end
@@ -117,22 +150,15 @@ describe Config::Core::Attributes do
       subject.key_attributes[:name].must_equal "test"
     end
 
-    it "does not have valid attributes if any are nil" do
+    it "does not have valid attributes if any have errors" do
       subject.wont_be :valid_attributes?
       subject.name = "foo"
-      subject.wont_be :valid_attributes?
-      subject.value = "bar"
-      subject.must_be :valid_attributes?
-      subject.other = nil
-      subject.wont_be :valid_attributes?
-      subject.other = "yay"
       subject.must_be :valid_attributes?
     end
 
     it "describes attribute errors" do
       subject.attribute_errors.must_equal [
-        "[Test Class] missing value for :name (The name)",
-        "[Test Class] missing value for :value (The value)"
+        "[Test Class] missing value for :name (The name)"
       ]
     end
   end

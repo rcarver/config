@@ -22,13 +22,20 @@ module Config
             if description.nil?
               errors << "missing description for #{name.inspect}"
             end
-            if value.nil?
+            if value.nil? && default_value == :undefined
               errors << "missing value for #{name.inspect} (#{description})"
+            end
+            if value.nil? && default_value != nil && default_value != :undefined
+              errors << "missing value for #{name.inspect} - default: #{default_value.inspect} (#{description})"
             end
             if value.is_a?(String) && value.strip == ""
               errors << "#{value.inspect} is an invalid value for #{name.inspect} (#{description})"
             end
             errors
+          end
+
+          def initial_value
+            default_value == :undefined ? nil : default_value
           end
         end
 
@@ -43,12 +50,12 @@ module Config
         # Public: Define a key attribute.
         #
         # name          - Symbol name of the attribute.
-        # default_value - Default value of attribute (default: no
-        #                 default value)
+        # default_value - Default value of attribute (default:
+        #                 undefined)
         #
         # Returns nothing.
-        def key(name, default_value=nil)
-          key_attrs << Attr.new(name, default_value, @_current_desc)
+        def key(name, default_value=:undefined)
+          key_attrs[name] = Attr.new(name, default_value, @_current_desc)
           @_current_desc = nil
           _define_attr(name)
         end
@@ -56,29 +63,29 @@ module Config
         # Public: Define an attribute.
         #
         # name          - Symbol name of the attribute.
-        # default_value - Default value of attribute (default: no
-        #                 default value)
+        # default_value - Default value of attribute (default:
+        #                 undefined)
         #
         # Returns nothing.
-        def attr(name, default_value=nil)
-          other_attrs << Attr.new(name, default_value, @_current_desc)
+        def attr(name, default_value=:undefined)
+          other_attrs[name] = Attr.new(name, default_value, @_current_desc)
           @_current_desc = nil
           _define_attr(name)
         end
 
-        # Internal: An Array of key attributes.
+        # Internal: A Hash of key attributes.
         def key_attrs
-          @key_attrs ||= []
+          @key_attrs ||= {}
         end
 
-        # Internal: An Array of non-key attributes.
+        # Internal: A Hash of non-key attributes.
         def other_attrs
-          @other_attrs ||= []
+          @other_attrs ||= {}
         end
 
-        # Internal: An Array of all attributes.
+        # Internal: A Hash of all attributes.
         def all_attrs
-          key_attrs + other_attrs
+          key_attrs.merge(other_attrs)
         end
 
       protected
@@ -103,8 +110,8 @@ module Config
       def attributes
         @attributes ||= begin
            attrs = {}
-           self.class.key_attrs.each { |a| attrs[a.name] = a.default_value }
-           self.class.other_attrs.each { |a| attrs[a.name] = a.default_value }
+           self.class.key_attrs.values.each { |a| attrs[a.name] = a.initial_value }
+           self.class.other_attrs.values.each { |a| attrs[a.name] = a.initial_value }
            attrs
         end
       end
@@ -114,7 +121,7 @@ module Config
       # Returns a Hash.
       def key_attributes
         attrs = {}
-        self.class.key_attrs.each { |a| attrs[a.name] = attributes[a.name] }
+        self.class.key_attrs.values.each { |a| attrs[a.name] = attributes[a.name] }
         attrs
       end
 
@@ -123,7 +130,7 @@ module Config
       # Returns a Hash.
       def other_attributes
         attrs = {}
-        self.class.other_attrs.each { |a| attrs[a.name] = attributes[a.name] }
+        self.class.other_attrs.values.each { |a| attrs[a.name] = attributes[a.name] }
         attrs
       end
 
@@ -139,7 +146,7 @@ module Config
       # Returns an Array of Strings.
       def attribute_errors
         errors = []
-        self.class.all_attrs.each do |attr|
+        self.class.all_attrs.values.each do |attr|
           attr.error_messages(attributes[attr.name]).each do |message|
             errors << "#{to_s} #{message}"
           end
