@@ -42,15 +42,16 @@ Nodes themselves.
 
 To generate a new project
 
-    $ config create myproject
+    $ mkdir myproject
     $ cd myproject
+    $ config-create-project
 
 The project layout
 
     patterns
-      [topic]/README.md
-      [topic]/[pattern].rb
-      [topic]/templates/[file].erb
+      [category]/README.md
+      [category]/[pattern].rb
+      [category]/templates/[file].erb
     blueprints
       [blueprint].rb
     clusters
@@ -62,8 +63,8 @@ The project layout
 
 To create a new server, begin by creating a Blueprint
 
+    $ config-create-blueprint webserver
     $ vim blueprints/webserver.rb
-
     it "Configures a server to run example.com"
 
     add Nginx::Service
@@ -74,15 +75,15 @@ To create a new server, begin by creating a Blueprint
 
 This Blueprint uses two Patterns. Those Patterns might look something like this
 
+    $ config-create-pattern nginx/service
     $ vim patterns/nginx/service.rb
-
     module Nginx
       class Service < Config::Pattern
 
         it "Installs nginx and creates a service to run it"
 
         desc "The name of the service to run"
-        attr :name, "nginx"
+        key :name, "nginx"
 
         def call
           package "nginx"
@@ -95,15 +96,15 @@ This Blueprint uses two Patterns. Those Patterns might look something like this
       end
     end
 
+    $ config-create-pattern nginx/site
     $ vim patterns/nginx/site.rb
-
     module Nginx
       class Site < Config::Pattern
 
         it "Installs a website to be hosted via nginx"
 
         desc "The hostname that the site should respond to"
-        attr :host
+        key :host
 
         desc "Whether or not the site should be enabled"
         attr :enabled, true
@@ -122,14 +123,14 @@ This Blueprint uses two Patterns. Those Patterns might look something like this
 
 Next we'll create a Cluster to contain the server. Let's call it 'test'.
 
+    $ config-create-cluster test
     $ vim clusters/test.rb
-
     # nothing to see here yet.
 
 Check these files into git and push to your remote repository. You're now ready
 to boot a server.
 
-    $ config node-create-ec2 --pattern=webserver --cluster=test
+    $ config-create-node-ec2 --pattern=webserver --cluster=test
 
 Here we've specified the two required parameters: The Pattern used to configure
 the server, and the Cluster that the resulting Node will belong to. We wait for
@@ -138,7 +139,6 @@ configure itself and store its information in this git repo. Once those commits
 exist, pull them down. Use the `--wait` flag to let Config do that for you.
 
     $ git pull
-
     + clusters/test/[node_id].json
     + facts/test_[node_id].json
 
@@ -146,7 +146,6 @@ Let's look at the facts first. This JSON file contains all kinds of information
 inherent to the server itself.
 
     $ cat facts/test_[node_id].json
-
     { "ec2.instance_id": "i-91923", "ip_address": "127.0.0.1", ... }
 
 On the other hand, `clusters/test/[node_id].json` is completely empty. That's
@@ -163,7 +162,7 @@ several tools to help you understand what will happen before you get there.
 Config can validate that your files are well formed and that all required
 variables have been specified.
 
-    $ config validate
+    $ config-validate
 
 If something is invalid, Config will tell you.
 
@@ -178,7 +177,7 @@ If something is invalid, Config will tell you.
 Once the parts are valid, you might want to get an idea of what the result of a
 Blueprint will be.
 
-    $ config try blueprints/test.rb
+    $ config-try blueprints/test.rb
 
 The result of this command is a record of everything that would happen. It might look
 something like this, showing the hierarchy of patterns used and their results.
@@ -221,7 +220,7 @@ Blueprint execution occurs in a few steps:
    that all Attributes have been set.
 1. **Resolve** Detect conflicting Patterns. Mark duplicate Patterns to
    execute in *skip* mode.
-1. **Cleanup** If a previous execution exists, find any Patterns that
+1. **Destroy** If a previous execution exists, find any Patterns that
    executed previously but would not execute now. Mark those Patterns
    to execute in *destroy* mode.
 1. **Execute** Execute all Patterns.
@@ -236,10 +235,9 @@ patterns to create your own, higher level patterns.
 All patterns inherit from `Config::Pattern`. A trivial example.
 
     class LastRunAt < Config::Pattern
-
       def call
         file "/etc/config_was_run" do |f|
-          f.content = Config.boot_time.to_s
+          f.content = Time.now.to_s
         end
       end
     end
@@ -252,7 +250,7 @@ rewrite it without the helper.
     def call
       add Config::Patterns::File do |f|
         f.path = "/etc/config_was_run"
-        f.content = Time.now
+        f.content = Time.now.to_s
       end
     end
 
@@ -292,8 +290,8 @@ Pass a second argument to `attr` or `key` to set a default value.
 
     attr :content, "Hello"
 
-**Important** All attributes of a Pattern must have a non-nil value. If
-an attribute of your Pattern is optional, it must have a default value.
+**Important** All attributes of a Pattern must have a value. If nil is
+an acceptable value, you must set that as the default.
 
 #### Keys
 
@@ -371,8 +369,7 @@ for your pattern via either the `describe` method or the `to_s` method.
 
 ### Create & Destroy
 
-The Pattern API has two additional methods: `create` and `destroy`. It's
-rare that you will need to use them in most cases.
+The Pattern API has two additional methods: `create` and `destroy`.
 
 During the Accumulation phase, Config collects all of the patterns and
 determines uniqueness. Once the set of patterns is found, each pattern
