@@ -7,7 +7,7 @@ class Config::Meta::PatternCategory < Config::Pattern
   key :name
 
   def call
-    dirp "#{root}/patterns/#{name}"
+    dir  "#{root}/patterns/#{name}"
     file "#{root}/patterns/#{name}/README.md" do |f|
       f.template = "pattern_category_readme.md.erb"
     end

@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path("../../", __FILE__) + "/lib"
+require 'config'
+
+blueprint_name = File.basename($0)
+
+name = ARGV.shift 
+name or abort "usage: config-create-blueprint NAME"
+
+Config.log_to $stdout
+Config.blueprint(blueprint_name) do
+  add Config::Meta::Blueprint do |p|
+    p.root = File.expand_path(".")
+    p.name = name
+  end
+end
+
+
