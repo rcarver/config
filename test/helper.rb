@@ -27,8 +27,14 @@ class ConfigSpec < MiniTest::Spec
     executor.execute
   end
 
-  def log_string(loggable=subject)
-    subject.log.stream.string
+  def log_string
+    log_stream.string
+  end
+
+  let(:log_stream) { StringIO.new }
+
+  before do
+    Config.log_to log_stream
   end
 end
 

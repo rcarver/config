@@ -7,8 +7,6 @@ module Config
       @indent_string = " " * 2
     end
 
-    attr_accessor :stream
-
     attr_accessor :indent_string
 
     def <<(input)

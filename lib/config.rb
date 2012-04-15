@@ -1,6 +1,7 @@
-require 'json'
 require 'active_support'
 require 'active_support/inflector'
+require 'json'
+require 'pathname'
 
 require 'config/version'
 
@@ -24,5 +25,18 @@ require 'config/log'
 require 'config/meta'
 
 module Config
+
+  def self.log
+    @log ||= Config::Log.new
+  end
+
+  def self.log_to(stream)
+    @log = Config::Log.new(stream)
+  end
+
+  def self.blueprint(&block)
+    blueprint = Config::Blueprint.new('tmp', &block)
+    blueprint.execute
+  end
 
 end

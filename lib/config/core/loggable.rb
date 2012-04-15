@@ -6,7 +6,7 @@ module Config
       #
       # Returns a Config::Log.
       def log
-        @log ||= Config::Log.new
+        @log ||= Config.log
       end
 
       # Public: Set the logger.
