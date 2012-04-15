@@ -13,6 +13,12 @@ category, name = qualified_name.split("/")
 
 Config.log_to $stdout
 Config.blueprint(blueprint_name) do
+  add Config::Meta::PatternCategory do |p|
+    p.root = File.expand_path(".")
+    p.name = category
+  end
+end
+Config.blueprint(blueprint_name) do
   add Config::Meta::Pattern do |p|
     p.root = File.expand_path(".")
     p.category = category

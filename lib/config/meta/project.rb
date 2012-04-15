@@ -8,10 +8,12 @@ class Config::Meta::Project < Config::Pattern
       dir "#{root}/#{d}"
     end
     file "#{root}/README.md" do |f|
+      f.only_create!
       f.template = "project_readme.md.erb"
     end
   end
 
+  # NOTE: this is an idea. let it sit.
   def if_changed
     [
       "init",

@@ -36,5 +36,19 @@ describe "filesystem", Config::Meta::Project do
 This project is powered by [Config](https://github.com/rcarver/config).
     STR
   end
+
+  it "does not overwrite the readme" do
+
+    # README should exist.
+    (tmpdir + "README.md").open("w") do |f|
+      f.print "hello"
+    end
+
+    subject.root = tmpdir
+
+    execute_pattern
+
+    (tmpdir + "README.md").read.must_equal "hello"
+  end
 end
 

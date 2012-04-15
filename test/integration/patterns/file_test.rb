@@ -42,7 +42,7 @@ describe "filesystem", Config::Patterns::File do
 
   describe "#create" do
 
-    describe "in general" do
+    describe "operation = :write" do
 
       before do
         subject.content = "hello world"
@@ -66,7 +66,7 @@ describe "filesystem", Config::Patterns::File do
         subject.changes.must_include "updated"
       end
 
-      describe "with append" do
+      describe "operation = :append" do
 
         before do
           subject.append!
@@ -83,6 +83,26 @@ describe "filesystem", Config::Patterns::File do
           subject.create
           subject.changes.must_include "appended"
           path.read.must_equal "HEREhello world"
+        end
+      end
+
+      describe "operation = :create" do
+
+        before do
+          subject.only_create!
+        end
+
+        it "creates the file" do
+          subject.create
+          subject.changes.must_include "created"
+          path.read.must_equal "hello world"
+        end
+
+        it "does not change the file" do
+          path.open("w") { |f| f.print "HERE" }
+          subject.create
+          subject.wont_be :changed?
+          path.read.must_equal "HERE"
         end
       end
     end

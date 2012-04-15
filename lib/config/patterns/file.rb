@@ -28,8 +28,8 @@ module Config
       desc "Specify the object to provide the template binding"
       attr :template_context, nil
 
-      desc "Append content to the file instead of creating or replacing"
-      attr :append, false
+      desc "The operation to perform. See append! and only_create!"
+      attr :operation, :write
 
       def describe
         "File #{pn}"
@@ -40,11 +40,18 @@ module Config
       #
       # Returns nothing.
       def append!
-        self.append = true
+        self.operation = :append
+      end
+
+      # Public: Not modifying an existing file is a questionable
+      # operation so call it with bang for confidence.
+      #
+      # Returns nothing.
+      def only_create!
+        self.operation = :only_create
       end
 
       def create
-
         if content
           new_content = content
         else
@@ -61,13 +68,14 @@ module Config
         change_status = nil
 
         if pn.exist?
-          existing_content = pn.read
-          change_status = case
-          when append
+          change_status = case operation
+          when :append
             "appended"
-          # TODO: checksum to compare?
-          when new_content != existing_content
-            "updated"
+          when :write
+            # TODO: checksum to compare? use File.identical?
+            if new_content != pn.read
+              "updated"
+            end
           end
         else
           change_status = "created"
