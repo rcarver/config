@@ -56,6 +56,8 @@ end
 
     (tmpdir + "patterns" + "nginx" + "README.md").must_be :exist?
     (tmpdir + "patterns" + "nginx" + "README.md").read.must_equal <<-STR
+# NGINX
+
 ## Service
 
 **TODO** Describe the purpose of this pattern.

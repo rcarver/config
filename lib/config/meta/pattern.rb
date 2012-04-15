@@ -15,7 +15,7 @@ class Config::Meta::Pattern < Config::Pattern
       f.template = "pattern.rb.erb"
     end
     file "#{root}/patterns/#{category}/README.md" do |f|
-      #f.append!
+      f.append!
       f.template = "pattern_readme.md.erb"
     end
   end
