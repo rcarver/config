@@ -26,7 +26,9 @@ module BlueprintTest
       BlueprintTest.value = []
     end
 
-    subject { Config::Blueprint.from_string("test", code) }
+    let(:blueprint_name) { "test" }
+
+    subject { Config::Blueprint.from_string(blueprint_name, code) }
 
     def log_execute(*args)
       stream = StringIO.new
@@ -239,6 +241,39 @@ Execute Blueprint test
   Create [BlueprintTest::Test name:"pattern2"]
   Create [BlueprintTest::Test name:"pattern3"]
         STR
+      end
+    end
+
+    describe "in context of a cluster" do
+
+      let(:cluster_code) {
+        <<-STR
+          blueprint :webserver,
+            my_name: "bob"
+        STR
+      }
+
+      let(:code) {
+        <<-STR
+          add BlueprintTest::Test do |t|
+            t.name = cluster.webserver.my_name
+            t.value = "ok"
+          end
+        STR
+      }
+
+      let(:blueprint_name) { "webserver" }
+      let(:cluster) { Config::Cluster.from_string("staging", cluster_code) }
+
+      before do
+        subject.cluster = cluster
+      end
+
+      it "uses cluster variables" do
+        subject.execute
+        BlueprintTest.value.must_equal [
+          [:create, "bob", "ok"]
+        ]
       end
     end
   end

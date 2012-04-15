@@ -2,9 +2,27 @@ module Config
   class Blueprint
     include Config::Core::Loggable
 
-    def self.from_string(name, string)
+    def self.from_file(path)
+      name = File.basename(path, ".rb")
+      content = File.read(path)
+      from_string(name, content, path.to_s, 1)
+    end
+
+    def self.from_string(name, string, _file=nil, _line=nil)
       new(name) do
-        eval string
+        if _file && _line
+          instance_eval string, _file, _line
+        else
+          instance_eval string
+        end
+      end
+    end
+
+    class RootPattern < Config::Pattern
+      desc "The Cluster"
+      attr :cluster
+      def inspect
+        "<Blueprint>"
       end
     end
 
