@@ -28,8 +28,19 @@ module Config
       desc "Specify the object to provide the template binding"
       attr :template_context, nil
 
+      desc "Append content to the file instead of creating or replacing"
+      attr :append, false
+
       def describe
         "File #{pn}"
+      end
+
+      # Public: Appending is a questionable operation so call it with
+      # bang for confidence.
+      #
+      # Returns nothing.
+      def append!
+        self.append = true
       end
 
       def create
@@ -51,18 +62,26 @@ module Config
 
         if pn.exist?
           existing_content = pn.read
+          change_status = case
+          when append
+            "appended"
           # TODO: checksum to compare?
-          if new_content != existing_content
-            change_status = "updated"
+          when new_content != existing_content
+            "updated"
           end
         else
           change_status = "created"
         end
 
-        if change_status
+        case change_status
+        when "created", "updated"
           pn.open("w") { |f| f.print new_content }
           changes << change_status
+        when "appended"
+          pn.open("a") { |f| f.print new_content }
+          changes << change_status
         end
+
         #stat = Config::Core::Stat.new(self, path)
         #stat.owner = owner if owner
         #stat.group = group if group

@@ -42,7 +42,7 @@ describe "filesystem", Config::Patterns::File do
 
   describe "#create" do
 
-    describe "with static content" do
+    describe "in general" do
 
       before do
         subject.content = "hello world"
@@ -64,6 +64,26 @@ describe "filesystem", Config::Patterns::File do
         path.open("w") { |f| f.print "goodbye" }
         subject.create
         subject.changes.must_include "updated"
+      end
+
+      describe "with append" do
+
+        before do
+          subject.append!
+        end
+
+        it "creates the file" do
+          subject.create
+          subject.changes.must_include "created"
+          path.read.must_equal "hello world"
+        end
+
+        it "appends the file" do
+          path.open("w") { |f| f.print "HERE" }
+          subject.create
+          subject.changes.must_include "appended"
+          path.read.must_equal "HEREhello world"
+        end
       end
     end
 
@@ -95,7 +115,7 @@ describe "filesystem", Config::Patterns::File do
         subject.changes.must_include "updated"
       end
 
-      # TODO: validate attrs
+      # TODO: validate template attrs
     end
   end
 
