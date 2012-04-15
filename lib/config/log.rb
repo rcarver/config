@@ -10,15 +10,17 @@ module Config
     attr_accessor :indent_string
 
     def <<(input)
-      @stream.puts "#{current_indent}#{input}"
+      input.split("\n").each do |line|
+        @stream.puts "#{current_indent}#{line}"
+      end
     end
 
-    def indent
-      @indent_level += 1
+    def indent(level=1)
+      @indent_level += level
       begin
         yield
       ensure
-        @indent_level -= 1
+        @indent_level -= level
       end
     end
 

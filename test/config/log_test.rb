@@ -33,4 +33,21 @@ a
 e
     STR
   end
+
+  it "indents any amount" do
+    subject.indent(2) do
+      subject << "ok"
+    end
+    stream.string.must_equal "    ok\n"
+  end
+
+  it "handles multiline input with indent" do
+    subject.indent do
+      subject << "one\ntwo"
+    end
+    stream.string.must_equal <<-STR
+  one
+  two
+    STR
+  end
 end
