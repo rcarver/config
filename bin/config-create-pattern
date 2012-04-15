@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path("../../", __FILE__) + "/lib"
+require 'config'
 
-require 'config/meta'
+blueprint_name = File.basename($0)
 
 qualified_name = ARGV.shift 
 
@@ -10,7 +12,7 @@ category, name = qualified_name.split("/")
 (category && name) or abort "Name must contain two parts separated by a slash"
 
 Config.log_to $stdout
-Config.blueprint do
+Config.blueprint(blueprint_name) do
   add Config::Meta::Pattern do |p|
     p.root = File.expand_path(".")
     p.category = category

@@ -1,9 +1,11 @@
 #!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path("../../", __FILE__) + "/lib"
+require 'config'
 
-require 'config/meta'
+blueprint_name = File.basename($0)
 
 Config.log_to $stdout
-Config.blueprint do
+Config.blueprint(blueprint_name) do
   add Config::Meta::Project do |p|
     p.root = File.expand_path(".")
   end

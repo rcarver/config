@@ -44,9 +44,10 @@ module Config
 
   # Public: Create an execute a Blueprint with a block.
   #
+  # name - String name of the blueprint.
   # Returns nothing.
-  def self.blueprint(&block)
-    blueprint = Config::Blueprint.new('tmp', &block)
+  def self.blueprint(name, &block)
+    blueprint = Config::Blueprint.new(name, &block)
     blueprint.execute
   end
 end
