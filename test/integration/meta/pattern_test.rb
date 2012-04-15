@@ -25,7 +25,7 @@ describe "filesystem", Config::Meta::Pattern do
     # Pattern Category must exist.
     (tmpdir + "patterns" + "nginx").mkpath
 
-    # README may exist.
+    # README should exist.
     (tmpdir + "patterns" + "nginx" + "README.md").open("w") do |f|
       f.puts "# NGINX"
     end
@@ -62,6 +62,5 @@ end
 
 **TODO** Describe the purpose of this pattern.
     STR
-    skip "Need File#append!"
   end
 end

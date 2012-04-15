@@ -4,9 +4,8 @@ class Config::Meta::Project < Config::Pattern
   key :root
 
   def call
-    dirp root
-    %(blueprints patterns facts clusters).each do |d|
-      dirp "#{root}/#{d}"
+    %w(blueprints patterns facts clusters).each do |d|
+      dir "#{root}/#{d}"
     end
     file "#{root}/README.md" do |f|
       f.template = "project_readme.md.erb"
