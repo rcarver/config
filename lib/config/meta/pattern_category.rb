@@ -10,6 +10,7 @@ class Config::Meta::PatternCategory < Config::Pattern
     dir  "#{root}/patterns"
     dir  "#{root}/patterns/#{name}"
     file "#{root}/patterns/#{name}/README.md" do |f|
+      f.only_create!
       f.template = "pattern_category_readme.md.erb"
     end
   end
