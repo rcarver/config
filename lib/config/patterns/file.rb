@@ -81,13 +81,17 @@ module Config
           change_status = "created"
         end
 
-        case change_status
-        when "created", "updated"
-          pn.open("w") { |f| f.print new_content }
+        if change_status
+          case change_status
+          when "created", "updated"
+            pn.open("w") { |f| f.print new_content }
+          when "appended"
+            pn.open("a") { |f| f.print new_content }
+          end
           changes << change_status
-        when "appended"
-          pn.open("a") { |f| f.print new_content }
-          changes << change_status
+          log.indent(2) do
+            log << new_content
+          end
         end
 
         #stat = Config::Core::Stat.new(self, path)

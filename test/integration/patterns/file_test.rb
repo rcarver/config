@@ -65,45 +65,56 @@ describe "filesystem", Config::Patterns::File do
         subject.create
         subject.changes.must_include "updated"
       end
+    end
 
-      describe "operation = :append" do
+    describe "operation = :append" do
 
-        before do
-          subject.append!
-        end
-
-        it "creates the file" do
-          subject.create
-          subject.changes.must_include "created"
-          path.read.must_equal "hello world"
-        end
-
-        it "appends the file" do
-          path.open("w") { |f| f.print "HERE" }
-          subject.create
-          subject.changes.must_include "appended"
-          path.read.must_equal "HEREhello world"
-        end
+      before do
+        subject.content = "hello world"
+        subject.append!
       end
 
-      describe "operation = :create" do
+      it "creates the file" do
+        subject.create
+        subject.changes.must_include "created"
+        path.read.must_equal "hello world"
+      end
 
-        before do
-          subject.only_create!
-        end
+      it "appends the file" do
+        path.open("w") { |f| f.print "HERE" }
+        subject.create
+        subject.changes.must_include "appended"
+        path.read.must_equal "HEREhello world"
+      end
+    end
 
-        it "creates the file" do
-          subject.create
-          subject.changes.must_include "created"
-          path.read.must_equal "hello world"
-        end
+    describe "operation = :create" do
 
-        it "does not change the file" do
-          path.open("w") { |f| f.print "HERE" }
-          subject.create
-          subject.wont_be :changed?
-          path.read.must_equal "HERE"
-        end
+      before do
+        subject.content = "hello\nworld"
+        subject.only_create!
+      end
+
+      it "creates the file" do
+        subject.create
+        subject.changes.must_include "created"
+        path.read.must_equal "hello\nworld"
+      end
+
+      it "does not change the file" do
+        path.open("w") { |f| f.print "HERE" }
+        subject.create
+        subject.wont_be :changed?
+        path.read.must_equal "HERE"
+      end
+
+      it "logs the file content" do
+        subject.create
+        log_string.must_equal <<-STR
+  created
+    hello
+    world
+        STR
       end
     end
 
