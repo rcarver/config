@@ -34,14 +34,21 @@ describe Config::Patterns do
 
     it "sets the path and adds the pattern" do
       mock.expect(:path=, nil, ["/tmp/file"])
-      subject.file "/tmp/file"
+      subject.file "/tmp/file", false
     end
 
     it "calls the block" do
       mock.expect(:path=, nil, ["/tmp/file"])
       mock.expect(:other=, nil, ["value"])
-      subject.file "/tmp/file" do |f|
+      subject.file "/tmp/file", false do |f|
         f.other = "value"
+      end
+    end
+
+    it "allows simple template configuration" do
+      mock.expect(:path=, nil, ["/tmp/file"])
+      subject.file "/tmp/file", true do |f|
+        f.must_be_instance_of Config::Patterns::FileTemplate
       end
     end
   end
@@ -62,5 +69,31 @@ describe Config::Patterns do
         f.other = "value"
       end
     end
+  end
+end
+
+describe Config::Patterns::FileTemplate do
+
+  let(:pattern) { MiniTest::Mock.new }
+  let(:context) { MiniTest::Mock.new }
+  let(:source_file) { "/project/patterns/category/pattern.rb" }
+
+  subject { Config::Patterns::FileTemplate.new(pattern, context, source_file) }
+
+  it "assigns template details" do
+    pattern.expect(:template_path=, nil, ["/project/patterns/category/templates/template.erb"])
+    pattern.expect(:template_context=, nil, [context])
+    subject.template = "template.erb"
+  end
+
+  it "assigns template details with a subdir" do
+    pattern.expect(:template_path=, nil, ["/project/patterns/category/templates/subdir/template.erb"])
+    pattern.expect(:template_context=, nil, [context])
+    subject.template = "subdir/template.erb"
+  end
+
+  it "delegates everything else" do
+    pattern.expect(:public_send, "value", [:foo, "a", "b"])
+    subject.foo("a", "b").must_equal "value"
   end
 end
