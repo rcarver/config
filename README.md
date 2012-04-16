@@ -395,23 +395,19 @@ stored in `clusters/[name].rb`
 
     $ config-create-cluster production
     $ vim clusters/production.rb
-
-    blueprint :webserver,
+    configure :webserver,
       host: "example.com",
       enabled: true
 
-Here we have created a "production" cluster and customized the
-"webserver" blueprint. When the blueprint executes within this cluster,
-it may use cluster variables to alter its behavior. For example.
+Here we have created a `production` cluster and configured some
+variables for the `webserver`. When a blueprint executes within this
+cluster, it may access cluster variables to alter its behavior.
 
     $ vim blueprints/webserver.rb
     add Nginx::Site do |site|
       site.host = cluster.webserver.host
       site.enabled = cluster.webserver.enabled
     end
-
-**Note that this blueprint will fail to validate if any cluster using
-it does not define all variables.**
 
 ### Nodes
 
@@ -425,21 +421,6 @@ simple queries.
 
     node = cluster.find_node(MySQL::Server => { master: true })
     node.facts.public_ip
-
-This query returns a single node whose MySQL::Server Pattern has the
-attribute `master == true`. To create such a node we must add a
-variable. Within the the MySQL Blueprint.
-
-    $ vim blueprints/mysql.rb
-    add MySQL::Server do |s|
-      s.master = node.mysql_master || false
-    end
-
-And in the cluster file.
-
-    $ vim clusters/production.rb
-    node "the-node-id",
-      mysql_master: true
 
 ## Advanced Configuration
 
