@@ -15,12 +15,14 @@ require 'config/core/executable'
 require 'config/core/executor'
 require 'config/core/marshalable'
 require 'config/core/validation_error'
+require 'config/core/variables'
 
 require 'config/patterns'
-
-require 'config/blueprint'
-require 'config/pattern'
 require 'config/log'
+
+require 'config/pattern'
+require 'config/blueprint'
+require 'config/cluster'
 
 require 'config/meta'
 
