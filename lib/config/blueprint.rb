@@ -47,8 +47,10 @@ module Config
       root.cluster = cluster
       root.accumulation = @accumulation
       root.parent = nil
-      root.instance_eval(&@block)
-      @executor.accumulate
+      log.indent do
+        root.instance_eval(&@block)
+        @executor.accumulate
+      end
       @accumulation
     end
 

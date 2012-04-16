@@ -76,6 +76,10 @@ module BlueprintTest
       it "logs what happened" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint test
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"one"]
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"two"]
 Validate Blueprint test
 Resolve Blueprint test
 Execute Blueprint test
@@ -104,6 +108,8 @@ Execute Blueprint test
       it "logs what happened" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint test
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"the test"]
 Validate Blueprint test
   ERROR [BlueprintTest::Test name:"the test"] missing value for :value (The value)
         STR
@@ -132,6 +138,10 @@ Validate Blueprint test
       it "logs what happened" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint test
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"the test"]
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"the test"]
 Validate Blueprint test
 Resolve Blueprint test
   CONFLICT [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>1} vs. [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>2}
@@ -166,6 +176,10 @@ Resolve Blueprint test
       it "logs what happened" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint test
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"the test"]
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"the test"]
 Validate Blueprint test
 Resolve Blueprint test
 Execute Blueprint test
@@ -232,7 +246,17 @@ Execute Blueprint test
       it "logs what happened" do
         log_execute(@accumulation).must_equal <<-STR
 Accumulate Blueprint previous test
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"pattern1"]
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"pattern2"]
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"pattern3"]
 Accumulate Blueprint test
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"pattern2"]
+  Add BlueprintTest::Test
+    > [BlueprintTest::Test name:"pattern3"]
 Validate Blueprint test
 Resolve Blueprint test
 Execute Blueprint test
@@ -278,7 +302,9 @@ Execute Blueprint test
       it "logs when variables are used" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint webserver
-[Variables "Blueprint webserver"] read :my_name
+  Add BlueprintTest::Test
+      [Variables "Blueprint webserver"] read :my_name
+    > [BlueprintTest::Test name:"bob"]
 Validate Blueprint webserver
 Resolve Blueprint webserver
 Execute Blueprint webserver

@@ -75,6 +75,12 @@ module PatternIntegrationTest
         child_pattern.name.must_equal "sub-test"
         child_pattern.value.must_equal "sub-123"
       end
+      it "logs the patterns that are added" do
+        log_string.must_equal <<-STR
+Add PatternIntegrationTest::TestPattern
+  > [TestPattern:sub-test]
+        STR
+      end
     end
 
     describe "#execute" do

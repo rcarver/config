@@ -34,7 +34,12 @@ module Config
     # Public
     def add(pattern_class, &block)
       @accumulation.current = self
-      @accumulation.add(pattern_class, &block)
+      log << "Add #{pattern_class}"
+      pattern = nil
+      log.indent(2) do
+        pattern = @accumulation.add(pattern_class, &block)
+      end
+      log << "  > #{pattern}"
       nil
     end
 
