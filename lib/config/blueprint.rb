@@ -43,12 +43,10 @@ module Config
       return @accumulation if @accumulated
       @accumulated = true
       log << "Accumulate #{self}"
-      @accumulation.log = log
       root = RootPattern.new
       root.cluster = cluster
       root.accumulation = @accumulation
       root.parent = nil
-      root.log = log
       root.instance_eval(&@block)
       @executor.accumulate
       @accumulation
@@ -83,7 +81,6 @@ module Config
     def execute(previous_accumulation=nil)
       validate
       if previous_accumulation
-        previous_accumulation.log = log
         @executor.previous_accumulation = previous_accumulation
       end
       log << "Execute #{self}"

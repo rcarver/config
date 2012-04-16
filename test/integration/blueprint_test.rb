@@ -31,14 +31,12 @@ module BlueprintTest
     subject { Config::Blueprint.from_string(blueprint_name, code) }
 
     def log_execute(*args)
-      stream = StringIO.new
-      subject.log = Config::Log.new(stream)
       begin
         subject.execute(*args)
       rescue
         # ignore
       end
-      stream.string
+      log_string
     end
 
     describe "in general" do
@@ -215,7 +213,7 @@ Execute Blueprint test
         STR
       }
 
-      let(:previous) { Config::Blueprint.from_string("test", previous_code) }
+      let(:previous) { Config::Blueprint.from_string("previous test", previous_code) }
       subject        { Config::Blueprint.from_string("test", current_code) }
 
       before do
@@ -233,6 +231,7 @@ Execute Blueprint test
 
       it "logs what happened" do
         log_execute(@accumulation).must_equal <<-STR
+Accumulate Blueprint previous test
 Accumulate Blueprint test
 Validate Blueprint test
 Resolve Blueprint test
