@@ -16,7 +16,6 @@ describe Config::Core::Accumulation do
       pattern_class.expect(:new, pattern)
       pattern.expect(:accumulation=, nil, [subject])
       pattern.expect(:parent=, nil, [parent])
-      pattern.expect(:log=, nil, [subject.log])
     end
 
     after do
@@ -98,9 +97,6 @@ describe Config::Core::Accumulation do
 
         def hash
           key.hash
-        end
-
-        def log=(log)
         end
       end
     }

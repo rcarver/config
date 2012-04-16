@@ -8,16 +8,6 @@ module Config
       def log
         @log ||= Config.log
       end
-
-      # Public: Set the logger.
-      #
-      # log - Config::Log
-      #
-      # Returns nothing.
-      def log=(log)
-        @log = log
-      end
-
     end
   end
 end

@@ -29,7 +29,6 @@ module Config
         yield pattern if block_given?
         pattern.accumulation = self
         pattern.parent = @current
-        pattern.log = log
         self << pattern
         pattern
       end
@@ -47,7 +46,6 @@ module Config
       # Returns a Config::Core::Accumulation.
       def -(accumulation)
         accumulation = self.class.new(to_a - accumulation.to_a)
-        accumulation.log = self.log
         accumulation
       end
 
@@ -92,13 +90,6 @@ module Config
       def ==(other)
         to_a == other.to_a
       end
-
-      # Internal: Make sure all patterns have the right log.
-      def log=(log)
-        super
-        each { |p| p.log = log }
-      end
-
     end
   end
 end

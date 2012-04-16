@@ -25,14 +25,8 @@ describe Config::Core::Executable do
 
   subject { klass.new }
 
-  let(:stream) { StringIO.new }
-
-  before do
-    subject.log = Config::Log.new(stream)
-  end
-
   def log
-    stream.string.chomp
+    log_string.chomp
   end
 
   describe "pattern hierarchy" do
