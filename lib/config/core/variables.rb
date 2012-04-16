@@ -16,8 +16,9 @@ module Config
 
       def [](key)
         if @variables.key?(key)
-          log << "#{self} read #{key.inspect}"
-          @variables[key]
+          value = @variables[key]
+          log << "Read #{@name}.#{key} => #{value.inspect}"
+          value
         else
           raise UnknownVariable, "#{key.to_s} is not defined"
         end

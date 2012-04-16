@@ -14,19 +14,19 @@ module Config
       else
         dsl.instance_eval(string)
       end
-      self.new(name, dsl.blueprint_vars)
+      self.new(name, dsl.variables)
     end
 
     class DSL
 
       def initialize
-        @blueprint_vars = {}
+        @variables = {}
       end
 
-      attr :blueprint_vars
+      attr :variables
 
-      def blueprint(name, variables)
-        @blueprint_vars[name.to_sym] = Config::Core::Variables.new("Blueprint #{name}", variables)
+      def configure(name, variables)
+        @variables[name.to_sym] = Config::Core::Variables.new(name, variables)
       end
 
       def inspect
@@ -34,9 +34,9 @@ module Config
       end
     end
 
-    def initialize(name, blueprint_vars)
+    def initialize(name, variables)
       @name = name
-      @blueprint_vars = blueprint_vars
+      @variables = variables
       @nodes = []
     end
 
@@ -57,9 +57,9 @@ module Config
   protected
 
     def method_missing(message, *args, &block)
-      if @blueprint_vars[message]
-        raise ArgumentError, "Too many arguments to access blueprint" if args.size > 0
-        @blueprint_vars[message]
+      if @variables[message]
+        raise ArgumentError, "Too many arguments to variables" if args.size > 0
+        @variables[message]
       else
         super
       end

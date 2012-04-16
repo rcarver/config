@@ -35,7 +35,7 @@ describe Config::Core::Variables do
 
   it "logs when a variable is used" do
     subject.name
-    log_string.must_equal "[Variables :test] read :name\n"
+    log_string.must_equal "Read test.name => \"ok\"\n"
   end
 
   it "does not log a bad key" do

@@ -271,7 +271,7 @@ Execute Blueprint test
 
       let(:cluster_code) {
         <<-STR
-          blueprint :webserver,
+          configure :webserver,
             my_name: "bob"
         STR
       }
@@ -303,7 +303,7 @@ Execute Blueprint test
         log_execute.must_equal <<-STR
 Accumulate Blueprint webserver
   Add BlueprintTest::Test
-      [Variables "Blueprint webserver"] read :my_name
+      Read webserver.my_name => "bob"
     > [BlueprintTest::Test name:"bob"]
 Validate Blueprint webserver
 Resolve Blueprint webserver
