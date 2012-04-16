@@ -33,6 +33,8 @@ module Config
       @executor = Config::Core::Executor.new(@accumulation)
     end
 
+    attr_accessor :cluster
+
     def to_s
       "Blueprint #{@name}"
     end
@@ -42,7 +44,8 @@ module Config
       @accumulated = true
       log << "Accumulate #{self}"
       @accumulation.log = log
-      root = Config::Pattern.new
+      root = RootPattern.new
+      root.cluster = cluster
       root.accumulation = @accumulation
       root.parent = nil
       root.log = log

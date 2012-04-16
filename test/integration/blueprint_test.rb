@@ -244,7 +244,7 @@ Execute Blueprint test
       end
     end
 
-    describe "in context of a cluster" do
+    describe "with a cluster" do
 
       let(:cluster_code) {
         <<-STR
@@ -269,7 +269,7 @@ Execute Blueprint test
         subject.cluster = cluster
       end
 
-      it "uses cluster variables" do
+      it "can use cluster variables" do
         subject.execute
         BlueprintTest.value.must_equal [
           [:create, "bob", "ok"]
