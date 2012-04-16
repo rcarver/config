@@ -1,18 +1,25 @@
 module Config
   module Core
     class Variables
+      include Loggable
 
       UnknownVariable = Class.new(StandardError)
 
-      def initialize(variables={})
+      def initialize(name, variables={})
+        @name = name
         @variables = variables
       end
 
+      def to_s
+        "[Variables #{@name.inspect}]"
+      end
+
       def [](key)
-        begin
-          @variables.fetch(key)
-        rescue KeyError
-          raise UnknownVariable, "Unknown variable #{key.to_s}"
+        if @variables.key?(key)
+          log << "#{self} read #{key.inspect}"
+          @variables[key]
+        else
+          raise UnknownVariable, "#{key.to_s} is not defined"
         end
       end
 

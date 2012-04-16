@@ -4,7 +4,7 @@ describe Config::Core::Variables do
 
   let(:hash) { {} }
 
-  subject { Config::Core::Variables.new(hash) }
+  subject { Config::Core::Variables.new(:test, hash) }
 
   before do
     hash[:name] = "ok"
@@ -31,5 +31,15 @@ describe Config::Core::Variables do
 
   it "makes sure you don't call it wrong" do
     proc { subject.name("ok") }.must_raise ArgumentError
+  end
+
+  it "logs when a variable is used" do
+    subject.name
+    log_string.must_equal "[Variables :test] read :name\n"
+  end
+
+  it "does not log a bad key" do
+    proc { subject.foo }.must_raise Config::Core::Variables::UnknownVariable
+    log_string.must_be_empty
   end
 end
