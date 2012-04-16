@@ -1,10 +1,20 @@
 module Config
   class Cluster
 
-    def self.from_string(name, string)
+    def self.from_file(path)
+      name = File.basename(path, ".rb")
+      content = File.read(path)
+      from_string(name, content, path.to_s, 1)
+    end
+
+    def self.from_string(name, string, _file=nil, _line=nil)
       dsl = DSL.new
-      dsl.instance_eval(string)
-      self.new(dsl.blueprint_vars)
+      if _file && _line
+        dsl.instance_eval(string, _file, _line)
+      else
+        dsl.instance_eval(string)
+      end
+      self.new(name, dsl.blueprint_vars)
     end
 
     class DSL
@@ -18,11 +28,20 @@ module Config
       def blueprint(name, variables)
         @blueprint_vars[name.to_sym] = Config::Core::Variables.new("Blueprint #{name}", variables)
       end
+
+      def inspect
+        "<Cluster>"
+      end
     end
 
-    def initialize(blueprint_vars)
+    def initialize(name, blueprint_vars)
+      @name = name
       @blueprint_vars = blueprint_vars
       @nodes = []
+    end
+
+    def to_s
+      "#{@name} cluster"
     end
 
     def find_node(options)
@@ -30,7 +49,7 @@ module Config
       raise AmbiguousNode if nodes.size > 1
       nodes.first
     end
-    
+
     def find_all_nodes(options)
       @nodes.find_all { |node| node_match?(node, options) }
     end
