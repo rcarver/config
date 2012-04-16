@@ -42,15 +42,18 @@ module Config
     def accumulate
       return @accumulation if @accumulated
       @accumulated = true
-      log << "Accumulate #{self}"
+
       root = RootPattern.new
       root.cluster = cluster
       root.accumulation = @accumulation
       root.parent = nil
+
+      log << "Accumulate #{self}"
       log.indent do
         root.instance_eval(&@block)
         @executor.accumulate
       end
+
       @accumulation
     end
 
@@ -58,9 +61,12 @@ module Config
       return if @validated
       @validated = true
       accumulate
+
       begin
         log << "Validate #{self}"
-        @executor.validate!
+        log.indent do
+          @executor.validate!
+        end
       rescue Config::Core::ValidationError => e
         log.indent do
           e.errors.each do |msg|
@@ -69,27 +75,37 @@ module Config
         end
         raise
       end
+
       begin
         log << "Resolve #{self}"
-        @executor.resolve!
+        log.indent do
+          @executor.resolve!
+        end
       rescue Config::Core::ConflictError => e
         log.indent do
           log << "CONFLICT #{e.message}"
         end
         raise
       end
+
+      return nil
     end
 
     def execute(previous_accumulation=nil)
+      return if @executed
+      @executed = true
       validate
+
       if previous_accumulation
         @executor.previous_accumulation = previous_accumulation
       end
+
       log << "Execute #{self}"
       log.indent do
         @executor.execute
       end
-      nil
+
+      return nil
     end
 
   end
