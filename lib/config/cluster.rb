@@ -16,7 +16,7 @@ module Config
       attr :blueprint_vars
 
       def blueprint(name, variables)
-        @blueprint_vars[name.to_sym] = Config::Core::Variables.new(variables)
+        @blueprint_vars[name.to_sym] = Config::Core::Variables.new("Blueprint #{name}", variables)
       end
     end
 

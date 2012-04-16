@@ -196,7 +196,7 @@ Execute Blueprint test
       }
 
       # Now we run again with changed patterns.
-      # 
+      #
       # pattern1 is missing so it's destroyed.
       # pattern2 is the same so it gets run again.
       # pattern3 is changed and the new version is run.
@@ -273,6 +273,17 @@ Execute Blueprint test
         BlueprintTest.value.must_equal [
           [:create, "bob", "ok"]
         ]
+      end
+
+      it "logs when variables are used" do
+        log_execute.must_equal <<-STR
+Accumulate Blueprint webserver
+[Variables "Blueprint webserver"] read :my_name
+Validate Blueprint webserver
+Resolve Blueprint webserver
+Execute Blueprint webserver
+  Create [BlueprintTest::Test name:"bob"]
+        STR
       end
     end
   end
