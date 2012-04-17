@@ -11,16 +11,24 @@ module Config
     def self.from_string(name, string, _file=nil, _line=nil)
       new(name) do
         if _file && _line
-          instance_eval string, _file, _line
+          eval string, binding, _file, _line
         else
-          instance_eval string
+          eval string, binding
         end
       end
     end
 
     class RootPattern < Config::Pattern
-      desc "The Cluster"
+
+      desc "The current Node"
+      attr :node
+
+      desc "The current Cluster"
       attr :cluster
+
+      def to_s
+        "<Blueprint>"
+      end
       def inspect
         "<Blueprint>"
       end
@@ -33,19 +41,21 @@ module Config
       @executor = Config::Core::Executor.new(@accumulation)
     end
 
-    attr_accessor :cluster
-
     def to_s
       "Blueprint #{@name}"
     end
+
+    attr_accessor :node
+    attr_accessor :cluster
 
     def accumulate
       return @accumulation if @accumulated
       @accumulated = true
 
       root = RootPattern.new
-      root.cluster = cluster
       root.accumulation = @accumulation
+      root.node = node
+      root.cluster = cluster
       root.parent = nil
 
       log << "Accumulate #{self}"

@@ -23,6 +23,7 @@ require 'config/log'
 require 'config/pattern'
 require 'config/blueprint'
 require 'config/cluster'
+require 'config/node'
 
 require 'config/meta'
 

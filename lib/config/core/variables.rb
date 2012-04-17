@@ -20,7 +20,7 @@ module Config
           log << "Read #{@name}.#{key} => #{value.inspect}"
           value
         else
-          raise UnknownVariable, "#{key.to_s} is not defined"
+          raise UnknownVariable, "#{key.to_s} is not defined in #{self}"
         end
       end
 

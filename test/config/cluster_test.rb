@@ -2,16 +2,18 @@ require 'helper'
 
 describe Config::Cluster do
 
-  let(:blueprint_vars) { {} }
+  subject { Config::Cluster.new("production") }
 
-  subject { Config::Cluster.new("production", blueprint_vars) }
+  specify "#name" do
+    subject.name.must_equal "production"
+  end
 
-  it "#to_s" do
+  specify "#to_s" do
     subject.to_s.must_equal "production cluster"
   end
 
-  it "provides access to each blueprint's vars" do
-    blueprint_vars[:webserver] = :vars
+  it "provides access to variables" do
+    subject.variables = { :webserver => :vars }
     subject.webserver.must_equal :vars
   end
 end

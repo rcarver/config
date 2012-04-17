@@ -14,7 +14,9 @@ module Config
       else
         dsl.instance_eval(string)
       end
-      self.new(name, dsl.variables)
+      cluster = self.new(name)
+      cluster.variables = dsl.variables
+      cluster
     end
 
     class DSL
@@ -25,8 +27,8 @@ module Config
 
       attr :variables
 
-      def configure(name, variables)
-        @variables[name.to_sym] = Config::Core::Variables.new(name, variables)
+      def configure(name, hash)
+        @variables[name.to_sym] = Config::Core::Variables.new(name, hash)
       end
 
       def inspect
@@ -34,15 +36,19 @@ module Config
       end
     end
 
-    def initialize(name, variables)
+    def initialize(name)
       @name = name
-      @variables = variables
+      @variables = {}
       @nodes = []
     end
 
+    attr :name
+
     def to_s
-      "#{@name} cluster"
+      "#{name} cluster"
     end
+
+    attr_writer :variables
 
     def find_node(options)
       nodes = find_all(options)
