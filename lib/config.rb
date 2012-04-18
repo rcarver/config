@@ -16,6 +16,7 @@ require 'config/core/executor'
 require 'config/core/marshalable'
 require 'config/core/validation_error'
 require 'config/core/variables'
+require 'config/core/facts'
 
 require 'config/patterns'
 require 'config/log'
