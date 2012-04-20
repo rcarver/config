@@ -4,13 +4,13 @@ module Config
     class Facts
       include Config::Core::Loggable
 
-      def self.read
+      # Public: Get facts about the execution environment. This uses
+      # ohai underheath.
+      #
+      # Returns a Config::Core::Facts.
+      def self.invent
         ohai = Ohai::System.new
-        if block_given?
-          yield ohai
-        else
-          ohai.all_plugins
-        end
+        ohai.all_plugins
         new ohai.data
       end
 
