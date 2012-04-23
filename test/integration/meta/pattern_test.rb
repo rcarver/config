@@ -5,13 +5,13 @@ describe Config::Meta::Pattern do
   subject { Config::Meta::Pattern.new }
 
   specify "keys" do
-    subject.key_attributes.keys.must_equal [:root, :category, :name]
+    subject.key_attributes.keys.must_equal [:root, :topic, :name]
   end
 
   specify "validity" do
     subject.root = "/tmp"
     subject.name = "tmp"
-    subject.category = "misc"
+    subject.topic = "misc"
     subject.error_messages.must_be_empty
   end
 end
@@ -22,7 +22,7 @@ describe "filesystem", Config::Meta::Pattern do
 
   it "creates a new pattern template" do
 
-    # Pattern Category must exist.
+    # Pattern topic must exist.
     (tmpdir + "patterns" + "nginx").mkpath
 
     # README should exist.
@@ -31,7 +31,7 @@ describe "filesystem", Config::Meta::Pattern do
     end
 
     subject.root = tmpdir
-    subject.category = "nginx"
+    subject.topic = "nginx"
     subject.name = "service"
 
     execute_pattern

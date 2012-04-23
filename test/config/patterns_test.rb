@@ -76,18 +76,18 @@ describe Config::Patterns::FileTemplate do
 
   let(:pattern) { MiniTest::Mock.new }
   let(:context) { MiniTest::Mock.new }
-  let(:source_file) { "/project/patterns/category/pattern.rb" }
+  let(:source_file) { "/project/patterns/topic/pattern.rb" }
 
   subject { Config::Patterns::FileTemplate.new(pattern, context, source_file) }
 
   it "assigns template details" do
-    pattern.expect(:template_path=, nil, ["/project/patterns/category/templates/template.erb"])
+    pattern.expect(:template_path=, nil, ["/project/patterns/topic/templates/template.erb"])
     pattern.expect(:template_context=, nil, [context])
     subject.template = "template.erb"
   end
 
   it "assigns template details with a subdir" do
-    pattern.expect(:template_path=, nil, ["/project/patterns/category/templates/subdir/template.erb"])
+    pattern.expect(:template_path=, nil, ["/project/patterns/topic/templates/subdir/template.erb"])
     pattern.expect(:template_context=, nil, [context])
     subject.template = "subdir/template.erb"
   end

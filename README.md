@@ -55,9 +55,9 @@ To generate a new project
 The project layout
 
     patterns
-      [category]/README.md
-      [category]/[pattern].rb
-      [category]/templates/[file].erb
+      [topic]/README.md
+      [topic]/[pattern].rb
+      [topic]/templates/[file].erb
     blueprints
       [blueprint].rb
     clusters

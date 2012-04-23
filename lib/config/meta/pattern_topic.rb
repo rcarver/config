@@ -1,9 +1,9 @@
-class Config::Meta::PatternCategory < Config::Pattern
+class Config::Meta::PatternTopic < Config::Pattern
 
   desc "Path to project root"
   key :root
 
-  desc "Name of the pattern category"
+  desc "Name of the pattern topic"
   key :name
 
   def call
@@ -11,7 +11,7 @@ class Config::Meta::PatternCategory < Config::Pattern
     dir  "#{root}/patterns/#{name}"
     file "#{root}/patterns/#{name}/README.md" do |f|
       f.only_create!
-      f.template = "pattern_category_readme.md.erb"
+      f.template = "pattern_topic_readme.md.erb"
     end
   end
 end

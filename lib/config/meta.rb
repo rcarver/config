@@ -3,7 +3,7 @@ module Config
 
     autoload :Blueprint, "config/meta/blueprint"
     autoload :Pattern, "config/meta/pattern"
-    autoload :PatternCategory, "config/meta/pattern_category"
+    autoload :PatternTopic, "config/meta/pattern_topic"
     autoload :Project, "config/meta/project"
 
   end

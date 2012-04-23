@@ -1,8 +1,8 @@
 require 'helper'
 
-describe Config::Meta::PatternCategory do
+describe Config::Meta::PatternTopic do
 
-  subject { Config::Meta::PatternCategory.new }
+  subject { Config::Meta::PatternTopic.new }
 
   specify "keys" do
     subject.key_attributes.keys.must_equal [:root, :name]
@@ -15,11 +15,11 @@ describe Config::Meta::PatternCategory do
   end
 end
 
-describe "filesystem", Config::Meta::PatternCategory do
+describe "filesystem", Config::Meta::PatternTopic do
 
-  subject { Config::Meta::PatternCategory.new }
+  subject { Config::Meta::PatternTopic.new }
 
-  it "creates a new category" do
+  it "creates a new topic" do
 
     subject.root = tmpdir
     subject.name = "nginx"
@@ -32,7 +32,7 @@ describe "filesystem", Config::Meta::PatternCategory do
     (tmpdir + "patterns" + "nginx" + "README.md").read.must_equal <<-STR
 # Nginx
 
-**TODO** Describe the purpose of this category.
+**TODO** Describe the purpose of this topic.
     STR
   end
 end
