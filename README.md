@@ -408,22 +408,59 @@ stored in `clusters/[name].rb`
 
     $ config-create-cluster production
     $ vim clusters/production.rb
-    configure :webserver,
+    blueprint :webserver,
       host: "example.com",
       enabled: true
 
 Here we have created a `production` cluster and configured some
-variables for the `webserver`. When a blueprint executes within this
-cluster, it may access cluster variables to alter its behavior.
+variables for the `webserver`. When a Blueprint executes within this
+Cluster, it may access variables to alter its behavior.
 
     $ vim blueprints/webserver.rb
     add Nginx::Site do |site|
-      site.host = cluster.webserver.host
-      site.enabled = cluster.webserver.enabled
+      site.host = cluster.host
+      site.enabled = cluster.enabled
     end
 
 *TODO: Should variables be blueprint specific, grouped in to arbitrary
 buckets, or something else?`
+
+**Ideas** I believe that the configuration of each blueprint should be
+clear, and that within the blueprint you should not pull variables from
+many locations. The minimum locations should be kept to 1) cluster 2)
+node variables, 3) node facts. However, there is a need for multiple
+blueprints to need access to the same variables while keeping the
+definition of those values DRY. Some kind of reference system could be
+useful.
+
+    set :shared_variables,
+      website_host: "example.com"
+
+    blueprint :webserver,
+      host: -> { shared_variables.website_host },
+      enabled: true
+
+**Ideas** Another dimension of reuse might be blueprint inheritance. I
+could definitely see it useful to define a "base" blueprint from which
+others can inherit. What might that look like?
+
+    $ blueprints/base.rb
+    file "~/.ssh/authorized_keys" do |f|
+      f.template = "authorized_keys.erb"
+    end
+
+    $ blueprints/webserver.rb
+    inherit :base
+    # Obviously the question of multiple inheritance should be asked
+    # here. I default to no for simplicity sake but there doesn't seem
+    # to be any real harm.
+    add Nginx::Server
+
+    $ cat clusters/production.rb
+    blueprint :base,
+      ssh_keys: ["..."]
+    blueprint :webserver,
+      host: "example.com"
 
 ### Nodes
 
