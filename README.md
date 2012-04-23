@@ -133,9 +133,9 @@ Next we'll create a Cluster to contain the server. Let's call it
 Check these files into git and push to your remote repository. You're
 now ready to boot a server.
 
-    $ config-ec2-create-node --pattern=webserver --cluster=production
+    $ config-ec2-create-node --blueprint=webserver --cluster=production
 
-Here we've specified the two required parameters: The Pattern used to
+Here we've specified the two required parameters: The Blueprint used to
 configure the server, and the Cluster that the resulting Node will
 belong to. We wait for AWS to provision us a server, and once the server
 boots it will automatically configure itself and store its information
@@ -143,18 +143,22 @@ in this git repo. Once those commits exist, pull them down. Use the
 `--wait` flag to let Config do that for you.
 
     $ git pull
-    + clusters/production/[node_id].json
+    + clusters/production/[node_id].rb
     + facts/production_[node_id].json
 
-Let's look at the facts first. This JSON file contains all kinds of
-information inherent to the server itself.
+Two new files appear. One contains our configuration of the Node, at
+this point its only the Blueprint and Cluster we've configured. You can
+use this file in the future to set Variables used by the blueprint just
+like a Cluster file.
 
-    $ cat facts/production_[node_id].json
-    { "ec2.instance_id": "i-91923", "ip_address": "127.0.0.1", ... }
+    $ cat clusters/production/[node_id].rb
+    cluster   :production
+    blueprint :webserver
 
-On the other hand, `clusters/production_/[node_id].json` is completely
-empty. That's ok. We can use this file to define Variables to alter how
-this particular Node behaves.
+The facts file is contains information gathered by Ohai.
+
+    $ cat facts/production/[node_id].json
+    { "ec2": { "instance_id": "i-91923", "ip_address": "127.0.0.1", ... } }
 
 ## Testing
 
