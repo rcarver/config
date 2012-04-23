@@ -16,22 +16,28 @@ A modern server maintenance tool.
 * __Node__ A server. A Node has a Blueprint and belongs to a Cluster.
 * __Blueprint__ The complete set of Patterns that describe a Node.
 * __Cluster__ A collection of Nodes that work together.
-* __Pattern__ A reusable concept that makes up a Blueprint or another Pattern. All Patterns operations are idempotent.
-* __Fact__ A bit of information about a Node that cannot be changed such as memory or IP address.
-* __Variable__ A part of a Blueprint that may be changed. Variables may be set on either the Node or Blueprint.
-* __Service__ A long running application, generally managed by Upstart. A Service may be notified that something it depends on has changed, when that happens the Service typically restarts.
+* __Pattern__ A reusable concept that makes up a Blueprint or another
+  Pattern. All Pattern operations are idempotent.
+* __Fact__ A bit of information about a Node that cannot be changed,
+  such as memory or IP address.
+* __Variable__ A part of a Blueprint that may be configured. Variables
+  may be set on either the Node or Blueprint.
+* __Service__ A long running application, generally managed by Upstart.
+  A Service may be notified that something it depends on has changed.
+When that happens the Service typically restarts.
 * __TODO__ is monitoring/alerting a core concept?
 
 ### Patterns
 
-Config comes with a set of useful Patterns built in. These Patterns form the
-building blocks for your own higher level Patterns and the Blueprints that use
-them.
+Config comes with a set of useful Patterns built in. These Patterns form
+the building blocks for your own higher level Patterns and the
+Blueprints that use them.
 
 * __Directory__ A directory on disk.
-* __File__ A file on disk. The contents may come from an ERB template, or a string.
+* __File__ A file on disk. The contents may come from an ERB template
+  or a String.
 * __Link__ A symbolic (or hard) link.
-* __Package__ Install a 3rd party library via apt
+* __Package__ Install a 3rd party library via apt>
 * __Script__ Any executable code.
 
 ## Basic Use
@@ -59,7 +65,7 @@ The project layout
       [cluster]/
         [node_id].rb
     facts
-      [cluster]_[node_id].rb
+      [cluster]/[node_id].rb
 
 To create a new server, begin by creating a Blueprint
 
@@ -77,85 +83,84 @@ This Blueprint uses two Patterns. Those Patterns might look something like this
 
     $ config-create-pattern nginx/service
     $ vim patterns/nginx/service.rb
-    module Nginx
-      class Service < Config::Pattern
+    class Nginx::Service < Config::Pattern
 
-        it "Installs nginx and creates a service to run it"
+      it "Installs nginx and creates a service to run it"
 
-        desc "The name of the service to run"
-        key :name, "nginx"
+      desc "The name of the service to run"
+      key :service_name, "nginx"
 
-        def call
-          package "nginx"
-          file "/etc/nginx/nginx.conf" do |f|
-            f.template = "nginx.conf"
-          end
-          service name
-          notify name
+      def call
+        package "nginx"
+        file "/etc/nginx/nginx.conf" do |f|
+          f.template = "nginx.conf"
         end
+        service service_name
+        notify service_name
       end
     end
 
     $ config-create-pattern nginx/site
     $ vim patterns/nginx/site.rb
-    module Nginx
-      class Site < Config::Pattern
+    class Nginx::Site < Config::Pattern
 
-        it "Installs a website to be hosted via nginx"
+      it "Installs a website to be hosted via nginx"
 
-        desc "The hostname that the site should respond to"
-        key :host
+      desc "The hostname that the site should respond to"
+      key :host
 
-        desc "Whether or not the site should be enabled"
-        attr :enabled, true
+      desc "Whether or not the site should be enabled"
+      attr :enabled, true
 
-        def call
-          file "/etc/nginx/sites-available/#{host}" do |f|
-            f.template = "site.erb"
-          end
-          if enabled
-            link "/etc/nginx/sites-available/#{host}" => "/etc/nginx/sites-enabled/#{host}"
-          end
-          notify "nginx"
+      def call
+        file "/etc/nginx/sites-available/#{host}" do |f|
+          f.template = "site.erb"
         end
+        if enabled
+          link "/etc/nginx/sites-available/#{host}" => "/etc/nginx/sites-enabled/#{host}"
+        end
+        notify "nginx"
       end
     end
 
-Next we'll create a Cluster to contain the server. Let's call it 'test'.
+Next we'll create a Cluster to contain the server. Let's call it
+'production'.
 
-    $ config-create-cluster test
-    $ vim clusters/test.rb
+    $ config-create-cluster production
+    $ vim clusters/production.rb
     # nothing to see here yet.
 
-Check these files into git and push to your remote repository. You're now ready
-to boot a server.
+Check these files into git and push to your remote repository. You're
+now ready to boot a server.
 
-    $ config-create-node-ec2 --pattern=webserver --cluster=test
+    $ config-ec2-create-node --pattern=webserver --cluster=production
 
-Here we've specified the two required parameters: The Pattern used to configure
-the server, and the Cluster that the resulting Node will belong to. We wait for
-AWS to provision us a server, and once the server boots it will automatically
-configure itself and store its information in this git repo. Once those commits
-exist, pull them down. Use the `--wait` flag to let Config do that for you.
+Here we've specified the two required parameters: The Pattern used to
+configure the server, and the Cluster that the resulting Node will
+belong to. We wait for AWS to provision us a server, and once the server
+boots it will automatically configure itself and store its information
+in this git repo. Once those commits exist, pull them down. Use the
+`--wait` flag to let Config do that for you.
 
     $ git pull
-    + clusters/test/[node_id].json
-    + facts/test_[node_id].json
+    + clusters/production/[node_id].json
+    + facts/production_[node_id].json
 
-Let's look at the facts first. This JSON file contains all kinds of information
-inherent to the server itself.
+Let's look at the facts first. This JSON file contains all kinds of
+information inherent to the server itself.
 
-    $ cat facts/test_[node_id].json
+    $ cat facts/production_[node_id].json
     { "ec2.instance_id": "i-91923", "ip_address": "127.0.0.1", ... }
 
-On the other hand, `clusters/test/[node_id].json` is completely empty. That's
-ok. We can use this file to customize the way that this particular Node
-behaves. See Variables for more information.
+On the other hand, `clusters/production_/[node_id].json` is completely
+empty. That's ok. We can use this file to define Variables to alter how
+this particular Node behaves.
 
 ## Testing
 
-Because developing and testing against a real server is slow, Config provides
-several tools to help you understand what will happen before you get there.
+Because developing and testing against a real server is slow, Config
+provides several tools to help you understand what will happen before
+you get there.
 
 ### Validate
 
@@ -170,17 +175,18 @@ If something is invalid, Config will tell you.
     Nginx::Site missing value for :name (The hostname that the site should respond to)
 
     patterns/nginx/service.rb
-    Nginx::Service missing description for attribute :name
+    Nginx::Service missing description for attribute :service_name
 
 ### Try a Blueprint
 
-Once the parts are valid, you might want to get an idea of what the result of a
-Blueprint will be.
+Once the parts are valid, you might want to get an idea of what the
+result of a Blueprint will be.
 
-    $ config-try blueprints/test.rb
+    $ config-try-blueprint blueprints/production.rb
 
-The result of this command is a record of everything that would happen. It might look
-something like this, showing the hierarchy of patterns used and their results.
+The result of this command is a record of everything that would happen.
+It might look something like this, showing the hierarchy of patterns
+used and their results.
 
     # Nginx::Service
       # Config::Patterns::Package
@@ -208,8 +214,9 @@ something like this, showing the hierarchy of patterns used and their results.
 
 ## What is a Blueprint
 
-A Blueprint uses one or more Patterns to describe a server. It has
-the Facts about the current Node available when it runs.
+A Blueprint uses one or more Patterns to describe a server. It may be
+configured via Variables from the current Node or the current Cluster.
+Blueprints are stored in `blueprints/[name].rb`.
 
 ### How a Blueprint is executed
 
@@ -230,7 +237,8 @@ Blueprint execution occurs in a few steps:
 A Pattern is a reusable bit of configuration. Patterns are composable,
 and so therefore may be of any size and scope. Low level patterns such
 as `File` and `Package` are provided by Config. You can use these
-patterns to create your own, higher level patterns.
+patterns to create your own, higher level patterns. Patterns are stored
+in `patterns/[topic]/[name].rb`.
 
 All patterns inherit from `Config::Pattern`. A trivial example.
 
@@ -259,8 +267,9 @@ With this we've exposed another important method in Pattern's API,
 More importantly, we've exposed that by instantiating a Pattern we have
 not executed it. Put another way: there are two phases to using a
 Pattern: Accumulation and Execution. To configure a server, obviously we
-need to Execute the Pattern, but there are also many benefits of using
-only the Accumulation phase.
+need to Execute the Pattern. Before doing so, Config accumulates all of
+the patterns that will run in order to validate, detect duplicates and
+comflicts.
 
 ### Attributes
 
@@ -409,6 +418,9 @@ cluster, it may access cluster variables to alter its behavior.
       site.enabled = cluster.webserver.enabled
     end
 
+*TODO: Should variables be blueprint specific, grouped in to arbitrary
+buckets, or something else?`
+
 ### Nodes
 
 A cluster is only useful once Nodes are running within it. Each Node has
@@ -425,7 +437,7 @@ simple queries.
 ## Advanced Configuration
 
 Following are more advanced ways to use Config. You can probably do a lot
-without these techniques, but this is where it gets interesting.
+without these techniques.
 
 ### Extending a Pattern
 
@@ -478,6 +490,27 @@ Helpers available during Pattern execution.
 * `log` A `Config::Log` object. Write to it with `<<`.
 * `add(klass, &block)` Add a sub-pattern. Provide a block to set
   attributes on the instantiated pattern.
+* The `Config::Patterns` helpers.
+
+### The Blueprint API
+
+The Blueprint API is a subset of the Pattern API. Blueprints act as a
+single entrypoint for a set of patterns.
+
+* `log`
+* `add`
+* The `Config::Patterns` helpers.
+
+### Config::Patterns helpers
+
+`Config::Patterns` contains a number of methods to make using the core
+patterns simpler. You may extend this module to add your own helpers.
+
+* `file(path)` Add a `Config::Patterns::File`. Using this helper
+  also provides the `template=` method. Use this method to assign the
+template file name, expected to live at
+`patterns/[topic]/templates/[file]`.
+* `dir(path)` Add a `Config::Patterns::Directory`.
 
 ## Authors
 
