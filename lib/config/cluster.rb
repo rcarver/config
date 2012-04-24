@@ -8,7 +8,7 @@ module Config
     end
 
     def self.from_string(name, string, _file=nil, _line=nil)
-      dsl = DSL.new
+      dsl = Config::DSL::ClusterDSL.new
       if _file && _line
         dsl.instance_eval(string, _file, _line)
       else
@@ -17,23 +17,6 @@ module Config
       cluster = self.new(name)
       cluster.variables = dsl.variables
       cluster
-    end
-
-    class DSL
-
-      def initialize
-        @variables = {}
-      end
-
-      attr :variables
-
-      def configure(name, hash)
-        @variables[name.to_sym] = Config::Core::Variables.new(name, hash)
-      end
-
-      def inspect
-        "<Cluster>"
-      end
     end
 
     def initialize(name)

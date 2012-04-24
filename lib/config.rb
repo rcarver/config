@@ -26,6 +26,10 @@ require 'config/blueprint'
 require 'config/cluster'
 require 'config/node'
 
+require 'config/dsl/blueprint_dsl'
+require 'config/dsl/cluster_dsl'
+require 'config/dsl/node_dsl'
+
 require 'config/meta'
 
 module Config

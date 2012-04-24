@@ -23,7 +23,7 @@ describe Config::Cluster do
         STR
       rescue => e
         e.class.must_equal NoMethodError
-        e.message.must_equal %(undefined method `xconfigure' for <Cluster>:RbConfig::Cluster::DSL)
+        e.message.must_equal %(undefined method `xconfigure' for <Cluster>:RbConfig::DSL::ClusterDSL)
         e.backtrace.first.must_equal "#{file}:#{line}:in `from_string'"
       end
     end
@@ -56,7 +56,7 @@ describe "filesystem", Config::Cluster do
         Config::Cluster.from_file(file)
       rescue => e
         e.class.must_equal NoMethodError
-        e.message.must_equal %(undefined method `xconfigure' for <Cluster>:RbConfig::Cluster::DSL)
+        e.message.must_equal %(undefined method `xconfigure' for <Cluster>:RbConfig::DSL::ClusterDSL)
         e.backtrace.first.must_equal "#{file}:2:in `from_string'"
       end
     end

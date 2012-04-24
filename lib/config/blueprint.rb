@@ -18,22 +18,6 @@ module Config
       end
     end
 
-    class RootPattern < Config::Pattern
-
-      desc "The current Node"
-      attr :node
-
-      desc "The current Cluster"
-      attr :cluster
-
-      def to_s
-        "<Blueprint>"
-      end
-      def inspect
-        "<Blueprint>"
-      end
-    end
-
     def initialize(name, &block)
       @name = name
       @block = block
@@ -52,7 +36,7 @@ module Config
       return @accumulation if @accumulated
       @accumulated = true
 
-      root = RootPattern.new
+      root = Config::DSL::BlueprintDSL.new
       root.accumulation = @accumulation
       root.node = node
       root.cluster = cluster
