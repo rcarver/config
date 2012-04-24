@@ -4,7 +4,7 @@ A modern server maintenance tool.
 
 ## Goals
 
-* Simple and minimal interface and implementation. No magic.
+* Simple and minimal interface and implementation. No magic. (MC: What do you mean by no magic? Patterns seem like they could pretty quickly turn into magic with their ability to cascade changes to places you didn't expect)
 * A clear and obvious way to do things.
 * An API and supporting tools that naturally reduces errors.
 * Useful information when things do go wrong.
@@ -19,10 +19,10 @@ A modern server maintenance tool.
 * __Pattern__ A reusable concept that makes up a Blueprint or another
   Pattern. All Pattern operations are idempotent.
 * __Fact__ A bit of information about a Node that cannot be changed,
-  such as memory or IP address.
+  such as memory or IP address. (MC: But this stuff can change, there are very few things that can't change.)
 * __Variable__ A part of a Blueprint that may be configured. Variables
   may be set on either the Node or Blueprint.
-* __Service__ A long running application, generally managed by Upstart.
+* __Service__ A long running application, generally managed by Upstart. (MC: It seems very specific to use upstart here, I don't think you should favor one init system over another. It also seems odd to mention Service at this high of a level, what about files or scripts?)
   A Service may be notified that something it depends on has changed.
 When that happens the Service typically restarts.
 * __TODO__ is monitoring/alerting a core concept?
@@ -135,6 +135,8 @@ now ready to boot a server.
 
     $ config-ec2-create-node --blueprint=webserver --cluster=production
 
+(MC: I'm curious how it has access to my git repository)
+
 Here we've specified the two required parameters: The Blueprint used to
 configure the server, and the Cluster that the resulting Node will
 belong to. We wait for AWS to provision us a server, and once the server
@@ -230,10 +232,10 @@ Blueprint execution occurs in a few steps:
 1. **Validate** Ensure that all Patterns have been defined correctly and
    that all Attributes have been set.
 1. **Resolve** Detect conflicting Patterns. Mark duplicate Patterns to
-   execute in *skip* mode.
+   execute in *skip* mode. (MC: What are conflicting patterns?)
 1. **Destroy** If a previous execution exists, find any Patterns that
    executed previously but would not execute now. Mark those Patterns
-   to execute in *destroy* mode.
+   to execute in *destroy* mode. (MC: This is good)
 1. **Execute** Execute all Patterns.
 
 ## What is a Pattern
@@ -273,7 +275,7 @@ not executed it. Put another way: there are two phases to using a
 Pattern: Accumulation and Execution. To configure a server, obviously we
 need to Execute the Pattern. Before doing so, Config accumulates all of
 the patterns that will run in order to validate, detect duplicates and
-comflicts.
+conflicts.
 
 ### Attributes
 
@@ -357,6 +359,8 @@ It's worth noting that if a Pattern defines no keys, it is always unique
 among other instances of that Pattern. Be careful if your Pattern has
 this quality as it may indicate a deeper problem with the design.
 
+(MC: Interesting, this is kind of like debian provides)
+
 ### Describe & Logging
 
 Config's logging is one the most important tools to understand what's
@@ -397,6 +401,8 @@ implement `create` or `destroy`.*
 A Pattern is destroyed when it has been removed from the set since the
 last execution. Config tracks the set of Patterns on each execution to
 determine what has been removed. See Lifecycle for more information.
+
+(MC: An implementation detail but what happens on a config run failure? Will it remember that it didn't successfully complete and then correctly attempt to destroy?)
 
 ## What is a Cluster
 
@@ -439,6 +445,8 @@ useful.
     blueprint :webserver,
       host: -> { shared_variables.website_host },
       enabled: true
+      
+(MC: I'm not sure why you would need more than cluster, node variables and node facts. It seems that the reference system is just going to add complexity.)
 
 **Ideas** Another dimension of reuse might be blueprint inheritance. I
 could definitely see it useful to define a "base" blueprint from which
@@ -461,6 +469,8 @@ others can inherit. What might that look like?
       ssh_keys: ["..."]
     blueprint :webserver,
       host: "example.com"
+      
+(MC: I think I would leave this out, as I think having blueprints being more explict and not having cascading changes will be less magical)
 
 ### Nodes
 
@@ -483,7 +493,7 @@ without these techniques.
 ### Extending a Pattern
 
 At times you may need to further extend an existing Pattern. For example, Our
-`Nginx::Service` pattern is a high level service. It install Nginx and then
+`Nginx::Service` pattern is a high level service. It installs Nginx and then
 uses Upstart to run it. Say we like this pattern, but need to more carefully
 control when the underlying Upstart service starts. Use the `intercept` method
 to tap that Upstart service and change its configuration.
@@ -500,9 +510,9 @@ Something here about a workflow like this:
 
 * Create a new branch
 * Make changes to patterns, etc
-* Create nodes
-* Merging this to master would be weird, right?
-* Should a Cluster indicate the branch(es) that are valid to boot from?
+* Create nodes (MC: How would the nodes know to use this branch?)
+* Merging this to master would be weird, right? (MC: it actually makes sense to me)
+* Should a Cluster indicate the branch(es) that are valid to boot from? (MC: also which branches should they run from?)
 * Is this how one might do development?
 
 ## Reference
