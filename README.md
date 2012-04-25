@@ -4,7 +4,15 @@ A modern server maintenance tool.
 
 ## Goals
 
-* Simple and minimal interface and implementation. No magic. (MC: What do you mean by no magic? Patterns seem like they could pretty quickly turn into magic with their ability to cascade changes to places you didn't expect)
+* Simple and minimal interface and implementation. No magic.
+  (MC: What do you mean by no magic? Patterns seem like they could pretty
+  quickly turn into magic with their ability to cascade changes to places
+  you didn't expect)
+  (RC: I was referring to the ruby implementation. It should be as simple
+  and clear as possible. In regards to patterns, yes I guess they could be
+  considered "magic" in that they just work. I think the logging system
+  goes a long way to show exactly what's happening as your patterns
+  execute.)
 * A clear and obvious way to do things.
 * An API and supporting tools that naturally reduces errors.
 * Useful information when things do go wrong.
@@ -19,12 +27,28 @@ A modern server maintenance tool.
 * __Pattern__ A reusable concept that makes up a Blueprint or another
   Pattern. All Pattern operations are idempotent.
 * __Fact__ A bit of information about a Node that cannot be changed,
-  such as memory or IP address. (MC: But this stuff can change, there are very few things that can't change.)
+  such as memory or IP address.
+  (MC: But this stuff can change, there are very few things that can't
+  change.)
+  (RC: Good point. I'm currently wondering whether or not storing this in
+  git is a good idea. Git is great because it means that every change is
+  recorded in one place. But there are problems, such as deadlock issues
+  if many nodes were to update their files at once. I've thought about
+  branches or disconnected branches. I've also considered a simple
+  redis(?) based storage engine but I don't love the dependency.)
 * __Variable__ A part of a Blueprint that may be configured. Variables
   may be set on either the Node or Blueprint.
-* __Service__ A long running application, generally managed by Upstart. (MC: It seems very specific to use upstart here, I don't think you should favor one init system over another. It also seems odd to mention Service at this high of a level, what about files or scripts?)
+* __Service__ A long running application, generally managed by Upstart.
   A Service may be notified that something it depends on has changed.
-When that happens the Service typically restarts.
+  When that happens the Service typically restarts.
+  (MC: It seems very specific to use upstart here, I don't think you
+  should favor one init system over another. It also seems odd to mention
+  Service at this high of a level, what about files or scripts?)
+  (RC: On my initial experience with upstart it seemed like a good
+  model. I agree that it doesn't need to be specific. The reason Service
+  is mentioned here is that they have "notify" behavior that
+  differentiates them from static patterns. If there's a way to make them
+  not special, that could be even better.)
 * __TODO__ is monitoring/alerting a core concept?
 
 ### Patterns
@@ -136,6 +160,9 @@ now ready to boot a server.
     $ config-ec2-create-node --blueprint=webserver --cluster=production
 
 (MC: I'm curious how it has access to my git repository)
+(RC: Me too. A secrets manager is a big missing piece here. See also
+whether or not this git access should really be read/write or just
+read)
 
 Here we've specified the two required parameters: The Blueprint used to
 configure the server, and the Cluster that the resulting Node will
@@ -232,10 +259,14 @@ Blueprint execution occurs in a few steps:
 1. **Validate** Ensure that all Patterns have been defined correctly and
    that all Attributes have been set.
 1. **Resolve** Detect conflicting Patterns. Mark duplicate Patterns to
-   execute in *skip* mode. (MC: What are conflicting patterns?)
+   execute in *skip* mode.
+   (MC: What are conflicting patterns?)
+   (RC: See the section below 'Uniqueness, Conflict and Equality')
 1. **Destroy** If a previous execution exists, find any Patterns that
    executed previously but would not execute now. Mark those Patterns
-   to execute in *destroy* mode. (MC: This is good)
+   to execute in *destroy* mode.
+   (MC: This is good)
+   (RC: Thanks! The lack of this in chef drives me crazy)
 1. **Execute** Execute all Patterns.
 
 ## What is a Pattern
@@ -360,6 +391,7 @@ among other instances of that Pattern. Be careful if your Pattern has
 this quality as it may indicate a deeper problem with the design.
 
 (MC: Interesting, this is kind of like debian provides)
+(RC: Tell me more about this?)
 
 ### Describe & Logging
 
@@ -402,7 +434,10 @@ A Pattern is destroyed when it has been removed from the set since the
 last execution. Config tracks the set of Patterns on each execution to
 determine what has been removed. See Lifecycle for more information.
 
-(MC: An implementation detail but what happens on a config run failure? Will it remember that it didn't successfully complete and then correctly attempt to destroy?)
+(MC: An implementation detail but what happens on a config run failure?
+Will it remember that it didn't successfully complete and then correctly
+attempt to destroy?)
+(RC: Good question. Sounds like it should.)
 
 ## What is a Cluster
 
@@ -445,8 +480,13 @@ useful.
     blueprint :webserver,
       host: -> { shared_variables.website_host },
       enabled: true
-      
-(MC: I'm not sure why you would need more than cluster, node variables and node facts. It seems that the reference system is just going to add complexity.)
+
+(MC: I'm not sure why you would need more than cluster, node variables
+and node facts. It seems that the reference system is just going to add
+complexity.)
+(RC: I'm probably overly concerned with DRYness of inputs. It might be
+wise to show some real world situations and then decide if they're
+probelmatic or not.)
 
 **Ideas** Another dimension of reuse might be blueprint inheritance. I
 could definitely see it useful to define a "base" blueprint from which
@@ -469,8 +509,11 @@ others can inherit. What might that look like?
       ssh_keys: ["..."]
     blueprint :webserver,
       host: "example.com"
-      
-(MC: I think I would leave this out, as I think having blueprints being more explict and not having cascading changes will be less magical)
+
+(MC: I think I would leave this out, as I think having blueprints being
+more explict and not having cascading changes will be less magical)
+(RC: I totally agree, again DRYness is nagging me but some real world
+cases would be useful to see here)
 
 ### Nodes
 
@@ -510,9 +553,23 @@ Something here about a workflow like this:
 
 * Create a new branch
 * Make changes to patterns, etc
-* Create nodes (MC: How would the nodes know to use this branch?)
-* Merging this to master would be weird, right? (MC: it actually makes sense to me)
-* Should a Cluster indicate the branch(es) that are valid to boot from? (MC: also which branches should they run from?)
+* Create nodes
+  (MC: How would the nodes know to use this branch?)
+  (RC: Good question. Much like node facts, I've been pondering where
+  this information would be stored. If there's a database of some sort,
+  obviously that could be the source of truth. Git branches aren't great
+  because then you introduce conflicts not to mention it's super
+  confusing. A special disconnected branch might actually make sense here.
+  Something like `config-branches` where you would specify which branch a
+  Cluster should run.)
+* Merging this to master would be weird, right?
+  (MC: it actually makes sense to me)
+  (RC: oh awesome, I think it could totally make sense. What about
+  deleting the branch?)
+* Should a Cluster indicate the branch(es) that are valid to boot from?
+  (MC: also which branches should they run from?)
+  (RC: yep, you obviouly see where I'm going here, probably better than
+  I do at this point)
 * Is this how one might do development?
 
 ## Reference
