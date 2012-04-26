@@ -40,7 +40,7 @@ describe "filesystem", Config::Meta::Pattern do
 
     (tmpdir + "patterns" + "nginx" + "service.rb").must_be :exist?
     (tmpdir + "patterns" + "nginx" + "service.rb").read.must_equal <<-STR
-class Nginx::Service
+class Nginx::Service < Config::Pattern
 
   desc "The name"
   key  :name
