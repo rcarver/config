@@ -2,6 +2,7 @@ module Config
   class Project
 
     UnknownCluster = Class.new(StandardError)
+    UnknownBlueprint = Class.new(StandardError)
 
     def initialize(dir)
       @dir = Pathname.new(dir).cleanpath
@@ -11,6 +12,22 @@ module Config
 
     attr :clusters
     attr :blueprints
+
+    def try(blueprint_name)
+      require_all
+
+      blueprint = blueprints[blueprint_name]
+      blueprint or raise UnknownBlueprint, "Blueprint #{blueprint_name} was not found"
+
+      accumulation = blueprint.accumulate
+
+      accumulation.each do |pattern|
+        pattern.noop!
+      end
+
+      blueprint.validate
+      blueprint.execute
+    end
 
     def require_all
       require_patterns

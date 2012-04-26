@@ -89,4 +89,28 @@ describe "filesystem", Config::Project do
       proc { subject.require_blueprints }.must_raise(SyntaxError)
     end
   end
+
+  describe "#try" do
+
+    it "executes the blueprint in noop mode" do
+      (tmpdir + "blueprints").mkdir
+      (tmpdir + "blueprints/one.rb").open("w") do |f|
+        f.puts <<-STR
+          file "#{tmpdir}/file1" do |f|
+            f.content = "hello"
+          end
+        STR
+      end
+
+      subject.try("one")
+
+      log_string.must_include("Create [File #{tmpdir}/file1]")
+
+      (tmpdir + "file1").wont_be :exist?
+    end
+
+    it "fails if the blueprint is not found" do
+      proc { subject.try("something") }.must_raise Config::Project::UnknownBlueprint
+    end
+  end
 end
