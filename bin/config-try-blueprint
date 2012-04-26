@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path("../../", __FILE__) + "/lib"
+require 'config'
+
+name = ARGV.shift 
+name or abort "usage: config-try-blueprint NAME"
+
+Config.log_to $stdout
+project = Config::Project.new(File.expand_path("."))
+project.try(name)
