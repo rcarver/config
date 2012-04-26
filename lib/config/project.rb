@@ -19,6 +19,8 @@ module Config
     end
 
     def require_patterns
+      return if @required_patterns; @required_patterns = true
+
       Dir[(@dir + "patterns/**/*.rb")].each do |f|
         begin
           require f
@@ -43,6 +45,8 @@ module Config
     end
 
     def require_clusters
+      return if @required_clusters; @required_clusters = true
+
       Dir[(@dir + "clusters/*.rb")].each do |f|
         cluster = Cluster.from_file(f)
         @clusters[cluster.name] = cluster
@@ -50,6 +54,8 @@ module Config
     end
 
     def require_blueprints
+      return if @required_blueprints; @required_blueprints = true
+
       Dir[(@dir + "blueprints/*.rb")].each do |f|
         blueprint = Blueprint.from_file(f)
         @blueprints[blueprint.name] = blueprint
