@@ -17,6 +17,11 @@ module Config
     end
 
     # Public
+    def validate
+      # noop
+    end
+
+    # Public
     def call
       # noop
     end
@@ -43,9 +48,14 @@ module Config
       nil
     end
 
+    def validation_errors
+      @validation_errors ||= []
+    end
+
     def error_messages
       errors = []
       errors.concat attribute_errors
+      errors.concat validation_errors
       errors
     end
 

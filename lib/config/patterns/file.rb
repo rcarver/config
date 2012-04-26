@@ -51,16 +51,25 @@ module Config
         self.operation = :only_create
       end
 
+      def validate
+        if content.nil?
+          if template_path.nil? || template_context.nil?
+            validation_errors << "You must set either `content` or (`template_path` and `template_context`)"
+          end
+          if template_path && !::File.exist?(template_path)
+            validation_errors << "template_path #{template_path} does not exist"
+          end
+          if template_context && !template_context.respond_to?(:get_binding)
+            validation_errors << "template_context must define #get_binding"
+          end
+        end
+      end
+
       def create
+
         if content
           new_content = content
         else
-          unless template_path && template_context
-            raise ArgumentError, "You must set either content or template_path and template_context"
-          end
-          unless template_context.respond_to?(:get_binding)
-            raise ArgumentError, "template_context must define #get_binding"
-          end
           template = ERB.new(::File.read(template_path))
           new_content = template.result(template_context.get_binding)
         end

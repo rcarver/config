@@ -22,6 +22,7 @@ module Config
       def validate!
         errors = []
         @accumulation.each do |pattern|
+          pattern.validate
           errors.concat pattern.error_messages
         end
         raise ValidationError, errors if errors.any?

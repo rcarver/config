@@ -519,6 +519,7 @@ Class methods DSL.
 
 Methods you may override in your Pattern subclass.
 
+* `validate` Perform deeper validation of attributes before execution.
 * `call` Add other Patterns. Don't perform any operations that alter the
   node, do that in `create`.
 * `create` Perform operations that alter the Node.
@@ -528,6 +529,8 @@ Methods you may override in your Pattern subclass.
 
 Helpers available during Pattern execution.
 
+* `validation_errors` An appendable (`<<`) object that accumulates
+  issues during `validate`.
 * `log` A `Config::Log` object. Write to it with `<<`.
 * `add(klass, &block)` Add a sub-pattern. Provide a block to set
   attributes on the instantiated pattern.

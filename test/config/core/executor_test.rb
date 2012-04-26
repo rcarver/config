@@ -41,11 +41,13 @@ describe Config::Core::Executor do
     end
 
     it "does nothing if there are no errors" do
+      pattern.expect(:validate, [])
       pattern.expect(:error_messages, [])
       subject.validate!
     end
 
     it "raises a ValidationError if there are errors" do
+      pattern.expect(:validate, [])
       pattern.expect(:error_messages, ["boo"])
       proc {
         subject.validate!

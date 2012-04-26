@@ -11,13 +11,65 @@ describe Config::Patterns::File do
 
   specify "validity" do
     subject.path = "/tmp/file.rb"
-    subject.error_messages.must_be_empty
+    subject.attribute_errors.must_be_empty
   end
 
   specify "#to_s" do
     subject.path = "/tmp//file.rb"
     subject.to_s.must_equal "[File /tmp/file.rb]"
   end
+
+  describe "#validate" do
+
+    before do
+      subject.path = "/tmp"
+    end
+
+    let(:fake_context_class) { 
+      Class.new do
+        def get_binding; binding end
+      end
+    }
+
+    it "must have content of some form" do
+      subject.validate
+      subject.error_messages.must_equal [
+        "You must set either `content` or (`template_path` and `template_context`)"
+      ]
+    end
+
+    it "may have explicit content" do
+      subject.content = "ok"
+      subject.validate
+      subject.error_messages.must_equal []
+    end
+
+    it "may have template content" do
+      subject.template_path = __FILE__
+      subject.template_context = fake_context_class.new
+      subject.validate
+      subject.error_messages.must_equal []
+    end
+
+    specify "template_path must be a real file" do
+      subject.template_path = "foo.erb"
+      subject.template_context = fake_context_class.new
+      subject.validate
+      subject.error_messages.must_equal [
+        "template_path foo.erb does not exist"
+      ]
+    end
+
+    specify "template_context must define #get_binding" do
+      subject.template_path = __FILE__
+      subject.template_context = Object.new
+      subject.validate
+      subject.error_messages.must_equal [
+        "template_context must define #get_binding"
+      ]
+    end
+  end
+
 end
 
 describe "filesystem", Config::Patterns::File do
