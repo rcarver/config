@@ -29,8 +29,8 @@ describe "filesystem", Config::Meta::Cluster do
     (tmpdir + "clusters" + "production.rb").must_be :exist?
     (tmpdir + "clusters" + "production.rb").read.must_equal <<-STR
 blueprint :some_blueprint,
-  :key1 => 123,
-  :key2 => "value"
+  key1: 123,
+  key2: "value"
     STR
   end
 end
