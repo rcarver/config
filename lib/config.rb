@@ -25,6 +25,7 @@ require 'config/pattern'
 require 'config/blueprint'
 require 'config/cluster'
 require 'config/node'
+require 'config/project'
 
 require 'config/dsl/blueprint_dsl'
 require 'config/dsl/cluster_dsl'

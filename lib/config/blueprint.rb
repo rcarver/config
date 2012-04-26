@@ -25,6 +25,8 @@ module Config
       @executor = Config::Core::Executor.new(@accumulation)
     end
 
+    attr :name
+
     def to_s
       "Blueprint #{@name}"
     end
