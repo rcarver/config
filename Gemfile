@@ -7,4 +7,5 @@ group :test do
   gem "guard"
   gem "guard-minitest"
   gem 'ruby_gntp'
+  gem 'fivemat'
 end

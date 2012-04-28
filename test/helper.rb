@@ -1,5 +1,5 @@
 require 'minitest/spec'
-require 'minitest/autorun'
+require 'fivemat/minitest/autorun'
 
 require 'tmpdir'
 require 'fileutils'
