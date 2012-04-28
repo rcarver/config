@@ -49,8 +49,8 @@ describe "filesystem", Config::Project do
 
       subject.require_clusters
 
-      subject.clusters["one"].test.key.must_equal 123
-      subject.clusters["two"].other.key.must_equal 456
+      subject.clusters["one"].configuration.test.key.must_equal 123
+      subject.clusters["two"].configuration.other.key.must_equal 456
     end
 
     it "fails to load a cluster with a syntax error" do

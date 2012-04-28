@@ -267,32 +267,25 @@ Execute Blueprint current webserver
       end
     end
 
-    describe "with a cluster" do
-
-      let(:cluster_code) {
-        <<-STR
-          configure :webserver,
-            my_name: "bob"
-        STR
-      }
+    describe "with a configuration" do
 
       let(:code) {
         <<-STR
           add BlueprintTest::Test do |t|
-            t.name = cluster.webserver.my_name
+            t.name = configure.webserver.my_name
             t.value = "ok"
           end
         STR
       }
 
-      let(:blueprint_name) { "webserver" }
-      let(:cluster) { Config::Cluster.from_string("staging", cluster_code) }
+      let(:configuration) { Config::Core::Configuration.new }
 
       before do
-        subject.cluster = cluster
+        configuration.set_group(:webserver, my_name: "bob")
+        subject.configuration = configuration
       end
 
-      it "can use cluster variables" do
+      it "can use configuration variables" do
         subject.execute
         BlueprintTest.value.must_equal [
           [:create, "bob", "ok"]

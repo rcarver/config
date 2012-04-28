@@ -10,7 +10,7 @@ describe Config::Cluster do
           value: "ok"
       STR
       cluster.to_s.must_equal "sample cluster"
-      cluster.foo.value.must_equal "ok"
+      cluster.configuration.foo.value.must_equal "ok"
     end
 
     it "provides useful information for a syntax error" do
@@ -43,7 +43,7 @@ describe "filesystem", Config::Cluster do
       end
       cluster = Config::Cluster.from_file(file)
       cluster.to_s.must_equal "sample cluster"
-      cluster.foo.value.must_equal "ok"
+      cluster.configuration.foo.value.must_equal "ok"
     end
 
     it "provides useful information for an error" do

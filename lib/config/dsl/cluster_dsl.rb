@@ -5,8 +5,10 @@ module Config
     class ClusterDSL
 
       def initialize
-        @variables = {}
+        @configuration = Config::Core::Configuration.new
       end
+
+      attr :configuration
 
       # Public: Define configuration variables.
       #
@@ -15,10 +17,8 @@ module Config
       #
       # Returns nothing.
       def configure(name, hash)
-        @variables[name.to_sym] = Config::Core::Variables.new(name, hash)
+        @configuration.set_group(name, hash)
       end
-
-      attr :variables
 
       def to_s
         "<Cluster>"

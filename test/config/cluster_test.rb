@@ -11,9 +11,4 @@ describe Config::Cluster do
   specify "#to_s" do
     subject.to_s.must_equal "production cluster"
   end
-
-  it "provides access to variables" do
-    subject.variables = { :webserver => :vars }
-    subject.webserver.must_equal :vars
-  end
 end

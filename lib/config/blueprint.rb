@@ -32,7 +32,7 @@ module Config
     end
 
     attr_accessor :node
-    attr_accessor :cluster
+    attr_accessor :configuration
 
     def accumulate
       return @accumulation if @accumulated
@@ -41,7 +41,7 @@ module Config
       root = Config::DSL::BlueprintDSL.new
       root.accumulation = @accumulation
       root.node = node
-      root.cluster = cluster
+      root.configure = configuration
       root.parent = nil
 
       log << "Accumulate #{self}"

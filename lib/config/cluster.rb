@@ -15,23 +15,22 @@ module Config
         dsl.instance_eval(string)
       end
       cluster = self.new(name)
-      cluster.variables = dsl.variables
+      cluster.configuration = dsl.configuration
       cluster
     end
 
     def initialize(name)
       @name = name
-      @variables = {}
       @nodes = []
+      @configuration = Config::Core::Configuration.new
     end
 
     attr :name
+    attr_accessor :configuration
 
     def to_s
       "#{name} cluster"
     end
-
-    attr_writer :variables
 
     def find_node(options)
       nodes = find_all(options)
@@ -44,15 +43,6 @@ module Config
     end
 
   protected
-
-    def method_missing(message, *args, &block)
-      if @variables[message]
-        raise ArgumentError, "Too many arguments to variables" if args.size > 0
-        @variables[message]
-      else
-        super
-      end
-    end
 
     def node_match?(node, options)
       options.all? do |pattern, attrs|

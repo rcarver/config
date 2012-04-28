@@ -10,10 +10,10 @@ module Config
       # Returns a Config::Node.
       attr_accessor :node
 
-      # Public: Get the current cluster.
+      # Public: Get the current configuration.
       #
-      # Returns a Config::Cluster.
-      attr_accessor :cluster
+      # Returns a Config::Core::Variables.
+      attr_accessor :configure
 
       def to_s
         "<Blueprint>"
