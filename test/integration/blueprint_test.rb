@@ -26,7 +26,7 @@ module BlueprintTest
       BlueprintTest.value = []
     end
 
-    let(:blueprint_name) { "test" }
+    let(:blueprint_name) { :webserver }
 
     subject { Config::Blueprint.from_string(blueprint_name, code) }
 
@@ -55,7 +55,7 @@ module BlueprintTest
       }
 
       it "has a name" do
-        subject.to_s.must_equal "Blueprint test"
+        subject.to_s.must_equal "Blueprint webserver"
       end
 
       it "accumulates the patterns" do
@@ -75,14 +75,14 @@ module BlueprintTest
 
       it "logs what happened" do
         log_execute.must_equal <<-STR
-Accumulate Blueprint test
+Accumulate Blueprint webserver
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"one"]
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"two"]
-Validate Blueprint test
-Resolve Blueprint test
-Execute Blueprint test
+Validate Blueprint webserver
+Resolve Blueprint webserver
+Execute Blueprint webserver
   Create [BlueprintTest::Test name:"one"]
   Create [BlueprintTest::Test name:"two"]
         STR
@@ -107,10 +107,10 @@ Execute Blueprint test
 
       it "logs what happened" do
         log_execute.must_equal <<-STR
-Accumulate Blueprint test
+Accumulate Blueprint webserver
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"the test"]
-Validate Blueprint test
+Validate Blueprint webserver
   ERROR [BlueprintTest::Test name:"the test"] missing value for :value (The value)
         STR
       end
@@ -137,13 +137,13 @@ Validate Blueprint test
 
       it "logs what happened" do
         log_execute.must_equal <<-STR
-Accumulate Blueprint test
+Accumulate Blueprint webserver
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"the test"]
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"the test"]
-Validate Blueprint test
-Resolve Blueprint test
+Validate Blueprint webserver
+Resolve Blueprint webserver
   CONFLICT [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>1} vs. [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>2}
         STR
       end
@@ -175,14 +175,14 @@ Resolve Blueprint test
 
       it "logs what happened" do
         log_execute.must_equal <<-STR
-Accumulate Blueprint test
+Accumulate Blueprint webserver
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"the test"]
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"the test"]
-Validate Blueprint test
-Resolve Blueprint test
-Execute Blueprint test
+Validate Blueprint webserver
+Resolve Blueprint webserver
+Execute Blueprint webserver
   Create [BlueprintTest::Test name:"the test"]
   Skip [BlueprintTest::Test name:"the test"]
         STR
@@ -227,8 +227,8 @@ Execute Blueprint test
         STR
       }
 
-      let(:previous) { Config::Blueprint.from_string("previous test", previous_code) }
-      subject        { Config::Blueprint.from_string("test", current_code) }
+      let(:previous) { Config::Blueprint.from_string("previous #{blueprint_name}", previous_code) }
+      subject        { Config::Blueprint.from_string("current #{blueprint_name}", current_code) }
 
       before do
         @accumulation = previous.accumulate
@@ -245,21 +245,21 @@ Execute Blueprint test
 
       it "logs what happened" do
         log_execute(@accumulation).must_equal <<-STR
-Accumulate Blueprint previous test
+Accumulate Blueprint previous webserver
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"pattern1"]
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"pattern2"]
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"pattern3"]
-Accumulate Blueprint test
+Accumulate Blueprint current webserver
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"pattern2"]
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"pattern3"]
-Validate Blueprint test
-Resolve Blueprint test
-Execute Blueprint test
+Validate Blueprint current webserver
+Resolve Blueprint current webserver
+Execute Blueprint current webserver
   Destroy [BlueprintTest::Test name:"pattern1"]
   Create [BlueprintTest::Test name:"pattern2"]
   Create [BlueprintTest::Test name:"pattern3"]
