@@ -33,6 +33,7 @@ module Config
 
     attr_accessor :facts
     attr_accessor :configuration
+    attr_accessor :previous_accumulation
 
     def accumulate
       return @accumulation if @accumulated
@@ -87,13 +88,13 @@ module Config
       return nil
     end
 
-    def execute(previous_accumulation=nil)
+    def execute
       return if @executed
       @executed = true
       validate
 
-      if previous_accumulation
-        @executor.previous_accumulation = previous_accumulation
+      if @previous_accumulation
+        @executor.previous_accumulation = @previous_accumulation
       end
 
       log << "Execute #{self}"

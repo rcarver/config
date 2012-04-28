@@ -231,11 +231,11 @@ Execute Blueprint webserver
       subject        { Config::Blueprint.from_string("current #{blueprint_name}", current_code) }
 
       before do
-        @accumulation = previous.accumulate
+        subject.previous_accumulation = previous.accumulate
       end
 
       it "destroys the removed pattern" do
-        subject.execute(@accumulation)
+        subject.execute
         BlueprintTest.value.must_equal [
           [:destroy, "pattern1", "ok"],
           [:create, "pattern2", "ok"],
@@ -244,7 +244,7 @@ Execute Blueprint webserver
       end
 
       it "logs what happened" do
-        log_execute(@accumulation).must_equal <<-STR
+        log_execute.must_equal <<-STR
 Accumulate Blueprint previous webserver
   Add BlueprintTest::Test
     > [BlueprintTest::Test name:"pattern1"]

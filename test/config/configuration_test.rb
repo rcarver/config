@@ -14,7 +14,7 @@ describe Config::Core::Configuration do
     subject[:test].must_be_instance_of Config::Core::Configuration::Group
   end
 
-  it "rasies an error if you access an unknown group" do
+  it "raises an error if you access an unknown group" do
     proc { subject.nothing }.must_raise Config::Core::Configuration::UnknownGroup
     proc { subject[:nothing] }.must_raise Config::Core::Configuration::UnknownGroup
   end

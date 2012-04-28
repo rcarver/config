@@ -2,18 +2,15 @@ module Config
   class Node
     include Config::Core::Loggable
 
-    def initialize(cluster, blueprint)
-      @cluster = cluster
-      @blueprint = blueprint
-    end
-
     attr_accessor :facts
+    attr_accessor :configuration
     attr_accessor :previous_accumulation
 
-    def execute
-      @blueprint.node = self
-      @blueprint.cluster = @cluster
-      @blueprint.execute(@previous_accumulation)
+    def execute_blueprint(blueprint)
+      blueprint.facts = facts
+      blueprint.configuration = configuration
+      blueprint.previous_accumulation = previous_accumulation
+      blueprint.execute
     end
   end
 end
