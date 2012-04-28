@@ -8,12 +8,12 @@ module Config
       # Public: Get the current node.
       #
       # Returns a Config::Node.
-      attr_accessor :node
+      attr_reader :node
 
       # Public: Get the current configuration.
       #
       # Returns a Config::Core::Variables.
-      attr_accessor :configure
+      attr_reader :configure
 
       def to_s
         "<Blueprint>"
@@ -21,6 +21,14 @@ module Config
 
       def inspect
         "<Blueprint>"
+      end
+
+      def _set_facts(facts)
+        @node = facts
+      end
+
+      def _set_configuration(configuration)
+        @configure = configuration
       end
     end
   end

@@ -1,14 +1,12 @@
 module Config
   module DSL
     # Syntax for Cluster files, stored at clusters/[name].rb. A cluster
-    # is used to define variables for use by blueprints.
+    # is used to define the configuration for use by blueprints.
     class ClusterDSL
 
       def initialize
         @configuration = Config::Core::Configuration.new
       end
-
-      attr :configuration
 
       # Public: Define configuration variables.
       #
@@ -26,6 +24,10 @@ module Config
 
       def inspect
         "<Cluster>"
+      end
+
+      def _get_configuration
+        @configuration
       end
     end
   end

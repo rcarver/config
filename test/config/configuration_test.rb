@@ -11,10 +11,12 @@ describe Config::Core::Configuration do
   it "allows groups to be defined and accessed" do
     subject.set_group(:test, key: 123)
     subject.test.must_be_instance_of Config::Core::Configuration::Group
+    subject[:test].must_be_instance_of Config::Core::Configuration::Group
   end
 
   it "rasies an error if you access an unknown group" do
     proc { subject.nothing }.must_raise Config::Core::Configuration::UnknownGroup
+    proc { subject[:nothing] }.must_raise Config::Core::Configuration::UnknownGroup
   end
 
   it "does not allow a group to be redefined" do

@@ -1,9 +1,18 @@
 module Config
   module Core
+    # The configuration is a collection key/value pairs organized into groups.
+    # Each group should define a single resource to be made available to
+    # blueprints.
     class Configuration
 
+      # Error thrown if a group is defined more than once.
       DuplicateGroup = Class.new(StandardError)
+
+      # Error thrown when attempting to access a group that has not been
+      # defined.
       UnknownGroup = Class.new(StandardError)
+
+      # Error thrown when attempting to read a key that has not been defined.
       UnknownVariable = Class.new(StandardError)
 
       def initialize
@@ -21,9 +30,14 @@ module Config
         @groups[group_name.to_sym] = Group.new(group_name.to_sym, hash)
       end
 
+      def [](group_name)
+        @groups[group_name] or raise UnknownGroup, "#{group_name} group is not defined"
+      end
+
+      # Enables dot syntax access to groups.
       def method_missing(message, *args, &block)
         raise ArgumentError, "arguments are not allowed: #{message}(#{args.inspect})" if args.any?
-        @groups[message] or raise UnknownGroup, "#{message} group is not defined"
+        self[message]
       end
 
       class Group

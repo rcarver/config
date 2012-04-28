@@ -15,7 +15,7 @@ module Config
         dsl.instance_eval(string)
       end
       cluster = self.new(name)
-      cluster.configuration = dsl.configuration
+      cluster.configuration = dsl._get_configuration
       cluster
     end
 

@@ -31,7 +31,7 @@ module Config
       "Blueprint #{@name}"
     end
 
-    attr_accessor :node
+    attr_accessor :facts
     attr_accessor :configuration
 
     def accumulate
@@ -39,9 +39,9 @@ module Config
       @accumulated = true
 
       root = Config::DSL::BlueprintDSL.new
+      root._set_facts(facts)
+      root._set_configuration(configuration)
       root.accumulation = @accumulation
-      root.node = node
-      root.configure = configuration
       root.parent = nil
 
       log << "Accumulate #{self}"
