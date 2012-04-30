@@ -1,6 +1,47 @@
 require 'helper'
 
-describe "filesystem", Config::Project do
+describe "filesystem running items", Config::Project do
+
+  subject { Config::Project.new(tmpdir) }
+
+  before do
+    (tmpdir + "blueprints").mkdir
+    (tmpdir + "blueprints/message.rb").open("w") do |f|
+      f.puts <<-STR
+        file "#{tmpdir}/file1" do |f|
+          f.content = configure.messages.greeting
+        end
+      STR
+    end
+
+    (tmpdir + "clusters").mkdir
+    (tmpdir + "clusters/production.rb").open("w") do |f|
+      f.puts <<-STR
+        configure :messages,
+          greeting: "hello world"
+      STR
+    end
+  end
+
+  it "fails if a blueprint is not found" do
+    proc { subject.try_blueprint("something", "production") }.must_raise Config::Project::UnknownBlueprint
+  end
+
+  it "fails if a cluster is not found" do
+    proc { subject.try_blueprint("message", "other") }.must_raise Config::Project::UnknownCluster
+  end
+
+  describe "#try_blueprint with blueprint and cluster" do
+
+    it "executes the blueprint in noop mode" do
+      subject.try_blueprint("message", "production")
+      log_string.must_include("Create [File #{tmpdir}/file2]")
+      (tmpdir + "file1").wont_be :exist?
+    end
+  end
+end
+
+describe "filesystem loading assets", Config::Project do
 
   subject { Config::Project.new(tmpdir) }
 
@@ -87,30 +128,6 @@ describe "filesystem", Config::Project do
 
       skip "this doesn't work because blueprint evaluation doesn't occur until accumulation"
       proc { subject.require_blueprints }.must_raise(SyntaxError)
-    end
-  end
-
-  describe "#try" do
-
-    it "executes the blueprint in noop mode" do
-      (tmpdir + "blueprints").mkdir
-      (tmpdir + "blueprints/one.rb").open("w") do |f|
-        f.puts <<-STR
-          file "#{tmpdir}/file1" do |f|
-            f.content = "hello"
-          end
-        STR
-      end
-
-      subject.try("one")
-
-      log_string.must_include("Create [File #{tmpdir}/file1]")
-
-      (tmpdir + "file1").wont_be :exist?
-    end
-
-    it "fails if the blueprint is not found" do
-      proc { subject.try("something") }.must_raise Config::Project::UnknownBlueprint
     end
   end
 end

@@ -34,7 +34,7 @@ module Config
         @groups[group_name] or raise UnknownGroup, "#{group_name} group is not defined"
       end
 
-      # Enables dot syntax access to groups.
+      # Enables dot syntax for groups.
       def method_missing(message, *args, &block)
         raise ArgumentError, "arguments are not allowed: #{message}(#{args.inspect})" if args.any?
         self[message]
@@ -62,12 +62,12 @@ module Config
           end
         end
 
+        # Enables dot syntax for keys.
         def method_missing(message, *args, &block)
           raise ArgumentError, "arguments are not allowed: #{message}(#{args.inspect})" if args.any?
           self[message]
         end
       end
-
     end
   end
 end

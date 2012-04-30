@@ -2,9 +2,13 @@
 $LOAD_PATH.unshift File.expand_path("../../", __FILE__) + "/lib"
 require 'config'
 
-name = ARGV.shift 
-name or abort "usage: config-try-blueprint NAME"
+usage = "usage: config-try-blueprint BLUEPRINT_NAME CLUSTER_NAME"
+blueprint_name = ARGV.shift
+blueprint_name or abort usage
+
+cluster_name = ARGV.shift
+cluster_name or abort usage
 
 Config.log_to $stdout
 project = Config::Project.new(File.expand_path("."))
-project.try(name)
+project.try_blueprint(blueprint_name, cluster_name)
