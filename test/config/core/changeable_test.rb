@@ -33,8 +33,10 @@ describe Config::Core::Changeable do
   end
 
   it "tracks changed state" do
+    subject.changes.must_be :empty?
     subject.wont_be :changed?
     subject.changes << "thing"
+    subject.changes.wont_be :empty?
     subject.must_be :changed?
   end
 end

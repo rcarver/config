@@ -37,10 +37,6 @@ module Config
           @changes.empty?
         end
 
-        def changed?
-          @changes.any?
-        end
-
         def to_a
           @changes
         end
@@ -65,7 +61,7 @@ module Config
       #
       # Returns a Boolean.
       def changed?
-        changes.changed?
+        !changes.empty?
       end
 
     end
