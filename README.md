@@ -522,6 +522,7 @@ Methods you may override in your Pattern subclass.
 * `validate` Perform deeper validation of attributes before execution.
 * `call` Add other Patterns. Don't perform any operations that alter the
   node, do that in `create`.
+* `prepare` Prepare and log data before execution.
 * `create` Perform operations that alter the Node.
 * `destroy` Perform operations that undo the alteration of the Node.
 * `describe` Change the string representation of your Pattern.
