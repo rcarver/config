@@ -35,7 +35,7 @@ describe "filesystem running items", Config::Project do
 
     it "executes the blueprint in noop mode" do
       subject.try_blueprint("message", "production")
-      log_string.must_include("Create [File #{tmpdir}/file2]")
+      log_string.must_include("Create [File #{tmpdir}/file1]")
       (tmpdir + "file1").wont_be :exist?
     end
   end
