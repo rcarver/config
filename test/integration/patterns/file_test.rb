@@ -121,6 +121,18 @@ describe "filesystem", Config::Patterns::File do
         execute :create
         subject.changes.must_include "updated"
       end
+
+      it "logs an identical file" do
+        path.open("w") { |f| f.print subject.content }
+        execute :create
+        subject.changes.must_be_empty
+        log_string.must_equal <<-STR
+    >>>
+    hello world
+    <<<
+  identical
+        STR
+      end
     end
 
     describe "operation = :append" do
@@ -167,8 +179,10 @@ describe "filesystem", Config::Patterns::File do
       it "logs the file content" do
         execute :create
         log_string.must_equal <<-STR
+    >>>
     hello
     world
+    <<<
   created
         STR
       end

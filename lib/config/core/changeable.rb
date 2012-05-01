@@ -30,6 +30,13 @@ module Config
           @changes.include? msg
         end
 
+        # Public: Determine if no changes have occurred.
+        #
+        # Returns a Boolean.
+        def empty?
+          @changes.empty?
+        end
+
         def changed?
           @changes.any?
         end

@@ -73,7 +73,9 @@ module Config
           @new_content = template.result(template_context.get_binding)
         end
         log.indent(2) do
+          log << ">>>"
           log << @new_content
+          log << "<<<"
         end
       end
 
@@ -86,7 +88,9 @@ module Config
             "appended"
           when :write
             # TODO: checksum to compare? use File.identical?
-            if @new_content != pn.read
+            if @new_content == pn.read
+              "identical"
+            else
               "updated"
             end
           end
@@ -98,12 +102,15 @@ module Config
           case change_status
           when "created", "updated"
             pn.open("w") { |f| f.print @new_content }
+            changes << change_status
           when "appended"
             pn.open("a") { |f| f.print @new_content }
+            changes << change_status
+          when "identical"
+            log.indent do
+              log << "identical"
+            end
           end
-          changes << change_status
-        else
-          log << "identical"
         end
 
         #stat = Config::Core::Stat.new(self, path)
