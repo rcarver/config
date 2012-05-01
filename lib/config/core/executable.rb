@@ -14,9 +14,11 @@ module Config
         case run_mode
         when :create
           log << "#{prefix}Create #{self}"
-          create unless skip or noop?
+          prepare unless skip
+          create  unless skip or noop?
         when :destroy
           log << "#{prefix}Destroy #{self}"
+          prepare unless skip
           destroy unless skip or noop?
         when :skip
           log << "Skip #{self}"

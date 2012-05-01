@@ -65,15 +65,19 @@ module Config
         end
       end
 
-      def create
-
+      def prepare
         if content
-          new_content = content
+          @new_content = content
         else
           template = ERB.new(::File.read(template_path))
-          new_content = template.result(template_context.get_binding)
+          @new_content = template.result(template_context.get_binding)
         end
+        log.indent(2) do
+          log << @new_content
+        end
+      end
 
+      def create
         change_status = nil
 
         if pn.exist?
@@ -82,7 +86,7 @@ module Config
             "appended"
           when :write
             # TODO: checksum to compare? use File.identical?
-            if new_content != pn.read
+            if @new_content != pn.read
               "updated"
             end
           end
@@ -93,14 +97,13 @@ module Config
         if change_status
           case change_status
           when "created", "updated"
-            pn.open("w") { |f| f.print new_content }
+            pn.open("w") { |f| f.print @new_content }
           when "appended"
-            pn.open("a") { |f| f.print new_content }
+            pn.open("a") { |f| f.print @new_content }
           end
           changes << change_status
-          log.indent(2) do
-            log << new_content
-          end
+        else
+          log << "identical"
         end
 
         #stat = Config::Core::Stat.new(self, path)

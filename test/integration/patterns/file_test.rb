@@ -69,7 +69,6 @@ describe Config::Patterns::File do
       ]
     end
   end
-
 end
 
 describe "filesystem", Config::Patterns::File do
@@ -92,6 +91,11 @@ describe "filesystem", Config::Patterns::File do
     end
   end
 
+  def execute(run_mode)
+    subject.prepare
+    subject.public_send(run_mode)
+  end
+
   describe "#create" do
 
     describe "operation = :write" do
@@ -101,20 +105,20 @@ describe "filesystem", Config::Patterns::File do
       end
 
       it "writes the file" do
-        subject.create
+        execute :create
         path.read.must_equal "hello world"
         subject.changes.must_include "created"
       end
 
       it "does not change the file if it exists and is equivalent" do
         path.open("w") { |f| f.print "hello world" }
-        subject.create
+        execute :create
         subject.wont_be :changed?
       end
 
       it "changes the file if the content is different" do
         path.open("w") { |f| f.print "goodbye" }
-        subject.create
+        execute :create
         subject.changes.must_include "updated"
       end
     end
@@ -127,14 +131,14 @@ describe "filesystem", Config::Patterns::File do
       end
 
       it "creates the file" do
-        subject.create
+        execute :create
         subject.changes.must_include "created"
         path.read.must_equal "hello world"
       end
 
       it "appends the file" do
         path.open("w") { |f| f.print "HERE" }
-        subject.create
+        execute :create
         subject.changes.must_include "appended"
         path.read.must_equal "HEREhello world"
       end
@@ -148,24 +152,24 @@ describe "filesystem", Config::Patterns::File do
       end
 
       it "creates the file" do
-        subject.create
+        execute :create
         subject.changes.must_include "created"
         path.read.must_equal "hello\nworld"
       end
 
       it "does not change the file" do
         path.open("w") { |f| f.print "HERE" }
-        subject.create
+        execute :create
         subject.wont_be :changed?
         path.read.must_equal "HERE"
       end
 
       it "logs the file content" do
-        subject.create
+        execute :create
         log_string.must_equal <<-STR
-  created
     hello
     world
+  created
         STR
       end
     end
@@ -181,20 +185,20 @@ describe "filesystem", Config::Patterns::File do
       end
 
       it "renders the file" do
-        subject.create
+        execute :create
         path.read.must_equal "bob"
         subject.changes.must_include "created"
       end
 
       it "does not change the file if it exists and is equivalent" do
         path.open("w") { |f| f.print "bob" }
-        subject.create
+        execute :create
         subject.wont_be :changed?
       end
 
       it "changes the file if the content is different" do
         path.open("w") { |f| f.print "joe" }
-        subject.create
+        execute :create
         subject.changes.must_include "updated"
       end
 
@@ -204,15 +208,19 @@ describe "filesystem", Config::Patterns::File do
 
   describe "#destroy" do
 
+    before do
+      subject.content = "hello world"
+    end
+
     it "does nothing if the file does not exist" do
-      subject.destroy
+      execute :destroy
       tmpdir.must_be :exist?
       subject.wont_be :changed?
     end
 
     it "deletes the file" do
       path.open("w") { |f| f.print "ok" }
-      subject.destroy
+      execute :destroy
       path.wont_be :exist?
       tmpdir.must_be :exist?
       subject.changes.must_include "deleted"

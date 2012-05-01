@@ -13,12 +13,16 @@ describe Config::Core::Executable do
         "Test"
       end
 
+      def prepare
+        @result = "prepared"
+      end
+
       def create
-        @result = "created"
+        @result << " created"
       end
 
       def destroy
-        @result = "destroyed"
+        @result << " destroyed"
       end
     end
   }
@@ -69,18 +73,18 @@ describe Config::Core::Executable do
 
     it "creates by default" do
       subject.execute
-      subject.result.must_equal "created"
+      subject.result.must_equal "prepared created"
     end
     it "creates" do
       subject.run_mode = :create
       subject.execute
-      subject.result.must_equal "created"
+      subject.result.must_equal "prepared created"
       log.must_equal "Create Test"
     end
     it "destroys" do
       subject.run_mode = :destroy
       subject.execute
-      subject.result.must_equal "destroyed"
+      subject.result.must_equal "prepared destroyed"
       log.must_equal "Destroy Test"
     end
     it "skips" do
@@ -120,13 +124,13 @@ describe Config::Core::Executable do
       it "logs create but does not execute" do
         subject.run_mode = :create
         subject.execute
-        subject.result.must_equal nil
+        subject.result.must_equal "prepared"
         log.must_equal "Create Test"
       end
       it "logs destroy but does not execute" do
         subject.run_mode = :destroy
         subject.execute
-        subject.result.must_equal nil
+        subject.result.must_equal "prepared"
         log.must_equal "Destroy Test"
       end
     end

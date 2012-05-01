@@ -17,12 +17,17 @@ module Config
     end
 
     # Public
+    def call
+      # noop
+    end
+
+    # Public
     def validate
       # noop
     end
 
     # Public
-    def call
+    def prepare
       # noop
     end
 
