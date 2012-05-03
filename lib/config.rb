@@ -31,6 +31,8 @@ require 'config/dsl/blueprint_dsl'
 require 'config/dsl/cluster_dsl'
 require 'config/dsl/node_dsl'
 
+require 'config/spy/configuration'
+
 require 'config/meta'
 
 module Config
