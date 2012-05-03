@@ -50,4 +50,13 @@ e
   two
     STR
   end
+
+  it "colorizes" do
+    subject.colorize("hello", :green).must_equal "\e[32mhello\e[0m"
+  end
+
+  it "does not colorize when color is set to false" do
+    subject.color = false
+    subject.colorize("hello", :green).must_equal "hello"
+  end
 end
