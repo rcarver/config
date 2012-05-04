@@ -192,7 +192,7 @@ describe "filesystem", Config::Patterns::File do
 
       before do
         (tmpdir + "tmpl.erb").open("w") do |f|
-          f.print "<%= name %>"
+          f.print "Hello <%= name %>"
         end
         subject.template_path = tmpdir + "tmpl.erb"
         subject.template_context = SampleTemplateContext.new("bob")
@@ -200,23 +200,42 @@ describe "filesystem", Config::Patterns::File do
 
       it "renders the file" do
         execute :create
-        path.read.must_equal "bob"
+        path.read.must_equal "Hello bob"
         subject.changes.must_include "created"
       end
 
       it "does not change the file if it exists and is equivalent" do
-        path.open("w") { |f| f.print "bob" }
+        path.open("w") { |f| f.print "Hello bob" }
         execute :create
         subject.wont_be :changed?
       end
 
       it "changes the file if the content is different" do
-        path.open("w") { |f| f.print "joe" }
+        path.open("w") { |f| f.print "Hello joe" }
         execute :create
         subject.changes.must_include "updated"
       end
 
-      # TODO: validate template attrs
+      it "logs a debug template" do
+        execute :create
+        log_string.must_equal <<-STR
+    >>>
+    Hello [name:bob]
+    <<<
+  created
+        STR
+      end
+
+      it "colorizes the debug template" do
+        log.color = true
+        execute :create
+        log_string.must_equal <<-STR
+    >>>
+    Hello \e[34mname:\e[0m\e[31mbob\e[0m
+    <<<
+  created
+        STR
+      end
     end
   end
 

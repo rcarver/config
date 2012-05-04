@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency "activesupport"
+  s.add_dependency "erubis"
   s.add_dependency "ohai"
 
   s.add_development_dependency "rake"

@@ -1,4 +1,4 @@
-require 'erb'
+require 'erubis'
 
 module Config
   module Patterns
@@ -65,16 +65,39 @@ module Config
         end
       end
 
+      class ColorizingEruby < Erubis::Eruby
+        include Config::Core::Loggable
+
+        def add_expr_literal(src, code)
+          src << '_buf << (' << colorize(code) << ');'
+        end
+
+      protected
+
+        # Formats a colored string [key:value]
+        def colorize(code)
+          if log.color?
+            '"' + log.colorize("#{code.strip}:", :blue) + log.colorize("\#{#{code}}", :red) + '"'
+          else
+            %("[#{code.strip}:\#{#{code}}]")
+          end
+        end
+      end
+
       def prepare
         if content
           @new_content = content
+          log_content = @new_content
         else
-          template = ERB.new(::File.read(template_path))
-          @new_content = template.result(template_context.get_binding)
+          template = ::File.read(template_path)
+          log_template = ColorizingEruby.new(template)
+          log_content = log_template.result(template_context.get_binding)
+          new_template = Erubis::Eruby.new(template)
+          @new_content = new_template.result(template_context.get_binding)
         end
         log.indent(2) do
           log << ">>>"
-          log << @new_content
+          log << log_content
           log << "<<<"
         end
       end
