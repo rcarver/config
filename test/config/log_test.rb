@@ -59,4 +59,10 @@ e
     subject.color = false
     subject.colorize("hello", :green).must_equal "hello"
   end
+
+  it "knows if color is enabled" do
+    subject.must_be :color?
+    subject.color = false
+    subject.wont_be :color?
+  end
 end

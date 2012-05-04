@@ -27,6 +27,10 @@ class ConfigSpec < MiniTest::Spec
     executor.execute
   end
 
+  def log
+    Config.log
+  end
+
   def log_string
     log_stream.string
   end
@@ -35,7 +39,9 @@ class ConfigSpec < MiniTest::Spec
 
   before do
     Config.log_to log_stream
+    Config.log_color false
   end
+
 end
 
 class FilesystemSpec < ConfigSpec

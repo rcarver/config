@@ -53,6 +53,15 @@ module Config
     @log = Config::Log.new(stream)
   end
 
+  # Public: Configure color output.
+  #
+  # bool - Boolean to enable colored output.
+  #
+  # Returns nothing.
+  def self.log_color(bool)
+    log.color = bool
+  end
+
   # Public: Create an execute a Blueprint with a block.
   #
   # name - String name of the blueprint.

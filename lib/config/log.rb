@@ -68,6 +68,13 @@ module Config
     # enabled - Boolean true if colorizing is allowed.
     attr_writer :color
 
+    # Public: Determine if colorized output is enabled.
+    #
+    # Returns a Boolean.
+    def color?
+      @color
+    end
+
     # Public: Colorize a string. If `enable_color` is false, then no
     # color is applied.
     #
