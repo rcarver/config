@@ -7,7 +7,6 @@ blueprint_name = ARGV.shift
 blueprint_name or abort usage
 
 cluster_name = ARGV.shift
-cluster_name or abort usage
 
 Config.log_to $stdout
 project = Config::Project.new(File.expand_path("."))

@@ -13,16 +13,19 @@ module Config
     attr :clusters
     attr :blueprints
 
-    def try_blueprint(blueprint_name, cluster_name)
+    def try_blueprint(blueprint_name, cluster_name = nil)
       require_all
 
       blueprint = blueprints[blueprint_name]
       blueprint or raise UnknownBlueprint, "Blueprint #{blueprint_name} was not found"
 
-      cluster = clusters[cluster_name]
-      cluster or raise UnknownCluster, "Cluster #{cluster_name} was not found"
-
-      blueprint.configuration = cluster.configuration
+      if cluster_name
+        cluster = clusters[cluster_name]
+        cluster or raise UnknownCluster, "Cluster #{cluster_name} was not found"
+        blueprint.configuration = cluster.configuration
+      else
+        blueprint.configuration = Config::Spy::Configuration.new
+      end
 
       accumulation = blueprint.accumulate
       accumulation.each do |pattern|
