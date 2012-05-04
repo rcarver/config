@@ -74,7 +74,6 @@ module Config
 
       protected
 
-        # Formats a colored string [key:value]
         def colorize(code)
           if log.color?
             '"' + log.colorize("#{code.strip}:", :blue) + log.colorize("\#{#{code}}", :red) + '"'
