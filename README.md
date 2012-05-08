@@ -37,7 +37,7 @@ Blueprints that use them.
 * __File__ A file on disk. The contents may come from an ERB template
   or a String.
 * __Link__ A symbolic (or hard) link.
-* __Package__ Install a 3rd party library via apt>
+* __Package__ Install a 3rd party library via apt.
 * __Script__ Any executable code.
 
 ## Basic Use
