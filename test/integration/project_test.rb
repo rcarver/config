@@ -31,6 +31,18 @@ describe "filesystem running items", Config::Project do
     proc { subject.try_blueprint("message", "other") }.must_raise Config::Project::UnknownCluster
   end
 
+  it "works if the relative path to a blueprint is given" do
+    proc { subject.try_blueprint("blueprints/message") }.must_raise ArgumentError
+    proc { subject.try_blueprint("foo/message.rb") }.must_raise ArgumentError
+    subject.try_blueprint("blueprints/message.rb")
+  end
+
+  it "works if the relative path to a cluster is given" do
+    proc { subject.try_blueprint("message", "clusters/production") }.must_raise ArgumentError
+    proc { subject.try_blueprint("foo/production.rb") }.must_raise ArgumentError
+    subject.try_blueprint("message", "clusters/production.rb")
+  end
+
   describe "#try_blueprint with blueprint and cluster" do
 
     it "executes the blueprint in noop mode" do

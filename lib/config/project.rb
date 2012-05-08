@@ -4,10 +4,28 @@ module Config
     UnknownCluster = Class.new(StandardError)
     UnknownBlueprint = Class.new(StandardError)
 
+    class PathHash < Hash
+      def initialize(dir)
+        @dir = dir
+        super()
+      end
+      def [](key)
+        if key.include?("/")
+          if (@dir + key).exist?
+            super File.basename(key, ".rb")
+          else
+            raise ArgumentError, "File does not exist #{key.inspect}"
+          end
+        else
+          super
+        end
+      end
+    end
+
     def initialize(dir)
       @dir = Pathname.new(dir).cleanpath
-      @clusters = {}
-      @blueprints = {}
+      @clusters = PathHash.new(@dir)
+      @blueprints = PathHash.new(@dir)
     end
 
     attr :clusters
