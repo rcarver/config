@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path("../../", __FILE__) + "/lib"
+require 'config'
+require 'tempfile'
+
+blueprint_name = File.basename($0)
+
+usage = "usage: config-bootstrap CLUSTER BLUEPRINT IDENTITY"
+
+cluster   = ARGV.shift or abort usage
+blueprint = ARGV.shift or abort usage
+identity  = ARGV.shift or abort usage
+
+identity_file = Tempfile.new("identity")
+system_file = Tempfile.new("system")
+project_file = Tempfile.new("project")
+
+Config.log_to StringIO.new
+Config.blueprint(blueprint_name) do
+
+  add Config::Bootstrap::System do |p|
+    p.path = system_file
+    # TODO: set ruby,bundler,git versions
+  end
+
+  add Config::Bootstrap::Identity do |p|
+    p.path = identity_file
+    p.cluster = cluster
+    p.blueprint = blueprint
+    p.identity = identity
+    # TODO: set secret
+    p.secret = "SECRET"
+  end
+
+  add Config::Bootstrap::Project do |p|
+    p.path = project_file
+    # TODO: set git vars to real values.
+    p.git_uri = "git@github.com:rcarver/config-example.git"
+    p.git_ref = "origin/master"
+  end
+end
+
+puts "# System"
+puts system_file.read
+puts
+puts "# Identity"
+puts identity_file.read
+puts
+puts "# Project"
+puts project_file.read
