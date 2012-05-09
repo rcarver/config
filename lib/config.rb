@@ -34,6 +34,7 @@ require 'config/dsl/node_dsl'
 require 'config/spy/configuration'
 
 require 'config/meta'
+require 'config/bootstrap'
 
 module Config
 

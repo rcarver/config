@@ -1,0 +1,37 @@
+echo '[updating packages]'
+aptitude update -q
+aptitude safe-upgrade -y -q
+
+
+echo '[installing git <%= git_version %>]'
+aptitude install git-core=<%= apt_git_version %>
+
+
+mkdir -p /usr/src
+cd /usr/src
+
+
+echo '[downloading ruby <%= ruby_version %>]'
+# checksum: 3ea11df6bc4e7537cf97f7b134db24c55dfe013d
+curl -O http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-<%= ruby_version %>.tar.gz
+tar -zxf /usr/src/ruby-<%= ruby_version %>.tar.gz
+
+
+echo '[installing ruby <%= ruby_version %>]'
+cd /usr/src/ruby-<%= ruby_version %>
+./configure --prefix="/opt/ruby-config-<%= ruby_version %>"
+make
+make install
+
+
+echo '[installing bundler <%= bundler_version %>]'
+/opt/ruby-config-#{ruby_version}/gem install bundler --version <%= bundler_version %> --no-ri --no-rdoc
+
+
+echo '[linking ruby-config]'
+echo '#!/bin/sh
+set -e
+PATH=/opt/ruby-config-<%= ruby_version %>/bin:$PATH exec /opt/ruby-config-<%= ruby_version %>/bin/bundle "$@"
+' > /usr/local/bin/ruby-config
+chmod +x /usr/local/bin/ruby-config
+
