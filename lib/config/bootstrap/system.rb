@@ -7,10 +7,13 @@ module Config
       attr :path
 
       desc "The version of Ruby to install"
-      attr :ruby_version, "1.9.3"
+      attr :ruby_version, "1.9.3-p194"
+
+      desc "The version of RubyGems to install"
+      attr :rubygems_version, "1.8.24"
 
       desc "The version of Bundler to install"
-      attr :bundler_version, "~>1.1.0"
+      attr :bundler_version, "1.1.0"
 
       desc "The version of Git to install"
       attr :git_version, "1.7.10.1"

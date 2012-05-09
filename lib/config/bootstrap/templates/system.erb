@@ -2,6 +2,7 @@ echo '[updating packages]'
 aptitude update -q
 aptitude safe-upgrade -y -q
 
+aptitude install build-essential zlib1g-dev libreadline5-dev libyaml-dev -y -q
 
 echo '[installing git <%= git_version %>]'
 aptitude install git-core=<%= apt_git_version %>
@@ -12,7 +13,7 @@ cd /usr/src
 
 
 echo '[downloading ruby <%= ruby_version %>]'
-# checksum: 3ea11df6bc4e7537cf97f7b134db24c55dfe013d
+# TODO checksum: bc0c715c69da4d1d8bd57069c19f6c0e
 curl -O http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-<%= ruby_version %>.tar.gz
 tar -zxf /usr/src/ruby-<%= ruby_version %>.tar.gz
 
@@ -24,8 +25,16 @@ make
 make install
 
 
+echo '[install rubygems <%= rubygems_version %>]'
+# NOTE: SSL error on this wtf?
+curl -O http://production.cf.rubygems.org/rubygems/rubygems-<%= rubygems_version %>.tgz
+tar -zxf rubygems-<%= rubygems_version %>.tgz
+cd rubygems-<%= rubygems_version %>
+/opt/ruby-config-<%= ruby_version %>/bin/ruby setup.rb --no-format-executable --no-rdoc --no-ri
+
+
 echo '[installing bundler <%= bundler_version %>]'
-/opt/ruby-config-#{ruby_version}/gem install bundler --version <%= bundler_version %> --no-ri --no-rdoc
+/opt/ruby-config-<%= ruby_version %>/bin/gem install bundler --version <%= bundler_version %> --no-ri --no-rdoc
 
 
 echo '[linking ruby-config]'

@@ -21,18 +21,20 @@ describe "filesystem", Config::Bootstrap::System do
   it "writes a script" do
 
     subject.path = tmpdir + "system"
-    subject.ruby_version = "1.9"
-    subject.bundler_version = "1.1"
     subject.git_version = "1.7"
+    subject.ruby_version = "1.9"
+    subject.rubygems_version = "1.8"
+    subject.bundler_version = "1.1"
 
     execute_pattern
 
     (tmpdir + "system").must_be :exist?
     contents = (tmpdir + "system").read
 
-    contents.must_include "ruby-1.9.tar.gz"
-    contents.must_include "gem install bundler --version 1.1"
     contents.must_include "install git-core=1:1.7-1ubuntu0.2"
+    contents.must_include "ruby-1.9.tar.gz"
+    contents.must_include "rubygems-1.8.tgz"
+    contents.must_include "gem install bundler --version 1.1"
   end
 end
 
