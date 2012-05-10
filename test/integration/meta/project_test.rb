@@ -28,11 +28,6 @@ describe "filesystem", Config::Meta::Project do
     (tmpdir + "patterns").must_be :exist?
     (tmpdir + "facts").must_be :exist?
     (tmpdir + "clusters").must_be :exist?
-    (tmpdir + "hub.rb").must_be :exist?
-    (tmpdir + "hub.rb").read.must_equal <<-STR
-# git_project 'git@github.com:USER/REPO.git'
-# git_data    'git@github.com:USER/REPO-data.git'
-    STR
 
     (tmpdir + "README.md").must_be :exist?
     (tmpdir + "README.md").read.must_equal <<-STR
