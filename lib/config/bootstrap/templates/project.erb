@@ -2,9 +2,13 @@ mkdir -p /etc/config
 
 # TODO: should specify the git binary to use?
 
-echo '[cloning project: <%= git_uri %>]'
-cd /etc/config
-git clone <%= git_uri %> project
+if [ ! -f project ]; then
+  echo '[cloning project: <%= git_uri %>]'
+  cd /etc/config
+  git clone <%= git_uri %> project
+else
+  echo '[project exists]'
+fi
 
 cd project
 

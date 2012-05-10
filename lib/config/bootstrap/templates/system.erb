@@ -12,25 +12,31 @@ mkdir -p /usr/src
 cd /usr/src
 
 
-echo '[downloading ruby <%= ruby_version %>]'
-# TODO checksum: bc0c715c69da4d1d8bd57069c19f6c0e
-curl -O http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-<%= ruby_version %>.tar.gz
-tar -zxf /usr/src/ruby-<%= ruby_version %>.tar.gz
+if [ ! -f /opt/ruby-config-<%= ruby_version %>/bin/ruby ]; then
+  echo '[downloading ruby <%= ruby_version %>]'
+  curl -sO http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-<%= ruby_version %>.tar.gz
+  tar -zxf /usr/src/ruby-<%= ruby_version %>.tar.gz
+
+  echo '[installing ruby <%= ruby_version %>]'
+  cd /usr/src/ruby-<%= ruby_version %>
+  ./configure --prefix="/opt/ruby-config-<%= ruby_version %>"
+  make
+  make install
+else
+  echo '[ruby <%= ruby_version %> is installed]'
+fi
 
 
-echo '[installing ruby <%= ruby_version %>]'
-cd /usr/src/ruby-<%= ruby_version %>
-./configure --prefix="/opt/ruby-config-<%= ruby_version %>"
-make
-make install
-
-
-echo '[install rubygems <%= rubygems_version %>]'
-# NOTE: SSL error on this wtf?
-curl -O http://production.cf.rubygems.org/rubygems/rubygems-<%= rubygems_version %>.tgz
-tar -zxf rubygems-<%= rubygems_version %>.tgz
-cd rubygems-<%= rubygems_version %>
-/opt/ruby-config-<%= ruby_version %>/bin/ruby setup.rb --no-format-executable --no-rdoc --no-ri
+if [ ! -f /opt/ruby-config-<%= ruby_version %>/bin/gem ]; then
+  echo '[install rubygems <%= rubygems_version %>]'
+  # NOTE: SSL error on this url?
+  curl -sO http://production.cf.rubygems.org/rubygems/rubygems-<%= rubygems_version %>.tgz
+  tar -zxf rubygems-<%= rubygems_version %>.tgz
+  cd rubygems-<%= rubygems_version %>
+  /opt/ruby-config-<%= ruby_version %>/bin/ruby setup.rb --no-format-executable --no-rdoc --no-ri
+else
+  echo '[rubygems <%= rubygems_version %> is installed]'
+fi
 
 
 echo '[installing bundler <%= bundler_version %>]'
