@@ -24,12 +24,14 @@ require 'config/pattern'
 require 'config/blueprint'
 require 'config/cluster'
 require 'config/configuration'
+require 'config/hub'
 require 'config/node'
 require 'config/project'
 
 require 'config/dsl/blueprint_dsl'
 require 'config/dsl/cluster_dsl'
 require 'config/dsl/node_dsl'
+require 'config/dsl/hub_dsl'
 
 module Config
 

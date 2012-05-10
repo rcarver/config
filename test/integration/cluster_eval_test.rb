@@ -15,9 +15,9 @@ describe Config::Cluster do
 
     it "provides useful information for a syntax error" do
       file = __FILE__
-      line = __LINE__ + 2
+      line = __LINE__ + 2 # why is this 2? 3 makes more sense to me.
       begin
-        cluster = Config::Cluster.from_string("sample", <<-STR, __FILE__, __LINE__)
+        Config::Cluster.from_string("sample", <<-STR, __FILE__, __LINE__)
           xconfigure :foo,
             value: "ok"
         STR
