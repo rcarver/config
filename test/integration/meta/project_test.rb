@@ -30,8 +30,8 @@ describe "filesystem", Config::Meta::Project do
     (tmpdir + "clusters").must_be :exist?
     (tmpdir + "hub.rb").must_be :exist?
     (tmpdir + "hub.rb").read.must_equal <<-STR
-git_project 'git@github.com:USER/REPO.git'
-git_data    'git@github.com:USER/REPO-data.git'
+# git_project 'git@github.com:USER/REPO.git'
+# git_data    'git@github.com:USER/REPO-data.git'
     STR
 
     (tmpdir + "README.md").must_be :exist?

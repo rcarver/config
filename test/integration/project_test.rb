@@ -57,6 +57,18 @@ describe "filesystem loading assets", Config::Project do
 
   subject { Config::Project.new(tmpdir) }
 
+  describe "#hub" do
+    it "sets default git urls" do
+      (tmpdir + ".git").mkdir
+      (tmpdir + ".git/config").open("w") do |f|
+        f.puts '[remote "origin"]'
+        f.puts '        url = git@github.com:foo/bar.git'
+      end
+      subject.hub.git_project.must_equal 'git@github.com:foo/bar.git'
+      subject.hub.git_data.must_equal    'git@github.com:foo/bar-data.git'
+    end
+  end
+
   describe "#require_patterns" do
 
     it "loads all patterns" do

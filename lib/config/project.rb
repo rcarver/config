@@ -31,6 +31,19 @@ module Config
     attr :clusters
     attr :blueprints
 
+    def hub
+      @hub ||= begin
+        hub = Config::Hub.from_file(@dir + "hub.rb")
+        hub.git_project ||= begin
+          repo = `cd #{@dir} && git config --get remote.origin.url`
+          repo.empty? ? nil : repo.chomp
+        end
+        if hub.git_project
+          hub.git_data ||= hub.git_project.sub(/\.git/, '-data.git')
+        end
+      end
+    end
+
     def try_blueprint(blueprint_name, cluster_name = nil)
       require_all
 
