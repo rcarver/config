@@ -31,12 +31,25 @@ require 'config/dsl/blueprint_dsl'
 require 'config/dsl/cluster_dsl'
 require 'config/dsl/node_dsl'
 
-require 'config/spy/configuration'
-
-require 'config/meta'
-require 'config/bootstrap'
-
 module Config
+
+  module Bootstrap
+    autoload :Identity, "config/bootstrap/identity"
+    autoload :Project, "config/bootstrap/project"
+    autoload :System, "config/bootstrap/system"
+  end
+
+  module Meta
+    autoload :Blueprint, "config/meta/blueprint"
+    autoload :Cluster, "config/meta/cluster"
+    autoload :Pattern, "config/meta/pattern"
+    autoload :PatternTopic, "config/meta/pattern_topic"
+    autoload :Project, "config/meta/project"
+  end
+
+  module Spy
+    autoload :Configuration, "config/spy/configuration"
+  end
 
   # Public: Get the the global logger.
   #
@@ -71,4 +84,5 @@ module Config
     blueprint = Config::Blueprint.new(name, &block)
     blueprint.execute
   end
+
 end
