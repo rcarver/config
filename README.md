@@ -25,6 +25,8 @@ A modern server maintenance tool.
 * __Service__ A long running application, generally managed by Upstart.
   A Service may be notified that something it depends on has changed.
 When that happens the Service typically restarts.
+* __Hub__ A special node that is used to bootstrap other nodes. This can
+  be any node in the system or your development computer.
 * __TODO__ is monitoring/alerting a core concept?
 
 ### Patterns
@@ -66,7 +68,6 @@ The project layout
         [node_id].rb
     facts
       [cluster]/[node_id].rb
-    hub.rb
 
 To create a new server, begin by creating a Blueprint
 
@@ -478,15 +479,48 @@ simple queries.
 
 ## What is a Hub
 
+A Hub acts as the coordinator for nodes within a cluster. You'll
+typically have one hub, but you could have a different one for each
+cluster if desired. A hub only differs from any other checkout of your
+project in a few ways. Most importantly, it is the place where your
+secret keys are stored, so that they may be distributed to new nodes.
+
+You may use a different key for each cluster. By default, we'll have
+one key for everything, called "default".
+
+    config-create-secret [NAME]
+
+The project and data git repositories are also passed from the hub to
+nodes. By default, Config uses the project's origin to determine the
+repos. If your project repo is `my-project.git` the data repo should be
+named `my-project-data.git`. To use different repos, specify them in
+`hub.rb`.
+
     $ vim hub.rb
     git_project 'git@github.com:rcarver/config-example.git'
     git_data    'git@github.com:rcarver/config-example-data.git'
 
-    config-create-secret [NAME]
+### Bootstrap
+
+To allow a node to manage itself it must be boostrapped. Bootstrapping
+installs system requirements, installs the secret and clones the git
+repos. To bootstrap any server, run the bootstrap script (written in
+bash) on it. To generate a bootstrap script, identify the cluster,
+blueprint and a unique name for the node. This name becomes its
+`hostname` and forms the basis of consistent identification for all
+nodes. Here we bootstrap a new production webserver, called "1".
 
     config-bootstrap production-webserver-1 | ssh IP_ADDRESS "sudo bash"
 
-    ssh IP_ADDRESS "config-node-info" | config-update-node
+That's it. When the script completes the server will have a functional
+copy of the project and will add itself as a node in our system. To see
+information about the new node, ask for it. 
+
+    config-show-node production-webserver-1
+
+Behind the scenes, Config will sync the data repository and then extract
+node facts and other information. You can see the raw data stored at
+`.data/git/facts/production-webserver-1.json`.
 
 ## Advanced Configuration
 
@@ -521,6 +555,13 @@ Something here about a workflow like this:
 ## Reference
 
 A brief overview of Config's APIs and tools.
+
+### The Hub API
+
+DSL for `hub.rb`.
+
+* `git_project` Set the git url for the project.
+* `git_data` Set the git url for the project data.
 
 ### The Pattern API
 
