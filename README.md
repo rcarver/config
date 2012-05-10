@@ -66,6 +66,7 @@ The project layout
         [node_id].rb
     facts
       [cluster]/[node_id].rb
+    hub.rb
 
 To create a new server, begin by creating a Blueprint
 
@@ -474,6 +475,18 @@ simple queries.
 
     node = cluster.find_node(MySQL::Server => { master: true })
     node.facts.public_ip
+
+## What is a Hub
+
+    $ vim hub.rb
+    git_project 'git@github.com:rcarver/config-example.git'
+    git_data    'git@github.com:rcarver/config-example-data.git'
+
+    config-create-secret [NAME]
+
+    config-bootstrap production-webserver-1 | ssh IP_ADDRESS "sudo bash"
+
+    ssh IP_ADDRESS "config-node-info" | config-update-node
 
 ## Advanced Configuration
 
