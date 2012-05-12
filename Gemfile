@@ -8,4 +8,5 @@ group :test do
   gem "guard-minitest"
   gem 'ruby_gntp'
   gem 'fivemat'
+  gem 'simple_mock'
 end

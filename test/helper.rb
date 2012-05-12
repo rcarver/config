@@ -1,4 +1,5 @@
 require 'minitest/spec'
+require 'simple_mock'
 require 'fivemat/minitest/autorun'
 
 require 'tmpdir'
