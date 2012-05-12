@@ -117,13 +117,13 @@ describe "filesystem", Config::Data::Repo do
       # commit and push from project1
       within(project1_dir) { cmd "echo hello > one" }
       project1.add "."
-      project1.commit "from 1"
+      project1.commit "commit-from-1"
       project1.push
 
       # commit and push from project2 with state resolution
       within(project2_dir) { cmd "echo goodbye > two" }
       project2.add "."
-      project2.commit "from 2"
+      project2.commit "commit-from-2"
       proc { project2.push }.must_raise Config::Data::Repo::PushError
       project2.pull_rebase
       (project2_dir + "one").must_be :exist?
@@ -132,6 +132,16 @@ describe "filesystem", Config::Data::Repo do
       # pull changes into project1
       project1.pull_rebase
       (project2_dir + "two").must_be :exist?
+
+      # Show that there are only two commits (no merge).
+      within(project1_dir) do
+        lines = cmd "git log --oneline"
+        messages = lines.split("\n").map { |line| line.split(/\s/).last }
+        messages.must_equal [
+          "commit-from-2",
+          "commit-from-1"
+        ]
+      end
     end
   end
 end
