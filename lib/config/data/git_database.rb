@@ -1,6 +1,6 @@
 module Config
   module Data
-    class Repo
+    class GitDatabase
 
       def initialize(path, repo)
         @path = path
@@ -8,27 +8,43 @@ module Config
       end
 
       def update_node(node)
-        @repo.reset
-        @repo.pull
-        facts_file(node).mkdir
-        facts_file(node).open("w") do |f|
-          f.print node.facts.to_json
+        file = facts_file(node)
+        status = file.exist? ? "Updated" : "Added"
+
+        txn do
+          (@path + "facts").mkpath
+          file.open("w") do |f|
+            f.print node.facts.to_json
+          end
+          @repo.add file
+          @repo.commit "#{status} node #{node.fqn}"
         end
-        @repo.add facts_file(node)
-        @repo.commit "Updated #{node.fqn}"
-        @repo.push
       end
 
       def remove_node(node)
-        @repo.reset
-        @repo.pull
-        @repo.rm facts_file(node)
-        @repo.commit "Removed #{node.fqn}"
-        @repo.push
+        return if !facts_file(node).exist?
+
+        txn do
+          @repo.rm facts_file(node)
+          @repo.commit "Removed node #{node.fqn}"
+        end
       end
+
+    protected
 
       def facts_file(node)
         @path + "facts/#{node.fqn}.json"
+      end
+
+      def txn
+        @repo.reset
+        yield
+        begin
+          @repo.push
+        rescue Config::Data::Repo::PushError
+          @repo.pull
+          retry
+        end
       end
 
     end

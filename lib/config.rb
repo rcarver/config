@@ -17,6 +17,7 @@ require 'config/core/marshalable'
 require 'config/core/validation_error'
 require 'config/core/facts'
 
+require 'config/data/git_database'
 require 'config/data/repo'
 require 'config/data/secret'
 
