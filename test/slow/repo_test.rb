@@ -55,14 +55,14 @@ describe "filesystem", Config::Data::Repo do
       end
     end
 
-    describe "#reset" do
+    describe "#reset_hard" do
 
       before do
         within(project_dir) { `echo world >> README.md` }
       end
 
       it "stages changes to file" do
-        subject.reset
+        subject.reset_hard
         within(project_dir) do
           cmd("git status").must_include "nothing to commit"
         end
@@ -125,12 +125,12 @@ describe "filesystem", Config::Data::Repo do
       project2.add "."
       project2.commit "from 2"
       proc { project2.push }.must_raise Config::Data::Repo::PushError
-      project2.pull
+      project2.pull_rebase
       (project2_dir + "one").must_be :exist?
       project2.push
 
       # pull changes into project1
-      project1.pull
+      project1.pull_rebase
       (project2_dir + "two").must_be :exist?
     end
   end

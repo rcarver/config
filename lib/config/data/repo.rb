@@ -52,7 +52,7 @@ module Config
       # noise.
       #
       # Returns nothing.
-      def pull
+      def pull_rebase
         @git.run "git pull --rebase"
       end
 
@@ -73,7 +73,7 @@ module Config
       # Reset the index. Does a hard reset to ensure a clean slate.
       #
       # Returns nothing.
-      def reset
+      def reset_hard
         @git.run "git reset --hard"
       end
 

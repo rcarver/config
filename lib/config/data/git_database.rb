@@ -37,12 +37,12 @@ module Config
       end
 
       def txn
-        @repo.reset
+        @repo.reset_hard
         yield
         begin
           @repo.push
         rescue Config::Data::Repo::PushError
-          @repo.pull
+          @repo.pull_rebase
           retry
         end
       end

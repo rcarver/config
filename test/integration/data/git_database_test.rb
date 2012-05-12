@@ -23,7 +23,7 @@ describe "filesystem", Config::Data::GitDatabase do
 
     before do
       node.expect(:facts, { a: 1 })
-      repo.expect(:reset, nil)
+      repo.expect(:reset_hard, nil)
       repo.expect(:add, nil, [facts_file])
       repo.expect(:push, nil)
     end
@@ -52,7 +52,7 @@ describe "filesystem", Config::Data::GitDatabase do
       facts_file.open("w") do |f|
         f.print "ok"
       end
-      repo.expect(:reset, nil)
+      repo.expect(:reset_hard, nil)
       repo.expect(:rm, nil, [facts_file])
       repo.expect(:commit, nil, ["Removed node prod-webserver-1"])
       repo.expect(:push, nil)
@@ -82,7 +82,7 @@ describe "filesystem", Config::Data::GitDatabase do
 
         attr_reader :pulls
 
-        def pull
+        def pull_rebase
           @pulls ||= 0
           @pulls += 1
         end
@@ -92,7 +92,7 @@ describe "filesystem", Config::Data::GitDatabase do
     let(:repo) { SimpleMock.new(failed_push_class.new) }
 
     it "retries until the push succeeds" do
-      repo.expect(:reset, nil)
+      repo.expect(:reset_hard, nil)
       subject.send(:txn) do
         # nothing
       end
