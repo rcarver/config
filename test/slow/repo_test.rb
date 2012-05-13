@@ -2,16 +2,6 @@ require 'helper'
 
 describe "filesystem", Config::Data::Repo do
 
-  def within(dir, &block)
-    Dir.chdir(dir, &block)
-  end
-
-  def cmd(command)
-    o, s = Open3.capture2e(command)
-    raise o unless s.exitstatus == 0
-    o
-  end
-
   describe "working with the index" do
 
     let(:project_dir) { tmpdir + "project" }
@@ -108,6 +98,7 @@ describe "filesystem", Config::Data::Repo do
       project1_dir.wont_be :exist?
       project1.clone(source_dir)
       project1_dir.must_be :exist?
+      project1.must_be :cloned?
 
       # clone source to project2
       project2_dir.wont_be :exist?

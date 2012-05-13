@@ -65,6 +65,14 @@ module Config
       end
     end
 
+    # Clone the data repo and store it in the data dir. Does nothing if
+    # the data repo already exists.
+    #
+    # Returns nothing.
+    def clone_data_repo
+      data_dir.repo.clone(hub.git_data) unless data_dir.repo.cloned?
+    end
+
     def try_blueprint(blueprint_name, cluster_name = nil)
       require_all
 

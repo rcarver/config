@@ -48,6 +48,13 @@ module Config
         @clone.run "git clone #{url} #{@name}"
       end
 
+      # Determine if the repo has been cloned.
+      #
+      # Returns a Boolean.
+      def cloned?
+        @path.exist?
+      end
+
       # Pull from origin. Performs a pull with rebase to minimize merge
       # noise.
       #

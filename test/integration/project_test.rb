@@ -99,6 +99,10 @@ describe "filesystem loading assets", Config::Project do
     end
   end
 
+  describe "#clone_data_repo" do
+    # Tests are in slow/project_test.rb
+  end
+
   describe "#require_patterns" do
 
     it "loads all patterns" do
