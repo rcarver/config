@@ -9,10 +9,12 @@ project = Config::Project.new(Dir.pwd)
 Config.log_to $stdout
 Config.blueprint(blueprint_name) do
   add Config::Meta::CloneDatabase do |p|
-    p.path = project.data_dir.repo.path
+    p.path = project.data_dir.repo_path
     p.url = project.hub.git_data
   end
 end
+
+Config.log << "Updating the database..."
 
 project.data_dir.database.update
 

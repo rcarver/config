@@ -24,11 +24,17 @@ module Config
         Config::Data::GitDatabase.new(repo.path, repo)
       end
 
-      # Get the git repository that stores node data.
+      # Get the path at which the git database lives.
       #
-      # Returns a Config::Data::Repo.
+      # Returns a String.
+      def repo_path
+        (@dir + "project-data").to_s
+      end
+
+    protected
+
       def repo
-        Config::Data::Repo.new(@dir + "project-data")
+        Config::Data::Repo.new(repo_path)
       end
 
     end
