@@ -24,6 +24,13 @@ describe "filesystem", Config::Meta::Project do
 
     execute_pattern
 
+    (tmpdir + ".gitignore").must_be :exist?
+    (tmpdir + ".gitignore").read.must_equal <<-STR
+.data
+    STR
+
+    (tmpdir + ".data").must_be :exist?
+
     (tmpdir + "blueprints").must_be :exist?
     (tmpdir + "patterns").must_be :exist?
     (tmpdir + "facts").must_be :exist?

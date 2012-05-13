@@ -4,7 +4,10 @@ class Config::Meta::Project < Config::Pattern
   key :root
 
   def call
-    %w(blueprints patterns facts clusters).each do |d|
+    file "#{root}/.gitignore" do |f|
+      f.template = "gitignore.erb"
+    end
+    %w(.data blueprints patterns facts clusters).each do |d|
       dir "#{root}/#{d}"
     end
     file "#{root}/README.md" do |f|
