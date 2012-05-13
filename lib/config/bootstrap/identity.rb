@@ -28,7 +28,7 @@ module Config
     protected
 
       def hostname
-        [cluster, blueprint, identity].join('-')
+        Config::Node.new(cluster, blueprint, identity).fqn
       end
 
     end
