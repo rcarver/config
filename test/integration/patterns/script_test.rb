@@ -71,7 +71,6 @@ describe "filesystem", Config::Patterns::Script do
       STR
       execute :create
       log_string.must_equal <<-STR
-Running "test it out"
   STATUS 0
   STDOUT
     one to out
@@ -92,7 +91,6 @@ Running "test it out"
       STR
       proc { execute :create }.must_raise Config::Error
       log_string.must_equal <<-STR
-Running "test it out"
   STATUS 1
   STDOUT
     one to out
@@ -108,7 +106,6 @@ Running "test it out"
       STR
       execute :create
       log_string.must_equal <<-STR
-Running "test it out"
   STATUS 0
       STR
     end

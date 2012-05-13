@@ -13,8 +13,6 @@ module Config
       end
 
       def create
-        log << "Running #{name.inspect}"
-
         out, err, status = Open3.capture3(code)
 
         log.indent do 
