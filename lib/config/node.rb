@@ -1,16 +1,30 @@
 module Config
   class Node
-    include Config::Core::Loggable
+
+    def initialize(cluster, blueprint, identity)
+      @cluster = cluster
+      @blueprint = blueprint
+      @identity = identity
+    end
+
+    attr :cluster
+    attr :blueprint
+    attr :identity
 
     attr_accessor :facts
-    attr_accessor :configuration
-    attr_accessor :previous_accumulation
 
-    def execute_blueprint(blueprint)
-      blueprint.facts = facts
-      blueprint.configuration = configuration
-      blueprint.previous_accumulation = previous_accumulation
-      blueprint.execute
+    def fqn
+      [cluster, blueprint, identity].join('-')
     end
+
+    def as_json
+      {
+        cluster: cluster.to_s,
+        blueprint: blueprint.to_s,
+        identity: identity.to_s,
+        facts: facts || {}
+      }
+    end
+
   end
 end
