@@ -90,10 +90,24 @@ module Config
       end
     end
 
+    # Public: Add a script.
+    #
+    # name - String name of the script.
+    #
+    # Yields a Config::Patterns::Script.
+    #
+    def script(name, &block)
+      add Config::Patterns::Script do |p|
+        p.name = name
+        yield p if block_given?
+      end
+    end
+
     # Autoload builtin patterns.
 
     autoload :Directory, 'config/patterns/directory'
     autoload :File, 'config/patterns/file'
     autoload :Script, 'config/patterns/script'
+
   end
 end

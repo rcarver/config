@@ -65,8 +65,26 @@ describe Config::Patterns do
     it "calls the block" do
       mock.expect(:path=, nil, ["/tmp"])
       mock.expect(:other=, nil, ["value"])
-      subject.dir "/tmp" do |f|
-        f.other = "value"
+      subject.dir "/tmp" do |d|
+        d.other = "value"
+      end
+    end
+  end
+
+  describe "#script" do
+
+    let(:pattern) { Config::Patterns::Script }
+
+    it "sets the name and adds the pattern" do
+      mock.expect(:name=, nil, ["the test"])
+      subject.script "the test"
+    end
+
+    it "calls the block" do
+      mock.expect(:name=, nil, ["the test"])
+      mock.expect(:other=, nil, ["value"])
+      subject.script "the test" do |s|
+        s.other = "value"
       end
     end
   end
