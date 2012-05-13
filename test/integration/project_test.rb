@@ -90,6 +90,11 @@ describe "filesystem loading assets", Config::Project do
       (tmpdir + ".data").must_be :exist?
     end
 
+    it "does nothing if the dir exists" do
+      (tmpdir + ".data").mkdir
+      subject.data_dir
+    end
+
     it "can read a secret" do
       subject.data_dir
       (tmpdir + ".data/secret-default").open("w") do |f|

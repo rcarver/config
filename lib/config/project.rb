@@ -60,7 +60,7 @@ module Config
     # Returns a Config::Data::Dir.
     def data_dir
       @data_dir ||= begin
-        (@dir + ".data").mkdir
+        (@dir + ".data").mkdir unless (@dir + ".data").exist?
         Config::Data::Dir.new(@dir + ".data")
       end
     end
