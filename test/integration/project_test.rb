@@ -83,6 +83,22 @@ describe "filesystem loading assets", Config::Project do
     end
   end
 
+  describe "#data_dir" do
+
+    it "creates the dir" do
+      subject.data_dir
+      (tmpdir + ".data").must_be :exist?
+    end
+
+    it "can read a secret" do
+      subject.data_dir
+      (tmpdir + ".data/secret-default").open("w") do |f|
+        f.print "shh"
+      end
+      subject.data_dir.secret(:default).read.must_equal "shh"
+    end
+  end
+
   describe "#require_patterns" do
 
     it "loads all patterns" do

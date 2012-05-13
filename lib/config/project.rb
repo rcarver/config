@@ -31,6 +31,10 @@ module Config
     attr :clusters
     attr :blueprints
 
+    # Get the project Hub. The Hub describes centralized aspects of your
+    # system.
+    #
+    # Returns a Config::Hub.
     def hub
       @hub ||= begin
         file = @dir + "hub.rb"
@@ -47,6 +51,17 @@ module Config
         end
 
         hub
+      end
+    end
+
+    # Get the data directory. The data directory stores information
+    # about the state of your system.
+    #
+    # Returns a Config::Data::Dir.
+    def data_dir
+      @data_dir ||= begin
+        (@dir + ".data").mkdir
+        Config::Data::Dir.new(@dir + ".data")
       end
     end
 
