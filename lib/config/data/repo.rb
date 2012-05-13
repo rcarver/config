@@ -26,33 +26,16 @@ module Config
         end
       end
 
-      def initialize(dir, name)
-        @dir = dir
-        @name = name
-        @path = Pathname.new(@dir) + name
-        @clone = Cmd.new(@dir)
+      def initialize(path)
+        @path = path
         @git = Cmd.new(@path)
       end
 
-      attr :path
-
-      attr_writer :git
-      attr_writer :clone
-
-      # Clone a git repo.
+      # Path to the checkout.
       #
-      # url - String url to clone.
-      #
-      # Returns nothing.
-      def clone(url)
-        @clone.run "git clone #{url} #{@name}"
-      end
-
-      # Determine if the repo has been cloned.
-      #
-      # Returns a Boolean.
-      def cloned?
-        @path.exist?
+      # Returns a String.
+      def path
+        @path.to_s
       end
 
       # Pull from origin. Performs a pull with rebase to minimize merge

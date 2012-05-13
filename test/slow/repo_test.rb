@@ -6,7 +6,7 @@ describe "filesystem", Config::Data::Repo do
 
     let(:project_dir) { tmpdir + "project" }
 
-    subject { Config::Data::Repo.new(tmpdir, "project") }
+    subject { Config::Data::Repo.new(tmpdir + "project") }
 
     before do
       project_dir.mkdir
@@ -85,8 +85,8 @@ describe "filesystem", Config::Data::Repo do
     let(:project1_dir) { tmpdir + "project1" }
     let(:project2_dir) { tmpdir + "project2" }
 
-    let(:project1) { Config::Data::Repo.new(tmpdir, "project1") }
-    let(:project2) { Config::Data::Repo.new(tmpdir, "project2") }
+    let(:project1) { Config::Data::Repo.new(tmpdir + "project1") }
+    let(:project2) { Config::Data::Repo.new(tmpdir + "project2") }
 
     it "works" do
       source_dir.mkdir
@@ -95,15 +95,14 @@ describe "filesystem", Config::Data::Repo do
       end
 
       # clone source to project1
-      project1_dir.wont_be :exist?
-      project1.clone(source_dir)
-      project1_dir.must_be :exist?
-      project1.must_be :cloned?
+      cmd "git clone #{source_dir} #{project1_dir}"
 
       # clone source to project2
-      project2_dir.wont_be :exist?
-      project2.clone(source_dir)
-      project2_dir.must_be :exist?
+      cmd "git clone #{source_dir} #{project2_dir}"
+
+      # update project1
+      # NOTE: problems pulling a repo with no commit.
+      #project1.pull_rebase
 
       # commit and push from project1
       within(project1_dir) { cmd "echo hello > one" }

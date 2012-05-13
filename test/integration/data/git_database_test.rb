@@ -19,6 +19,15 @@ describe "filesystem", Config::Data::GitDatabase do
   let(:facts_dir)  { tmpdir + "facts" }
   let(:facts_file) { tmpdir + "facts/prod-webserver-1.json" }
 
+  describe "#update" do
+
+    it "pulls the repo" do
+      repo.expect(:reset_hard, nil)
+      repo.expect(:pull_rebase, nil)
+      subject.update
+    end
+  end
+
   describe "#update_node" do
 
     before do

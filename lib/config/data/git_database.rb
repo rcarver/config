@@ -7,6 +7,14 @@ module Config
         @repo = repo
       end
 
+      # Update the state of the database.
+      #
+      # Returns nothing.
+      def update
+        @repo.reset_hard
+        @repo.pull_rebase
+      end
+
       # Store information about a node in the database.
       #
       # node - Config::Node.

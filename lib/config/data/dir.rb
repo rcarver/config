@@ -28,7 +28,7 @@ module Config
       #
       # Returns a Config::Data::Repo.
       def repo
-        Config::Data::Repo.new(@dir, "project-data")
+        Config::Data::Repo.new(@dir + "project-data")
       end
 
     end
