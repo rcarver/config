@@ -48,6 +48,7 @@ module Config
 
   module Meta
     autoload :Blueprint, "config/meta/blueprint"
+    autoload :CloneDatabase, "config/meta/clone_database"
     autoload :Cluster, "config/meta/cluster"
     autoload :Pattern, "config/meta/pattern"
     autoload :PatternTopic, "config/meta/pattern_topic"
