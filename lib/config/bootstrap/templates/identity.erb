@@ -1,7 +1,10 @@
+set -e
+
 mkdir -p /etc/config
 
 echo '[setting hostname: <%= hostname %>]'
-hostname <%= hostname %>
+# TODO: figure out how to set hostname properly.
+# hostname <%= hostname %>
 
 echo '[storing secret]'
 echo '<%= secret %>' > /etc/config/secret

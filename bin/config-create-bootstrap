@@ -11,6 +11,12 @@ cluster   = ARGV.shift or abort usage
 blueprint = ARGV.shift or abort usage
 identity  = ARGV.shift or abort usage
 
+project = Config::Project.new(Dir.pwd)
+project.require_all
+
+project.clusters[cluster] or abort "Unknown cluster: #{cluster}"
+project.blueprints[blueprint] or abort "Unknown blueprint: #{blueprint}"
+
 identity_file = Tempfile.new("identity")
 system_file = Tempfile.new("system")
 project_file = Tempfile.new("project")
@@ -35,16 +41,24 @@ Config.blueprint(blueprint_name) do
   add Config::Bootstrap::Project do |p|
     p.path = project_file
     # TODO: set git vars to real values.
-    p.git_uri = "git@github.com:rcarver/config-example.git"
+    p.git_uri = project.hub.git_project
     p.git_ref = "origin/master"
   end
 end
 
-puts "# System"
+# Abort on any error.
+puts "set -e"
+
+# Show each command that's run.
+puts "set -x" # TODO: only enable -x if a debug option is set?
+
+puts
+puts "echo '[System]'"
 puts system_file.read
 puts
-puts "# Identity"
+puts "echo '[Identity]'"
 puts identity_file.read
 puts
-puts "# Project"
+puts "echo '[Project]'"
 puts project_file.read
+

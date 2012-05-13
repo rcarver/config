@@ -1,19 +1,25 @@
+set -e
+
 mkdir -p /etc/config
 
-# TODO: should specify the git binary to use?
+cd /etc/config
 
-if [ ! -f project ]; then
+if [ ! -d project ]; then
   echo '[cloning project: <%= git_uri %>]'
-  cd /etc/config
   git clone <%= git_uri %> project
 else
   echo '[project exists]'
+  cd project
+  git fetch
 fi
 
-cd project
+cd /etc/config/project
 
 echo '[initializing at: <%= git_ref %>]'
 git reset --hard <%= git_ref %>
+
+echo '[cloning the database]'
+bundle-config exec config-update-database
 
 echo '[starting config-run]'
 bundle-config exec config-run
