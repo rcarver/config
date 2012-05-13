@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-$LOAD_PATH.unshift File.expand_path("../../", __FILE__) + "/lib"
+
 require 'config'
 
 usage = "usage: config-try-blueprint BLUEPRINT_NAME CLUSTER_NAME"

@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
-$LOAD_PATH.unshift File.expand_path("../../", __FILE__) + "/lib"
+
 require 'config'
 require 'tempfile'
 
 blueprint_name = File.basename($0)
 
-usage = "usage: config-bootstrap CLUSTER BLUEPRINT IDENTITY"
+usage = "usage: config-create-bootstrap CLUSTER BLUEPRINT IDENTITY"
 
 cluster   = ARGV.shift or abort usage
 blueprint = ARGV.shift or abort usage

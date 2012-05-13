@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-$LOAD_PATH.unshift File.expand_path("../../", __FILE__) + "/lib"
+
 require 'config'
 
 blueprint_name = File.basename($0)
