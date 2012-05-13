@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path("../../", __FILE__) + "/lib"
+require 'config'
+
+blueprint_name = File.basename($0)
+
+project = Config::Project.new(Dir.pwd)
+
+Config.log_to $stdout
+Config.blueprint(blueprint_name) do
+  add Config::Meta::CloneDatabase do |p|
+    p.path = project.data_dir.repo.path
+    p.url = project.hub.git_data
+  end
+end
+
+
