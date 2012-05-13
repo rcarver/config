@@ -94,5 +94,6 @@ module Config
 
     autoload :Directory, 'config/patterns/directory'
     autoload :File, 'config/patterns/file'
+    autoload :Script, 'config/patterns/script'
   end
 end

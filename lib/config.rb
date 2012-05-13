@@ -58,6 +58,10 @@ module Config
     autoload :Configuration, "config/spy/configuration"
   end
 
+  # Public: This exception may be raised by a Pattern if a problem is
+  # found during execution. Doing so will abort the current execution.
+  Error = Class.new(StandardError)
+
   # Public: Get the the global logger.
   #
   # Returns a Config::Log.
