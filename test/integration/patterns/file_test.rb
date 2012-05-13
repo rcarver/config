@@ -19,6 +19,10 @@ describe Config::Patterns::File do
     subject.to_s.must_equal "[File /tmp/file.rb]"
   end
 
+  specify "#to_s without a path" do
+    subject.to_s.must_equal "[File]"
+  end
+
   describe "#validate" do
 
     before do

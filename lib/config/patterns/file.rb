@@ -32,7 +32,7 @@ module Config
       attr :operation, :write
 
       def describe
-        "File #{pn}"
+        ["File", pn].compact.join(" ")
       end
 
       # Public: Appending is a questionable operation so call it with
@@ -152,7 +152,7 @@ module Config
     protected
 
       def pn
-        @pn ||= Pathname.new(path).cleanpath
+        @pn ||= Pathname.new(path).cleanpath if path
       end
 
     end
