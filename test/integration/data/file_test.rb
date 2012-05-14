@@ -15,4 +15,11 @@ describe "filesystem", Config::Data::File do
       subject.read.must_equal "ok"
     end
   end
+
+  describe "#write" do
+    it "writes the file" do
+      subject.write("ok")
+      (tmpdir + "mine").read.must_equal "ok"
+    end
+  end
 end

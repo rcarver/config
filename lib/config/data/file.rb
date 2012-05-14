@@ -13,6 +13,14 @@ module Config
         @path.read if @path.exist?
       end
 
+      # Write file contents to disk.
+      #
+      # string - String to write.
+      #
+      # Returns nothing.
+      def write(string)
+        @path.open("w") { |f| f.print string }
+      end
     end
   end
 end
