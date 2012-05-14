@@ -19,9 +19,21 @@ module Config
 
       # Manage the SSH private key used to access git repos.
       #
+      # name - Symbol name of the key.
+      #
       # Returns a Config::Data::File.
-      def git_ssh_key
-        Config::Data::File.new(@dir + "ssh-key")
+      def git_ssh_key(name)
+        Config::Data::File.new(@dir + "git-ssh-key-#{name}")
+      end
+
+      # Get all available SSH keys.
+      #
+      # Returns an Array of Config::Data::File.
+      def all_git_ssh_keys
+        pairs = Pathname.glob(@dir + "git-ssh-key-*").map do |path|
+          Config::Data::File.new(path) unless path.extname == ".pub"
+        end
+        pairs.compact
       end
 
       # Get a database that manages information about your nodes.

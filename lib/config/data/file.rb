@@ -10,7 +10,14 @@ module Config
       #
       # Returns a String.
       def path
-        @path.to_s
+        @path.cleanpath.to_s
+      end
+
+      # Get the name of the file.
+      #
+      # Returns a String.
+      def name
+        @path.basename.to_s
       end
 
       # Read the file contents from disk.
