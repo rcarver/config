@@ -19,28 +19,42 @@ project.blueprints[blueprint] or abort "Unknown blueprint: #{blueprint}"
 
 identity_file = Tempfile.new("identity")
 system_file = Tempfile.new("system")
+access_file = Tempfile.new("access")
 project_file = Tempfile.new("project")
 
 Config.log_to StringIO.new
 Config.blueprint(blueprint_name) do
 
+  # Install system dependencies.
   add Config::Bootstrap::System do |p|
     p.path = system_file
     # TODO: set ruby,bundler,git versions
   end
 
+  # Establish the identity of the server.
   add Config::Bootstrap::Identity do |p|
     p.path = identity_file
     p.cluster = cluster
     p.blueprint = blueprint
     p.identity = identity
-    # TODO: set secret
-    p.secret = "SECRET"
+    # TODO: allow secret to be configured per cluster.
+    p.secret = project.data_dir.secret(:default).read
   end
 
+  # Provide access to the git repos.
+  add Config::Bootstrap::Access do |p|
+    p.path = access_file
+    p.ssh_host = project.hub.git_ssh_host
+    p.ssh_port = project.hub.git_ssh_port
+    p.ssh_user = project.hub.git_ssh_user
+    # TODO: allow more than one ssh key?
+    p.ssh_key  = project.data_dir.git_ssh_key.read
+  end
+
+  # Initialize and run the project.
   add Config::Bootstrap::Project do |p|
     p.path = project_file
-    p.git_uri = project.hub.git_project
+    p.git_uri = project.hub.git_project_url
     # TODO: someday we will have branching.
     p.git_ref = "origin/master"
   end
@@ -53,12 +67,15 @@ puts "set -e"
 puts "set -x" # TODO: only enable -x if a debug option is set?
 
 puts
-puts "echo '[System]'"
+puts "echo; echo '[System]'"
 puts system_file.read
 puts
-puts "echo '[Identity]'"
+puts "echo; echo '[Identity]'"
 puts identity_file.read
 puts
-puts "echo '[Project]'"
+puts "echo; echo '[Access]'"
+puts access_file.read
+puts
+puts "echo; echo '[Project]'"
 puts project_file.read
 
