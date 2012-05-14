@@ -6,8 +6,12 @@ if $stdin.tty?
   abort "Expected ssh key data on STDIN"
 end
 
+usage = "config-store-git-ssh-key NAME"
+
+name = ARGV.shift or abort usage
+
 Config.log_to $stdout
 project = Config::Project.new(Dir.pwd)
 
-project.data_dir.git_ssh_key.write($stdin.read)
+project.data_dir.git_ssh_key(name).write($stdin.read)
 
