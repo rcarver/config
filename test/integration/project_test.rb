@@ -60,8 +60,8 @@ describe "filesystem loading assets", Config::Project do
   describe "#hub" do
 
     it "has no git urls by default" do
-      subject.hub.git_project.must_equal nil
-      subject.hub.git_data.must_equal nil
+      subject.hub.git_project_url.must_equal nil
+      subject.hub.git_data_url.must_equal nil
     end
 
     it "sets git urls from the current repo" do
@@ -70,16 +70,16 @@ describe "filesystem loading assets", Config::Project do
         f.puts '[remote "origin"]'
         f.puts '        url = git@github.com:foo/bar.git'
       end
-      subject.hub.git_project.must_equal 'git@github.com:foo/bar.git'
-      subject.hub.git_data.must_equal    'git@github.com:foo/bar-data.git'
+      subject.hub.git_project_url.must_equal 'git@github.com:foo/bar.git'
+      subject.hub.git_data_url.must_equal    'git@github.com:foo/bar-data.git'
     end
 
     it "uses a hub file" do
       (tmpdir + "hub.rb").open("w") do |f|
         f.puts "git_project 'git@github.com:foo/bar.git'"
       end
-      subject.hub.git_project.must_equal 'git@github.com:foo/bar.git'
-      subject.hub.git_data.must_equal    'git@github.com:foo/bar-data.git'
+      subject.hub.git_project_url.must_equal 'git@github.com:foo/bar.git'
+      subject.hub.git_data_url.must_equal    'git@github.com:foo/bar-data.git'
     end
   end
 

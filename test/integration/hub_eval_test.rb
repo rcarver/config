@@ -9,8 +9,8 @@ describe Config::Hub do
         git_project '../project.git'
         git_data    '../data.git'
       STR
-      hub.git_project.must_equal '../project.git'
-      hub.git_data.must_equal '../data.git'
+      hub.git_project_url.must_equal '../project.git'
+      hub.git_data_url.must_equal '../data.git'
     end
 
     it "provides useful information for a syntax error" do
@@ -40,7 +40,7 @@ describe "filesystem", Config::Hub do
         f.puts "git_project '../project.git'"
       end
       hub = Config::Hub.from_file(file)
-      hub.git_project.must_equal "../project.git"
+      hub.git_project_url.must_equal "../project.git"
     end
 
     it "provides useful information for an error" do
