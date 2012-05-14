@@ -1,8 +1,8 @@
 require 'helper'
 
-describe "filesystem", Config::Data::Secret do
+describe "filesystem", Config::Data::File do
 
-  subject { Config::Data::Secret.new(tmpdir + "mine") }
+  subject { Config::Data::File.new(tmpdir + "mine") }
 
   describe "#read" do
     it "returns nil if nothing exists" do 

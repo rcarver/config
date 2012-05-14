@@ -12,9 +12,16 @@ module Config
       #
       # name - Symbol name of the secret.
       #
-      # Returns a Config::DataSecret.
+      # Returns a Config::Data::File.
       def secret(name)
-        Config::Data::Secret.new(@dir + "secret-#{name}")
+        Config::Data::File.new(@dir + "secret-#{name}")
+      end
+
+      # Manage the SSH private key used to access git repos.
+      #
+      # Returns a Config::Data::File.
+      def git_ssh_key
+        Config::Data::File.new(@dir + "ssh-key")
       end
 
       # Get a database that manages information about your nodes.

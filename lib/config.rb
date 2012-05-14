@@ -18,9 +18,9 @@ require 'config/core/validation_error'
 require 'config/core/facts'
 
 require 'config/data/dir'
+require 'config/data/file'
 require 'config/data/git_database'
 require 'config/data/repo'
-require 'config/data/secret'
 
 require 'config/patterns'
 require 'config/log'
