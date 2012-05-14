@@ -47,8 +47,7 @@ Config.blueprint(blueprint_name) do
     p.ssh_host = project.hub.git_ssh_host
     p.ssh_port = project.hub.git_ssh_port
     p.ssh_user = project.hub.git_ssh_user
-    # TODO: allow more than one ssh key?
-    p.ssh_key  = project.data_dir.git_ssh_key.read
+    p.ssh_keys = Hash[*project.data_dir.all_git_ssh_keys.map { |k| [k.name, k.read] }.flatten]
   end
 
   # Initialize and run the project.
