@@ -12,7 +12,7 @@ describe Config::Bootstrap::Access do
     subject.path = "/tmp"
     subject.ssh_host = "github.com"
     subject.ssh_user = "git"
-    subject.ssh_key = "KEY"
+    subject.ssh_keys = { a: "ok" }
     subject.error_messages.must_be_empty
   end
 end
@@ -26,14 +26,15 @@ describe "filesystem", Config::Bootstrap::Access do
     subject.path = tmpdir + "access"
     subject.ssh_host = "github.com"
     subject.ssh_user = "git"
-    subject.ssh_key = "KEY"
+    subject.ssh_keys = { a: "ok", b: "cool" }
 
     execute_pattern
 
     (tmpdir + "access").must_be :exist?
     contents = (tmpdir + "access").read
 
-    contents.must_include "echo 'KEY' > /root/.ssh/id_for_config_git"
+    contents.must_include "echo 'ok' > /etc/config/a"
+    contents.must_include "echo 'cool' > /etc/config/b"
   end
 end
 

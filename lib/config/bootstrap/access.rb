@@ -15,8 +15,8 @@ module Config
       desc "User with which to access the git repo"
       attr :ssh_user
 
-      desc "The SSH key used to authenticate"
-      attr :ssh_key
+      desc "The SSH keys used to authenticate. Hash of { name => content }"
+      attr :ssh_keys
 
       def call
         file path do |f|
