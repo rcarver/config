@@ -4,6 +4,10 @@ describe "filesystem", Config::Data::File do
 
   subject { Config::Data::File.new(tmpdir + "mine") }
 
+  specify "#path" do
+    subject.path.must_equal (tmpdir + "mine").to_s
+  end
+
   describe "#read" do
     it "returns nil if nothing exists" do 
       subject.read.must_equal nil

@@ -6,6 +6,13 @@ module Config
         @path = Pathname.new(path)
       end
 
+      # Get the path of the file.
+      #
+      # Returns a String.
+      def path
+        @path.to_s
+      end
+
       # Read the file contents from disk.
       #
       # Returns a String or nil.
