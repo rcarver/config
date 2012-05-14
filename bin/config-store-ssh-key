@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require 'config'
+
+if $stdin.tty?
+  abort "Expected ssh key data on STDIN"
+end
+
+Config.log_to $stdout
+project = Config::Project.new(Dir.pwd)
+
+project.data_dir.git_ssh_key.write($stdin.read)
+
