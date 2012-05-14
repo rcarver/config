@@ -9,12 +9,12 @@ Host <%= ssh_host %>
   Port <%= ssh_port %>
   User <%= ssh_user %>
   PreferredAuthentications publickey
-  IdentityFile /root/.ssh/id_for_config_git
+  IdentityFile /etc/config/git-ssh-key
 CFG
 ) > /root/.ssh/config
 
 chmod 600 /root/.ssh/config
 
-echo '<%= ssh_key %>' > /root/.ssh/id_for_config_git
+echo '<%= ssh_key %>' > /etc/config/git-ssh-key
 
-chmod 600 /root/.ssh/id_for_config_git
+chmod 600 /etc/config/git-ssh-key

@@ -8,3 +8,5 @@ echo '[setting hostname: <%= hostname %>]'
 
 echo '[storing secret]'
 echo '<%= secret %>' > /etc/config/secret
+
+chmod 600 /etc/config/secret
