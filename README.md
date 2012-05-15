@@ -496,9 +496,37 @@ repos. If your project repo is `my-project.git` the data repo should be
 named `my-project-data.git`. To use different repos, specify them in
 `hub.rb`.
 
+If you want to use the same ssh key for both repos, this configuration
+should suffice.
+
     $ vim hub.rb
-    git_project 'git@github.com:rcarver/config-example.git'
-    git_data    'git@github.com:rcarver/config-example-data.git'
+    project_repo 'git@github.com:rcarver/config-example.git'
+    data_repo    'git@github.com:rcarver/config-example-data.git'
+
+If you wish to use a different key for each repo (GitHub deploy keys for
+example), this form will allow you to specify the details.
+
+    project_repo do |p|
+      p.repo = 'git@github-project:rcarver/config-example.git'
+      p.ssh_key = 'project'
+      p.hostname = 'github.com'
+    end
+    data_repo do |p|
+      p.repo = 'git@github-data:rcarver/config-example-data.git'
+      p.ssh_key = 'data'
+      p.hostname = 'github.com'
+    end
+
+The resulting `.ssh/config` looks something like this.
+
+    Host github-project
+      User git
+      Hostname github.com
+      IdentityFile /etc/config/ssh-key-project
+    Host github-data
+      User git
+      Hostname github.com
+      IdentityFile /etc/config/ssh-key-data
 
 ### Bootstrap
 
@@ -514,7 +542,7 @@ nodes. Here we bootstrap a new production webserver, called "1".
 
 That's it. When the script completes the server will have a functional
 copy of the project and will add itself as a node in our system. To see
-information about the new node, ask for it. 
+information about the new node, ask for it.
 
     config-show-node production-webserver-1
 
@@ -560,8 +588,8 @@ A brief overview of Config's APIs and tools.
 
 DSL for `hub.rb`.
 
-* `git_project` Set the git url for the project.
-* `git_data` Set the git url for the project data.
+* `project_repo` Set the git url for the project.
+* `data_repo` Set the git url for the project data.
 
 ### The Pattern API
 
