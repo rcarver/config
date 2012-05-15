@@ -25,6 +25,9 @@ project_file = Tempfile.new("project")
 Config.log_to StringIO.new
 Config.blueprint(blueprint_name) do
 
+  hub = project.hub
+  data_dir = project.data_dir
+
   # Install system dependencies.
   add Config::Bootstrap::System do |p|
     p.path = system_file
@@ -38,22 +41,35 @@ Config.blueprint(blueprint_name) do
     p.blueprint = blueprint
     p.identity = identity
     # TODO: allow secret to be configured per cluster.
-    p.secret = project.data_dir.secret(:default).read
+    p.secret = data_dir.secret(:default).read
   end
+
+  git_configs = [hub.project_config, hub.data_config]
+  ssh_configs = git_configs.map { |c| c.ssh_config }
+  remote_data_dir = Config::Data::Dir.new("/etc/config")
 
   # Provide access to the git repos.
   add Config::Bootstrap::Access do |p|
     p.path = access_file
-    p.ssh_host = project.hub.git_ssh_host
-    p.ssh_port = project.hub.git_ssh_port
-    p.ssh_user = project.hub.git_ssh_user
-    p.ssh_keys = Hash[*project.data_dir.all_git_ssh_keys.map { |k| [k.name, k.read] }.flatten]
+    p.ssh_configs = ssh_configs.map do |c|
+      c.to_host_config(remote_data_dir)
+    end
+    p.ssh_keys = begin
+      keys = {}
+      ssh_configs.each do |c|
+        file = remote_data_dir.ssh_key(c.ssh_key).path
+        # TODO: handle the ssh key is missing locally.
+        key = data_dir.ssh_key(c.ssh_key).read
+        keys[file] = key
+      end
+      keys
+    end
   end
 
   # Initialize and run the project.
   add Config::Bootstrap::Project do |p|
     p.path = project_file
-    p.git_uri = project.hub.git_project_url
+    p.git_uri = hub.project_config.url
     # TODO: someday we will have branching.
     p.git_ref = "origin/master"
   end

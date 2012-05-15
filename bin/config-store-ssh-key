@@ -6,7 +6,7 @@ if $stdin.tty?
   abort "Expected ssh key data on STDIN"
 end
 
-usage = "config-store-git-ssh-key [NAME]"
+usage = "config-store-ssh-key [NAME]"
 
 name = ARGV.shift or "default"
 
