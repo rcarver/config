@@ -4,13 +4,53 @@ describe Config::Hub do
 
   describe ".from_string" do
 
-    it "works" do
+    it "works with a simple config" do
+
       hub = Config::Hub.from_string <<-STR
-        git_project '../project.git'
-        git_data    '../data.git'
+        project_repo "git@github.com:rcarver/config-example.git"
+        data_repo    "git@github.com:rcarver/config-example-data.git"
       STR
-      hub.git_project_url.must_equal '../project.git'
-      hub.git_data_url.must_equal '../data.git'
+
+      hub.project_config.url.must_equal "git@github.com:rcarver/config-example.git"
+      hub.project_config.ssh_config.host.must_equal "github.com"
+      hub.project_config.ssh_config.user.must_equal "git"
+      hub.project_config.ssh_config.ssh_key.must_equal "default"
+
+      hub.data_config.url.must_equal "git@github.com:rcarver/config-example-data.git"
+      hub.data_config.ssh_config.host.must_equal "github.com"
+      hub.data_config.ssh_config.user.must_equal "git"
+      hub.data_config.ssh_config.ssh_key.must_equal "default"
+    end
+
+    it "works with a detailed config" do
+
+      hub = Config::Hub.from_string <<-STR
+        project_repo do |p|
+          p.url = "github-project:rcarver/config-example.git"
+          p.hostname = "github.com"
+          p.port = 99
+          p.user = "buster"
+          p.ssh_key = "project"
+        end
+        data_repo do |p|
+          p.url = "git@github-data:rcarver/config-example-data.git"
+          p.hostname = "github.com"
+          p.ssh_key = "data"
+        end
+      STR
+
+      hub.project_config.url.must_equal "github-project:rcarver/config-example.git"
+      hub.project_config.ssh_config.host.must_equal "github-project"
+      hub.project_config.ssh_config.hostname.must_equal "github.com"
+      hub.project_config.ssh_config.user.must_equal "buster"
+      hub.project_config.ssh_config.port.must_equal 99
+      hub.project_config.ssh_config.ssh_key.must_equal "project"
+
+      hub.data_config.url.must_equal "git@github-data:rcarver/config-example-data.git"
+      hub.data_config.ssh_config.host.must_equal "github-data"
+      hub.data_config.ssh_config.hostname.must_equal "github.com"
+      hub.data_config.ssh_config.user.must_equal "git"
+      hub.data_config.ssh_config.ssh_key.must_equal "data"
     end
 
     it "provides useful information for a syntax error" do
@@ -18,11 +58,11 @@ describe Config::Hub do
       line = __LINE__ + 4 # why is this 4? 3 makes more sense to me.
       begin
         Config::Hub.from_string <<-STR, __FILE__, __LINE__
-          x_git_project '../project.git'
+          xproject_repo '../project.git'
         STR
       rescue => e
         e.class.must_equal NoMethodError
-        e.message.must_equal %(undefined method `x_git_project' for <Hub>:RbConfig::DSL::HubDSL)
+        e.message.must_equal %(undefined method `xproject_repo' for <Hub>:RbConfig::DSL::HubDSL)
         e.backtrace.first.must_equal "#{file}:#{line}:in `from_string'"
       end
     end
@@ -36,23 +76,27 @@ describe "filesystem", Config::Hub do
     let(:file) { tmpdir + "sample.rb" }
 
     it "works" do
+
       file.open("w") do |f|
-        f.puts "git_project '../project.git'"
+        f.puts "project_repo '../project.git'"
       end
+
       hub = Config::Hub.from_file(file)
-      hub.git_project_url.must_equal "../project.git"
+      hub.project_config.url.must_equal "../project.git"
     end
 
     it "provides useful information for an error" do
+
       file.open("w") do |f|
         f.puts "# the first line"
-        f.puts "x_git_project '../project.git'"
+        f.puts "xproject_repo '../project.git'"
       end
+
       begin
         Config::Hub.from_file(file)
       rescue => e
         e.class.must_equal NoMethodError
-        e.message.must_equal %(undefined method `x_git_project' for <Hub>:RbConfig::DSL::HubDSL)
+        e.message.must_equal %(undefined method `xproject_repo' for <Hub>:RbConfig::DSL::HubDSL)
         e.backtrace.first.must_equal "#{file}:2:in `from_string'"
       end
     end

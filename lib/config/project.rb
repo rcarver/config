@@ -41,13 +41,16 @@ module Config
 
         hub = file.exist? ? Config::Hub.from_file(@dir + "hub.rb") : Hub.new
 
-        if !hub.git_project_url
+        hub.project_config ||= Config::Core::GitConfig.new
+        hub.data_config    ||= Config::Core::GitConfig.new
+
+        if !hub.project_config.url
           repo = `cd #{@dir} && git config --get remote.origin.url`
-          hub.git_project_url = repo.empty? ? nil : repo.chomp
+          hub.project_config.url = repo.empty? ? nil : repo.chomp
         end
 
-        if hub.git_project_url && !hub.git_data_url
-          hub.git_data_url = hub.git_project_url.sub(/\.git/, '-data.git')
+        if hub.project_config.url && !hub.data_config.url
+          hub.data_config.url = hub.project_config.url.sub(/\.git/, '-data.git')
         end
 
         hub

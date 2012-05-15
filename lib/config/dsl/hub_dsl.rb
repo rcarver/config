@@ -4,24 +4,59 @@ module Config
     class HubDSL
 
       def initialize
-        @data = {}
+        @data = {
+          project_config: Config::Core::GitConfig.new,
+          data_config: Config::Core::GitConfig.new
+        }
       end
 
-      # Public: Set the project repository.
+      class RepoDSL
+
+        attr_writer :url
+        attr_writer :ssh_key
+        attr_writer :hostname
+        attr_writer :user
+        attr_writer :port
+
+        def to_git_config
+          Config::Core::GitConfig.new.tap do |c|
+            c.url = @url if @url
+            c.ssh_key = @ssh_key if @ssh_key
+            c.ssh_config.hostname = @hostname if @hostname
+            c.ssh_config.user = @user if @user
+            c.ssh_config.port = @port if @port
+          end
+        end
+
+        def to_s
+          "<Repo>"
+        end
+
+        def inspect
+          "<Repo>"
+        end
+      end
+
+      # Public: Configure the project repo.
       #
-      # repo - String URI of your project repo.
+      # url - String url of your project repo
+      #
+      # Yields a Config::DSL::HubDSL::RepoDSL.
       #
       # Returns nothing.
-      def git_project(repo)
-        @data[:git_project] = repo
+      def project_repo(url=nil, &block)
+        @data[:project_config] = git_config(url, &block)
       end
 
-      # Public: Set the data repository.
+      # Public: Configure the data repo.
       #
-      # repo - String URI of your data repo.
+      # url - String url of your data repo.
+      # 
+      # Yields a Config::DSL::HubDSL::RepoDSL.
       #
-      def git_data(repo)
-        @data[:git_data] = repo
+      # Returns nothing.
+      def data_repo(url=nil, &block)
+        @data[:data_config] = git_config(url, &block)
       end
 
       def to_s
@@ -35,6 +70,19 @@ module Config
       def [](key)
         @data[key]
       end
+
+    protected
+
+      def git_config(url, &block)
+        if url && block_given?
+          raise ArgumentError, "Specify either the url or a block"
+        end
+        repo = RepoDSL.new
+        repo.url = url
+        yield repo if block_given?
+        repo.to_git_config
+      end
+
     end
   end
 end

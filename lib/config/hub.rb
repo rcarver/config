@@ -14,31 +14,16 @@ module Config
         dsl.instance_eval(string)
       end
       hub = self.new
-      hub.git_project_url = dsl[:git_project]
-      hub.git_data_url = dsl[:git_data]
+      hub.project_config = dsl[:project_config]
+      hub.data_config = dsl[:data_config]
       hub
     end
 
-    # Get/Set the project's git clone url.
-    attr_accessor :git_project_url
+    # Get/Set the project Config::Core::GitConfig.
+    attr_accessor :project_config
 
-    # Get/Set the project data's git clone url.
-    attr_accessor :git_data_url
-
-    # TODO: allow ssh config to be specified for project and data?
-    # TODO: allow forms other than `user@host:path`?
-
-    def git_ssh_host
-      git_project_url[/@(.*?):/, 1] if git_project_url
-    end
-
-    def git_ssh_port
-      "22" if git_project_url
-    end
-
-    def git_ssh_user
-      git_project_url[/(^.*)@/, 1] if git_project_url
-    end
+    # Get/Set the data Config::Core::GitConfig.
+    attr_accessor :data_config
 
   end
 end
