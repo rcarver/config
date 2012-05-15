@@ -49,6 +49,6 @@ echo '[linking ruby-config]'
 echo '#!/bin/sh
 set -e
 PATH=/opt/ruby-config-<%= ruby_version %>/bin:$PATH exec /opt/ruby-config-<%= ruby_version %>/bin/bundle "$@"
-' > /usr/local/bin/ruby-config
-chmod +x /usr/local/bin/ruby-config
+' > /usr/local/bin/bundle-config
+chmod +x /usr/local/bin/bundle-config
 
