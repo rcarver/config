@@ -37,20 +37,32 @@ describe Config::Hub do
           p.hostname = "github.com"
           p.ssh_key = "data"
         end
+        ssh_config do |c|
+          c.url = "git@github.com:org/config-more.git"
+          c.ssh_key = "org"
+        end
       STR
 
       hub.project_config.url.must_equal "github-project:rcarver/config-example.git"
-      hub.project_config.ssh_config.host.must_equal "github-project"
-      hub.project_config.ssh_config.hostname.must_equal "github.com"
-      hub.project_config.ssh_config.user.must_equal "buster"
-      hub.project_config.ssh_config.port.must_equal 99
-      hub.project_config.ssh_config.ssh_key.must_equal "project"
-
       hub.data_config.url.must_equal "git@github-data:rcarver/config-example-data.git"
-      hub.data_config.ssh_config.host.must_equal "github-data"
-      hub.data_config.ssh_config.hostname.must_equal "github.com"
-      hub.data_config.ssh_config.user.must_equal "git"
-      hub.data_config.ssh_config.ssh_key.must_equal "data"
+
+      hub.ssh_configs.size.must_equal 3
+      project, data, github = hub.ssh_configs
+
+      project.host.must_equal "github-project"
+      project.hostname.must_equal "github.com"
+      project.user.must_equal "buster"
+      project.port.must_equal 99
+      project.ssh_key.must_equal "project"
+
+      data.host.must_equal "github-data"
+      data.hostname.must_equal "github.com"
+      data.user.must_equal "git"
+      data.ssh_key.must_equal "data"
+
+      github.host.must_equal "github.com"
+      github.user.must_equal "git"
+      github.ssh_key.must_equal "org"
     end
 
     it "provides useful information for a syntax error" do

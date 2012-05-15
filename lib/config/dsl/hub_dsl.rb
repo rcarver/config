@@ -6,7 +6,8 @@ module Config
       def initialize
         @data = {
           project_config: Config::Core::GitConfig.new,
-          data_config: Config::Core::GitConfig.new
+          data_config: Config::Core::GitConfig.new,
+          ssh_configs: []
         }
       end
 
@@ -45,7 +46,9 @@ module Config
       #
       # Returns nothing.
       def project_repo(url=nil, &block)
-        @data[:project_config] = git_config(url, &block)
+        config = git_config(url, &block)
+        @data[:project_config] = config
+        @data[:ssh_configs] << config.ssh_config
       end
 
       # Public: Configure the data repo.
@@ -56,7 +59,19 @@ module Config
       #
       # Returns nothing.
       def data_repo(url=nil, &block)
-        @data[:data_config] = git_config(url, &block)
+        config = git_config(url, &block)
+        @data[:data_config] = config
+        @data[:ssh_configs] << config.ssh_config
+      end
+
+      # Public: Add additional ssh configuration.
+      #
+      # Yields a Config::DSL::HubDSL::RepoDSL.
+      # 
+      # Returns nothing.
+      def ssh_config(&block)
+        config = git_config(nil, &block)
+        @data[:ssh_configs] << config.ssh_config
       end
 
       def to_s

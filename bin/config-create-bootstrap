@@ -44,19 +44,17 @@ Config.blueprint(blueprint_name) do
     p.secret = data_dir.secret(:default).read
   end
 
-  git_configs = [hub.project_config, hub.data_config]
-  ssh_configs = git_configs.map { |c| c.ssh_config }
   remote_data_dir = Config::Data::Dir.new("/etc/config")
 
   # Provide access to the git repos.
   add Config::Bootstrap::Access do |p|
     p.path = access_file
-    p.ssh_configs = ssh_configs.map do |c|
+    p.ssh_configs = hub.ssh_configs.map do |c|
       c.to_host_config(remote_data_dir)
     end
     p.ssh_keys = begin
       keys = {}
-      ssh_configs.each do |c|
+      hub.ssh_configs.each do |c|
         file = remote_data_dir.ssh_key(c.ssh_key).path
         # TODO: handle the ssh key is missing locally.
         key = data_dir.ssh_key(c.ssh_key).read
@@ -94,3 +92,5 @@ puts
 puts "echo; echo '[Project]'"
 puts project_file.read
 
+#libssl-dev
+#yaml

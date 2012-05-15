@@ -16,7 +16,12 @@ module Config
       hub = self.new
       hub.project_config = dsl[:project_config]
       hub.data_config = dsl[:data_config]
+      hub.ssh_configs.concat dsl[:ssh_configs]
       hub
+    end
+
+    def initialize
+      @ssh_configs = []
     end
 
     # Get/Set the project Config::Core::GitConfig.
@@ -24,6 +29,11 @@ module Config
 
     # Get/Set the data Config::Core::GitConfig.
     attr_accessor :data_config
+
+    # Get the ssh configs.
+    #
+    # Returns an Array of Config::Core::SSHConfig.
+    attr :ssh_configs
 
   end
 end
