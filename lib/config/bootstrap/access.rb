@@ -6,16 +6,10 @@ module Config
       desc "Path to write the configuration to"
       attr :path
 
-      desc "Host of the git repo"
-      key :ssh_host
+      desc "Array of configuration blocks to write to .ssh/config"
+      attr :ssh_configs
 
-      desc "Port to communicate on"
-      attr :ssh_port, "22"
-
-      desc "User with which to access the git repo"
-      attr :ssh_user
-
-      desc "The SSH keys used to authenticate. Hash of { name => content }"
+      desc "Array of SSH keys to install. Hash of { name: content }"
       attr :ssh_keys
 
       def call

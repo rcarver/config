@@ -3,22 +3,18 @@ set -e
 mkdir -p /root/.ssh
 chmod 700 /root/.ssh
 
-(
-cat <<'CFG'
-Host <%= ssh_host %>
-  Port <%= ssh_port %>
-  User <%= ssh_user %>
-  PreferredAuthentications publickey
-  <% ssh_keys.each do |name, content| %>
-  IdentityFile /etc/config/<%= name %>
-  <% end %>
-CFG
-) > /root/.ssh/config
+rm /root/.ssh/config
+
+<% ssh_configs.each do |config| %>
+echo '<%= config %>' >> /root/.ssh/config
+
+<% end %>
 
 chmod 600 /root/.ssh/config
 
-<% ssh_keys.each do |name, content| %>
-echo '<%= content %>' > /etc/config/<%= name %>
-chmod 600 /etc/config/<%= name %>
+<% ssh_keys.each do |path, content| %>
+echo '<%= content %>' > <%= path %>
+chmod 600 <%= path %>
+
 <% end %>
 
