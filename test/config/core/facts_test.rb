@@ -2,9 +2,9 @@ require 'helper'
 
 describe Config::Core::Facts do
 
-  let(:mash) {
-    Mash.new(
-      # Copied from ohai output.
+  let(:hash) {
+    # Copied from ohai output.
+    {
       "languages" => {
         "ruby" => {
           "platform" => "x86_64-darwin11.2.0",
@@ -14,19 +14,38 @@ describe Config::Core::Facts do
       "kernel" => {
         "name" => "Darwin",
       }
-    )
+    }
   }
 
-  subject { Config::Core::Facts.new(mash) }
+  subject { Config::Core::Facts.new(hash) }
 
   specify "#to_s" do
     subject.to_s.must_equal "[Facts: kernel,languages]"
   end
 
+  specify "equality" do
+    a = Config::Core::Facts.new(hash)
+    b = Config::Core::Facts.new(hash)
+    c = Config::Core::Facts.new(hash.merge("other" => "here"))
+    a.must_equal b
+    b.must_equal a
+    a.wont_equal c
+    c.wont_equal a
+  end
+
+  specify "#as_json" do
+    subject.as_json.must_equal hash
+  end
+
+  specify ".from_json" do
+    facts = Config::Core::Facts.from_json(hash)
+    facts.must_equal subject
+  end
+
   it "returns any value via hash syntax" do
-    subject["languages"].must_be_instance_of Mash
+    subject["languages"].must_be_instance_of Hash
     subject["languages"].keys.must_equal ["ruby"]
-    subject["languages"]["ruby"].must_be_instance_of Mash
+    subject["languages"]["ruby"].must_be_instance_of Hash
     subject["languages"]["ruby"]["version"].must_equal "1.9.3"
   end
 
