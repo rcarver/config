@@ -5,31 +5,41 @@ module Config
     UnknownBlueprint = Class.new(StandardError)
 
     class PathHash < Hash
-      def initialize(dir)
-        @dir = dir
+      def initialize(path)
+        @path = path
         super()
       end
       def [](key)
         if key.include?("/")
-          if (@dir + key).exist?
+          if (@path + key).exist?
             super File.basename(key, ".rb")
           else
             raise ArgumentError, "File does not exist #{key.inspect}"
           end
         else
-          super
+          super 
         end
       end
     end
 
-    def initialize(dir)
-      @dir = Pathname.new(dir).cleanpath
-      @clusters = PathHash.new(@dir)
-      @blueprints = PathHash.new(@dir)
+    def initialize(dir, data_dir=nil)
+      @path = Pathname.new(dir).cleanpath
+      @data_path = data_dir || @path + ".data"
+      @data_dir = Config::Data::Dir.new(@data_path)
+
+      @clusters = PathHash.new(@path)
+      @blueprints = PathHash.new(@path)
+      @nodes = PathHash.new(@data_dir.repo_path)
     end
 
-    attr :clusters
-    attr :blueprints
+    # Get the data directory. The data directory stores information
+    # about the state of your system.
+    #
+    # Returns a Config::Data::Dir.
+    def data_dir
+      @data_path.mkpath # TODO: don't mkpath
+      @data_dir
+    end
 
     # Get the project Hub. The Hub describes centralized aspects of your
     # system.
@@ -37,15 +47,15 @@ module Config
     # Returns a Config::Hub.
     def hub
       @hub ||= begin
-        file = @dir + "hub.rb"
+        file = @path + "hub.rb"
 
-        hub = file.exist? ? Config::Hub.from_file(@dir + "hub.rb") : Hub.new
+        hub = file.exist? ? Config::Hub.from_file(@path + "hub.rb") : Hub.new
 
         hub.project_config ||= Config::Core::GitConfig.new
         hub.data_config    ||= Config::Core::GitConfig.new
 
         if !hub.project_config.url
-          repo = `cd #{@dir} && git config --get remote.origin.url`
+          repo = `cd #{@path} && git config --get remote.origin.url`
           hub.project_config.url = repo.empty? ? nil : repo.chomp
         end
 
@@ -57,26 +67,38 @@ module Config
       end
     end
 
-    # Get the data directory. The data directory stores information
-    # about the state of your system.
+    # Execute the node's blueprint.
     #
-    # Returns a Config::Data::Dir.
-    def data_dir
-      @data_dir ||= begin
-        (@dir + ".data").mkdir unless (@dir + ".data").exist?
-        Config::Data::Dir.new(@dir + ".data")
-      end
+    # node - Config::Node or String FQN.
+    #
+    # Returns nothing.
+    def execute_node(node)
+      require_all
+
+      node = get_node(node) if node.is_a?(String)
+      cluster = get_cluster(node.cluster_name)
+      blueprint = get_blueprint(node.blueprint_name)
+
+      blueprint.configuration = cluster.configuration
+      blueprint.accumulate
+      blueprint.validate
+      blueprint.execute
     end
 
+    # Execute a blueprint in noop mode.
+    #
+    # blueprint_name - String name of the blueprint.
+    # cluster_name   - String name of the cluster (default: execute with
+    #                  a Spy cluster)
+    #
+    # Returns nothing.
     def try_blueprint(blueprint_name, cluster_name = nil)
       require_all
 
-      blueprint = blueprints[blueprint_name]
-      blueprint or raise UnknownBlueprint, "Blueprint #{blueprint_name} was not found"
+      blueprint = get_blueprint(blueprint_name)
 
       if cluster_name
-        cluster = clusters[cluster_name]
-        cluster or raise UnknownCluster, "Cluster #{cluster_name} was not found"
+        cluster = get_cluster(cluster_name)
         blueprint.configuration = cluster.configuration
       else
         blueprint.configuration = Config::Spy::Configuration.new
@@ -100,7 +122,7 @@ module Config
     def require_patterns
       return if @required_patterns; @required_patterns = true
 
-      Dir[(@dir + "patterns/**/*.rb")].each do |f|
+      Dir[(@path + "patterns/**/*.rb")].each do |f|
         begin
           require f
         rescue NameError => e
@@ -126,7 +148,7 @@ module Config
     def require_clusters
       return if @required_clusters; @required_clusters = true
 
-      Dir[(@dir + "clusters/*.rb")].each do |f|
+      Dir[(@path + "clusters/*.rb")].each do |f|
         cluster = Cluster.from_file(f)
         @clusters[cluster.name] = cluster
       end
@@ -135,10 +157,25 @@ module Config
     def require_blueprints
       return if @required_blueprints; @required_blueprints = true
 
-      Dir[(@dir + "blueprints/*.rb")].each do |f|
+      Dir[(@path + "blueprints/*.rb")].each do |f|
         blueprint = Blueprint.from_file(f)
         @blueprints[blueprint.name] = blueprint
       end
     end
+
+    def get_cluster(name)
+      @clusters[name] or raise UnknownCluster, "Cluster #{name.inspect} was not found"
+    end
+
+    def get_blueprint(name)
+      @blueprints[name] or raise UnknownBlueprint, "Blueprint #{name.inspect} was not found"
+    end
+
+    def get_node(name)
+      node = @nodes[name] or raise UnknownNode, "Node #{name.inspect} was not found"
+      node.facts = {}
+      node
+    end
+
   end
 end

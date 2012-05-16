@@ -23,32 +23,29 @@ describe "filesystem running items", Config::Project do
     end
   end
 
-  it "fails if a blueprint is not found" do
-    proc { subject.try_blueprint("something", "production") }.must_raise Config::Project::UnknownBlueprint
-  end
-
-  it "fails if a cluster is not found" do
-    proc { subject.try_blueprint("message", "other") }.must_raise Config::Project::UnknownCluster
-  end
-
-  it "works if the relative path to a blueprint is given" do
-    proc { subject.try_blueprint("blueprints/message") }.must_raise ArgumentError
-    proc { subject.try_blueprint("foo/message.rb") }.must_raise ArgumentError
-    subject.try_blueprint("blueprints/message.rb")
-  end
-
-  it "works if the relative path to a cluster is given" do
-    proc { subject.try_blueprint("message", "clusters/production") }.must_raise ArgumentError
-    proc { subject.try_blueprint("foo/production.rb") }.must_raise ArgumentError
-    subject.try_blueprint("message", "clusters/production.rb")
-  end
-
-  describe "#try_blueprint with blueprint and cluster" do
+  describe "#try_blueprint" do
 
     it "executes the blueprint in noop mode" do
       subject.try_blueprint("message", "production")
       log_string.must_include("Create [File #{tmpdir}/file1]")
+      log_string.must_include("hello world")
       (tmpdir + "file1").wont_be :exist?
+    end
+
+    it "executes the blueprint with a spy cluster" do
+      subject.try_blueprint("message")
+      log_string.must_include("Create [File #{tmpdir}/file1]")
+      log_string.must_include("fake:messages.greeting")
+      (tmpdir + "file1").wont_be :exist?
+    end
+  end
+
+  describe "#execute_node" do
+
+    it "works with a Node" do
+    end
+
+    it "works with a Node's FQN" do
     end
   end
 end
@@ -149,8 +146,8 @@ describe "filesystem loading assets", Config::Project do
 
       subject.require_clusters
 
-      subject.clusters["one"].configuration.test.key.must_equal 123
-      subject.clusters["two"].configuration.other.key.must_equal 456
+      subject.get_cluster("one").configuration.test.key.must_equal 123
+      subject.get_cluster("two").configuration.other.key.must_equal 456
     end
 
     it "fails to load a cluster with a syntax error" do
@@ -175,8 +172,8 @@ describe "filesystem loading assets", Config::Project do
       end
 
       subject.require_blueprints
-      subject.blueprints["one"].must_be_instance_of Config::Blueprint
-      subject.blueprints["two"].must_be_instance_of Config::Blueprint
+      subject.get_blueprint("one").must_be_instance_of Config::Blueprint
+      subject.get_blueprint("two").must_be_instance_of Config::Blueprint
     end
 
     it "exposes the error" do
@@ -187,6 +184,52 @@ describe "filesystem loading assets", Config::Project do
 
       skip "this doesn't work because blueprint evaluation doesn't occur until accumulation"
       proc { subject.require_blueprints }.must_raise(SyntaxError)
+    end
+  end
+
+  describe "#get_blueprint" do
+
+    before do
+      (tmpdir + "blueprints").mkdir
+      (tmpdir + "blueprints/message.rb").open("w")
+
+      subject.require_blueprints
+    end
+
+    it "returns a blueprint" do
+      subject.get_blueprint("message").must_be_instance_of Config::Blueprint
+    end
+
+    it "fails if a blueprint is not found" do
+      proc { subject.get_blueprint("something") }.must_raise Config::Project::UnknownBlueprint
+    end
+
+    it "fails if a path is given that doesn't point to a file" do
+      proc { subject.get_blueprint("blueprints/message") }.must_raise ArgumentError
+      proc { subject.get_blueprint("foo/message.rb") }.must_raise ArgumentError
+    end
+  end
+
+  describe "#get_cluster" do
+
+    before do
+      (tmpdir + "clusters").mkdir
+      (tmpdir + "clusters/production.rb").open("w")
+
+      subject.require_clusters
+    end
+
+    it "returns a cluster" do
+      subject.get_cluster("production").must_be_instance_of Config::Cluster
+    end
+
+    it "fails if a cluster is not found" do
+      proc { subject.get_cluster("other") }.must_raise Config::Project::UnknownCluster
+    end
+
+    it "fails if a path is given that doesn't point to a file" do
+      proc { subject.get_cluster("clusters/production") }.must_raise ArgumentError
+      proc { subject.get_cluster("foo/production.rb") }.must_raise ArgumentError
     end
   end
 end
