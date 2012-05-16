@@ -1,26 +1,26 @@
 module Config
   class Node
 
-    def initialize(cluster, blueprint, identity)
-      @cluster = cluster
-      @blueprint = blueprint
+    def initialize(cluster_name, blueprint_name, identity)
+      @cluster_name = cluster_name
+      @blueprint_name = blueprint_name
       @identity = identity
     end
 
-    attr :cluster
-    attr :blueprint
+    attr :cluster_name
+    attr :blueprint_name
     attr :identity
 
     attr_accessor :facts
 
     def fqn
-      [cluster, blueprint, identity].join('-')
+      [cluster_name, blueprint_name, identity].join('-')
     end
 
     def as_json
       {
-        cluster: cluster.to_s,
-        blueprint: blueprint.to_s,
+        cluster: cluster_name.to_s,
+        blueprint: blueprint_name.to_s,
         identity: identity.to_s,
         facts: facts || {}
       }

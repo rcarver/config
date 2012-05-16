@@ -2,11 +2,11 @@ require 'helper'
 
 describe Config::Node do
 
-  let(:cluster)   { :production }
-  let(:blueprint) { :webserver }
-  let(:identity)  { "xyz" }
+  let(:cluster_name)   { :production }
+  let(:blueprint_name) { :webserver }
+  let(:identity)       { "xyz" }
 
-  subject { Config::Node.new(cluster, blueprint, identity) }
+  subject { Config::Node.new(cluster_name, blueprint_name, identity) }
 
   specify "#fqn" do
     subject.fqn.must_equal "production-webserver-xyz"
