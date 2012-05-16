@@ -20,11 +20,29 @@ describe Config::Node do
     subject.fqn.must_equal "production-webserver-xyz"
   end
 
+  specify "equality" do
+    a = Config::Node.new("a", "b", "c")
+    b = Config::Node.new("a", "b", "c")
+    c = Config::Node.new("a", "b", "x")
+
+    a.must_equal b
+    b.must_equal a
+    a.wont_equal c
+    c.wont_equal a
+
+    b.facts = Config::Core::Facts.new("info" => "here")
+
+    a.wont_equal b
+    b.wont_equal a
+  end
+
   specify "#as_json" do
     subject.as_json.must_equal(
-      cluster: cluster_name,
-      blueprint: blueprint_name,
-      identity: identity,
+      node: {
+        cluster: cluster_name,
+        blueprint: blueprint_name,
+        identity: identity,
+      },
       facts: facts_data
     )
   end

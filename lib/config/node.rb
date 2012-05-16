@@ -3,9 +3,9 @@ module Config
 
     def self.from_json(json)
       node = new(
-        json["cluster"],
-        json["blueprint"],
-        json["identity"]
+        json["node"]["cluster"],
+        json["node"]["blueprint"],
+        json["node"]["identity"]
       )
       node.facts = Config::Core::Facts.from_json(json["facts"])
       node
@@ -16,6 +16,7 @@ module Config
       @cluster_name = cluster_name
       @blueprint_name = blueprint_name
       @identity = identity
+      @facts = Config::Core::Facts.new({})
     end
 
     attr :cluster_name
@@ -40,12 +41,20 @@ module Config
 
     def as_json
       {
-        cluster: cluster_name.to_s,
-        blueprint: blueprint_name.to_s,
-        identity: identity.to_s,
-        facts: facts ? facts.as_json : {}
+        node: {
+          cluster: cluster_name.to_s,
+          blueprint: blueprint_name.to_s,
+          identity: identity.to_s,
+        },
+        facts: facts.as_json
       }
     end
+
+    def eql?(other)
+      fqn == other.fqn && facts == other.facts
+    end
+
+    alias == eql?
 
   end
 end
