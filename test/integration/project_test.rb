@@ -42,10 +42,20 @@ describe "filesystem running items", Config::Project do
 
   describe "#execute_node" do
 
+    let(:node) { Config::Node.new("production", "message", "one") }
+
+    before do
+      subject.database = Config::Data::FakeDatabase.new([node])
+    end
+
     it "works with a Node" do
+      subject.execute_node(node)
+      (tmpdir + "file1").read.must_equal "hello world"
     end
 
     it "works with a Node's FQN" do
+      subject.execute_node(node.fqn)
+      (tmpdir + "file1").read.must_equal "hello world"
     end
   end
 end
@@ -187,6 +197,26 @@ describe "filesystem loading assets", Config::Project do
     end
   end
 
+  describe "#get_node" do
+
+    let(:node) { Config::Node.new("production", "message", "one") }
+
+    before do
+      (tmpdir + ".data/project-data/nodes").mkpath
+      (tmpdir + ".data/project-data/nodes/production-message-one.json").open("w") do |f|
+        f.print JSON.dump(node.as_json)
+      end
+    end
+
+    it "returns a node" do
+      subject.get_node("production-message-one").must_be_instance_of Config::Node
+    end
+
+    it "fails if a node is not found" do
+      proc { subject.get_node("other") }.must_raise Config::Project::UnknownNode
+    end
+  end
+
   describe "#get_blueprint" do
 
     before do
@@ -198,6 +228,7 @@ describe "filesystem loading assets", Config::Project do
 
     it "returns a blueprint" do
       subject.get_blueprint("message").must_be_instance_of Config::Blueprint
+      subject.get_blueprint("blueprints/message.rb").must_be_instance_of Config::Blueprint
     end
 
     it "fails if a blueprint is not found" do
@@ -221,6 +252,7 @@ describe "filesystem loading assets", Config::Project do
 
     it "returns a cluster" do
       subject.get_cluster("production").must_be_instance_of Config::Cluster
+      subject.get_cluster("clusters/production.rb").must_be_instance_of Config::Cluster
     end
 
     it "fails if a cluster is not found" do

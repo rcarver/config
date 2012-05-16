@@ -1,6 +1,7 @@
 module Config
   class Project
 
+    UnknownNode = Class.new(StandardError)
     UnknownCluster = Class.new(StandardError)
     UnknownBlueprint = Class.new(StandardError)
 
@@ -40,6 +41,17 @@ module Config
       @data_path.mkpath # TODO: don't mkpath
       @data_dir
     end
+
+    # Get the database. The database stores information about your
+    # nodes.
+    #
+    # Returns a Config::Data::Database.
+    def database
+      @database or data_dir.database
+    end
+
+    # Dependency injection
+    attr_writer :database
 
     # Get the project Hub. The Hub describes centralized aspects of your
     # system.
@@ -172,9 +184,7 @@ module Config
     end
 
     def get_node(name)
-      node = @nodes[name] or raise UnknownNode, "Node #{name.inspect} was not found"
-      node.facts = {}
-      node
+      database.find_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
     end
 
   end
