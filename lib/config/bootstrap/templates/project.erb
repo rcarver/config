@@ -18,6 +18,9 @@ cd /etc/config/project
 echo '[initializing at: <%= git_ref %>]'
 git reset --hard <%= git_ref %>
 
+echo ['bundle install']
+bundle-config install
+
 echo '[cloning the database]'
 bundle-config exec config-update-database
 
