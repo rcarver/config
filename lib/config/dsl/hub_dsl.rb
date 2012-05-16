@@ -15,6 +15,7 @@ module Config
 
         attr_writer :url
         attr_writer :ssh_key
+        attr_writer :host
         attr_writer :hostname
         attr_writer :user
         attr_writer :port
@@ -23,6 +24,7 @@ module Config
           Config::Core::GitConfig.new.tap do |c|
             c.url = @url if @url
             c.ssh_key = @ssh_key if @ssh_key
+            c.ssh_config.host = @host if @host
             c.ssh_config.hostname = @hostname if @hostname
             c.ssh_config.user = @user if @user
             c.ssh_config.port = @port if @port
