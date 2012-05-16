@@ -3,7 +3,7 @@ module Config
     class GitDatabase
 
       def initialize(path, repo)
-        @path = path
+        @path = Pathname.new(path)
         @repo = repo
       end
 
@@ -15,19 +15,37 @@ module Config
         @repo.pull_rebase
       end
 
+      # Get a node from the database.
+      #
+      # fqn - String the fully qualified node name.
+      #
+      # Returns a Config::Node.
+      def find_node(fqn)
+        file = node_file(fqn, false)
+        if file.exist?
+          json = JSON.parse(file.read)
+          Config::Node.from_json(json)
+        end
+      end
+
       # Store information about a node in the database.
       #
       # node - Config::Node.
       #
       # Returns nothing.
       def update_node(node)
-        file = facts_file(node)
+        file = node_file(node)
         status = file.exist? ? "Updated" : "Added"
 
         txn do
-          (@path + "facts").mkpath
+          (@path + "nodes").mkpath
           file.open("w") do |f|
-            f.print node.facts.to_json
+            f.print JSON.generate(
+              node.as_json,
+              object_nl: "\n",
+              indent: "  ",
+              space: " "
+            )
           end
           @repo.add file
           @repo.commit "#{status} node #{node.fqn}"
@@ -40,18 +58,19 @@ module Config
       #
       # Returns nothing.
       def remove_node(node)
-        return if !facts_file(node).exist?
+        return if !node_file(node).exist?
 
         txn do
-          @repo.rm facts_file(node)
+          @repo.rm node_file(node)
           @repo.commit "Removed node #{node.fqn}"
         end
       end
 
     protected
 
-      def facts_file(node)
-        @path + "facts/#{node.fqn}.json"
+      def node_file(node, is_node=true)
+        fqn = is_node ? node.fqn : node
+        @path + "nodes/#{fqn}.json"
       end
 
       # This is a critically important function. Here we make sure that changes
