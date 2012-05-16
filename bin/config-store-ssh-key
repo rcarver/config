@@ -13,5 +13,5 @@ name = ARGV.shift or "default"
 Config.log_to $stdout
 project = Config::Project.new(Dir.pwd)
 
-project.data_dir.git_ssh_key(name).write($stdin.read)
+project.data_dir.ssh_key(name).write($stdin.read)
 
