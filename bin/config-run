@@ -4,7 +4,7 @@ require 'config'
 
 usage = "usage: config-run [FQN]"
 
-fqn = ARGV.shift or `hostname`.chomp
+fqn = ARGV.shift || `hostname`.chomp
 
 Config.log_to $stdout
 
