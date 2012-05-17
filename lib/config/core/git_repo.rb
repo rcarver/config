@@ -1,10 +1,10 @@
 module Config
-  module Data
+  module Core
     # A very simple git client. I have chosen to implement my own client
     # rather than use an existing library in order to 1) reduce
     # dependencies, 2) provide complete clarity on how the data repo is
     # maintained.
-    class Repo
+    class GitRepo
 
       StateError  = Class.new(RuntimeError)
       CommitError = Class.new(StateError)

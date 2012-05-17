@@ -85,7 +85,7 @@ module Config
           # pull from the origin and rebase our local changes.
           # Then try to push again.
           @repo.push
-        rescue Config::Data::Repo::PushError => e
+        rescue Config::Core::GitRepo::PushError => e
           @repo.pull_rebase
           # NOTE: We should determine if retries should be slower
           # or if a backoff strategy should be designed.

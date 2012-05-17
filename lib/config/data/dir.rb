@@ -51,7 +51,7 @@ module Config
     protected
 
       def repo
-        Config::Data::Repo.new(repo_path)
+        Config::Core::GitRepo.new(repo_path)
       end
 
     end

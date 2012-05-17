@@ -1,12 +1,12 @@
 require 'helper'
 
-describe "filesystem", Config::Data::Repo do
+describe "filesystem", Config::Core::GitRepo do
 
   describe "working with the index" do
 
     let(:project_dir) { tmpdir + "project" }
 
-    subject { Config::Data::Repo.new(tmpdir + "project") }
+    subject { Config::Core::GitRepo.new(tmpdir + "project") }
 
     before do
       project_dir.mkdir
@@ -66,7 +66,7 @@ describe "filesystem", Config::Data::Repo do
       end
 
       it "fails if there is nothing to commit" do
-        proc { subject.commit "okok" }.must_raise Config::Data::Repo::CommitError
+        proc { subject.commit "okok" }.must_raise Config::Core::GitRepo::CommitError
       end
 
       it "commits changes" do
@@ -85,8 +85,8 @@ describe "filesystem", Config::Data::Repo do
     let(:project1_dir) { tmpdir + "project1" }
     let(:project2_dir) { tmpdir + "project2" }
 
-    let(:project1) { Config::Data::Repo.new(tmpdir + "project1") }
-    let(:project2) { Config::Data::Repo.new(tmpdir + "project2") }
+    let(:project1) { Config::Core::GitRepo.new(tmpdir + "project1") }
+    let(:project2) { Config::Core::GitRepo.new(tmpdir + "project2") }
 
     it "works" do
       source_dir.mkdir
@@ -114,7 +114,7 @@ describe "filesystem", Config::Data::Repo do
       within(project2_dir) { cmd "echo goodbye > two" }
       project2.add "."
       project2.commit "commit-from-2"
-      proc { project2.push }.must_raise Config::Data::Repo::PushError
+      proc { project2.push }.must_raise Config::Core::GitRepo::PushError
       project2.pull_rebase
       (project2_dir + "one").must_be :exist?
       project2.push

@@ -107,7 +107,7 @@ describe "filesystem", Config::Data::GitDatabase do
           @pushes ||= 0
           @pushes += 1
           case @pushes
-          when 1, 2 then raise Config::Data::Repo::PushError
+          when 1, 2 then raise Config::Core::GitRepo::PushError
           else nil
           end
         end
