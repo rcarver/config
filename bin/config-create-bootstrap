@@ -14,8 +14,8 @@ identity  = ARGV.shift or abort usage
 project = Config::Project.new(Dir.pwd)
 project.require_all
 
-project.clusters[cluster] or abort "Unknown cluster: #{cluster}"
-project.blueprints[blueprint] or abort "Unknown blueprint: #{blueprint}"
+project.get_cluster(cluster)
+project.get_blueprint(blueprint)
 
 identity_file = Tempfile.new("identity")
 system_file = Tempfile.new("system")
