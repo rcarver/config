@@ -50,9 +50,6 @@ module Config
       @database or data_dir.database
     end
 
-    # Dependency injection
-    attr_writer :database
-
     # Get the project Hub. The Hub describes centralized aspects of your
     # system.
     #
@@ -79,15 +76,37 @@ module Config
       end
     end
 
-    # Execute the node's blueprint.
+    # Update the stored node data by inspecting the current execution
+    # environment.
     #
-    # node - Config::Node or String FQN.
+    # fqn - String Node FQN.
     #
     # Returns nothing.
-    def execute_node(node)
+    def update_node!(fqn)
+      node = get_node(fqn)
+      node.facts = fact_inventor.call
+      database.update_node(node)
+    end
+
+    # Remove the node from the database.
+    #
+    # fqn - String Node FQN.
+    #
+    # Returns nothing.
+    def remove_node!(fqn)
+      node = get_node(fqn)
+      database.remove_node(node)
+    end
+
+    # Execute the node's blueprint.
+    #
+    # fqn - String Node FQN.
+    #
+    # Returns nothing.
+    def execute_node!(fqn)
       require_all
 
-      node = get_node(node) if node.is_a?(String)
+      node = get_node(fqn)
       cluster = get_cluster(node.cluster_name)
       blueprint = get_blueprint(node.blueprint_name)
 
@@ -185,6 +204,18 @@ module Config
 
     def get_node(name)
       database.find_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
+    end
+
+    #
+    # Internal / Dependency Injection
+    #
+
+    attr_writer :database
+
+    attr_writer :fact_inventor
+
+    def fact_inventor
+      @fact_inventor || proc { Config::Core::Facts.invent }
     end
 
   end

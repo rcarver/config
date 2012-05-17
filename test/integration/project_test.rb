@@ -40,22 +40,47 @@ describe "filesystem running items", Config::Project do
     end
   end
 
-  describe "#execute_node" do
+  describe "node operations" do
 
     let(:node) { Config::Node.new("production", "message", "one") }
+    let(:database) { MiniTest::Mock.new }
 
     before do
-      subject.database = Config::Data::FakeDatabase.new([node])
+      subject.database = database
+      database.expect(:find_node, node, [node.fqn])
     end
 
-    it "works with a Node" do
-      subject.execute_node(node)
-      (tmpdir + "file1").read.must_equal "hello world"
+    describe "#update_node!" do
+
+      let(:facts) { Config::Core::Facts.new(a: "ok") }
+
+      before do
+        subject.fact_inventor = -> { facts }
+      end
+
+      it "updates the node's facts and stores it in the database" do
+        database.expect(:find_node, node, [node.fqn])
+        database.expect(:update_node, nil, [node])
+        subject.update_node!(node.fqn)
+        node.facts.must_equal facts
+      end
     end
 
-    it "works with a Node's FQN" do
-      subject.execute_node(node.fqn)
-      (tmpdir + "file1").read.must_equal "hello world"
+    describe "#remove_node!" do
+
+      it "removes the node from the database" do
+        database.expect(:find_node, node, [node.fqn])
+        database.expect(:remove_node, nil, [node])
+        subject.remove_node!(node.fqn)
+      end
+    end
+
+    describe "#execute_node!" do
+
+      it "executes the blueprint" do
+        subject.execute_node!(node.fqn)
+        (tmpdir + "file1").read.must_equal "hello world"
+      end
     end
   end
 end
