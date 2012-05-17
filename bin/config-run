@@ -2,12 +2,13 @@
 
 require 'config'
 
-usage = "usage: config-try-blueprint NODE_FQN"
+usage = "usage: config-run NODE_FQN"
 
 fqn = ARGV.shift or abort usage
 
 Config.log_to $stdout
 
 project = Config::Project.new(File.expand_path("."))
-project.execute_node(fqn)
+project.update_node!(fqn)
+project.execute_node!(fqn)
 
