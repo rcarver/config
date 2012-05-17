@@ -47,7 +47,10 @@ describe "filesystem running items", Config::Project do
 
     before do
       subject.database = database
-      database.expect(:find_node, node, [node.fqn])
+    end
+
+    after do
+      database.verify
     end
 
     describe "#update_node!" do
@@ -64,6 +67,13 @@ describe "filesystem running items", Config::Project do
         subject.update_node!(node.fqn)
         node.facts.must_equal facts
       end
+
+      it "creates a new node if none exists" do
+        database.expect(:find_node, nil, [node.fqn])
+        database.expect(:update_node, nil, [node])
+        updated_node = subject.update_node!(node.fqn)
+        updated_node.facts.must_equal facts
+      end
     end
 
     describe "#remove_node!" do
@@ -78,6 +88,7 @@ describe "filesystem running items", Config::Project do
     describe "#execute_node!" do
 
       it "executes the blueprint" do
+        database.expect(:find_node, node, [node.fqn])
         subject.execute_node!(node.fqn)
         (tmpdir + "file1").read.must_equal "hello world"
       end

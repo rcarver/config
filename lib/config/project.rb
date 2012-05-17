@@ -81,11 +81,18 @@ module Config
     #
     # fqn - String Node FQN.
     #
-    # Returns nothing.
+    # Returns a Config::Node.
     def update_node!(fqn)
-      node = get_node(fqn)
+      begin
+        node = get_node(fqn)
+      rescue UnknownNode
+        node = Config::Node.from_fqn(fqn)
+      end
+
       node.facts = fact_inventor.call
       database.update_node(node)
+
+      node
     end
 
     # Remove the node from the database.
@@ -96,13 +103,14 @@ module Config
     def remove_node!(fqn)
       node = get_node(fqn)
       database.remove_node(node)
+      nil
     end
 
     # Execute the node's blueprint.
     #
     # fqn - String Node FQN.
     #
-    # Returns nothing.
+    # Returns a Config::Node.
     def execute_node!(fqn)
       require_all
 
@@ -114,6 +122,8 @@ module Config
       blueprint.accumulate
       blueprint.validate
       blueprint.execute
+
+      node
     end
 
     # Execute a blueprint in noop mode.
