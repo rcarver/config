@@ -15,9 +15,6 @@ fi
 
 cd /etc/config/project
 
-echo '[initializing at: <%= git_ref %>]'
-git reset --hard <%= git_ref %>
-
 echo ['bundle install']
 bundle-config install
 

@@ -68,8 +68,6 @@ Config.blueprint(blueprint_name) do
   add Config::Bootstrap::Project do |p|
     p.path = project_file
     p.git_uri = hub.project_config.url
-    # TODO: someday we will have branching.
-    p.git_ref = "origin/master"
   end
 end
 

@@ -10,9 +10,6 @@ module Config
       desc "URI of the project's git repo"
       key  :git_uri
 
-      desc "Git ref to initialize the project at"
-      attr :git_ref
-
       def call
         file path do |f|
           f.template = "project.erb"
