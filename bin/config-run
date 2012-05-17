@@ -2,9 +2,9 @@
 
 require 'config'
 
-usage = "usage: config-run NODE_FQN"
+usage = "usage: config-run [FQN]"
 
-fqn = ARGV.shift or abort usage
+fqn = ARGV.shift or `hostname`.chomp
 
 Config.log_to $stdout
 
