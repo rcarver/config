@@ -24,5 +24,11 @@ bundle-config install
 echo '[cloning the database]'
 bundle-config exec config-update-database
 
+# TODO: We might want to add a --bootstrap flag to config-run
+# to indicate that this node should NOT exist. Otherwise you
+# might be creating a duplicate node. If we did that, we'd want
+# to call config-run with/without --bootstrap as appropriate, 
+# probably dependent on the project existing?
+
 echo '[starting config-run]'
 bundle-config exec config-run
