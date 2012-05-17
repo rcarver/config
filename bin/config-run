@@ -2,13 +2,14 @@
 
 require 'config'
 
-usage = "usage: config-run [FQN]"
-
-fqn = ARGV.shift || `hostname`.chomp
-
 Config.log_to $stdout
 
 project = Config::Project.new(File.expand_path("."))
+
+fqn = ARGV.shift || project.data_dir.fqn
+
+abort "Missing FQN to identify the Node" unless fqn
+
 project.update_node!(fqn)
 project.execute_node!(fqn)
 

@@ -8,6 +8,14 @@ module Config
         @dir = Pathname.new(dir)
       end
 
+      # Get the FQN of the current node.
+      #
+      # Returns a String or nil.
+      def fqn
+        value = Config::Data::File.new(@dir + "fqn").read
+        value.chomp if value
+      end
+
       # Manage a secret.
       #
       # name - Symbol name of the secret.

@@ -4,6 +4,14 @@ describe "filesystem", Config::Data::Dir do
 
   subject { Config::Data::Dir.new(tmpdir) }
 
+  describe "#fqn" do
+    it "reads the value from disk if it exists" do
+      subject.fqn.must_equal nil
+      (tmpdir + "fqn").open("w") { |f| f.puts "xyz" }
+      subject.fqn.must_equal "xyz"
+    end
+  end
+
   describe "#ssh_key" do
 
     it "returns a file" do

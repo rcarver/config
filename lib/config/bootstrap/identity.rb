@@ -27,7 +27,7 @@ module Config
 
     protected
 
-      def hostname
+      def fqn
         Config::Node.new(cluster, blueprint, identity).fqn
       end
 

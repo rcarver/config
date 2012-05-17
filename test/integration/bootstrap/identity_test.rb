@@ -35,7 +35,7 @@ describe "filesystem", Config::Bootstrap::Identity do
     (tmpdir + "identity").must_be :exist?
     contents = (tmpdir + "identity").read
 
-    contents.must_include "hostname production-webserver-xyz"
+    contents.must_include "echo production-webserver-xyz > /etc/config/fqn"
   end
 end
 
