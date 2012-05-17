@@ -11,7 +11,7 @@ cluster   = ARGV.shift or abort usage
 blueprint = ARGV.shift or abort usage
 identity  = ARGV.shift or abort usage
 
-project = Config::Project.new(Dir.pwd)
+project = Config.project
 project.require_all
 
 project.get_cluster(cluster)

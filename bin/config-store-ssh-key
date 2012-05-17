@@ -11,7 +11,7 @@ usage = "config-store-ssh-key [NAME]"
 name = ARGV.shift or "default"
 
 Config.log_to $stdout
-project = Config::Project.new(Dir.pwd)
+project = Config.project
 
 project.data_dir.ssh_key(name).write($stdin.read)
 

@@ -9,5 +9,6 @@ blueprint_name or abort usage
 cluster_name = ARGV.shift
 
 Config.log_to $stdout
-project = Config::Project.new(File.expand_path("."))
+
+project = Config.project
 project.try_blueprint(blueprint_name, cluster_name)

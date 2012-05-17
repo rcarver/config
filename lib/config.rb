@@ -104,4 +104,17 @@ module Config
     blueprint.execute
   end
 
+  # Public: Instantiate a project, using the best guess as to its
+  # location on disk.
+  #
+  # Returns a Config::Project.
+  def self.project
+    root = Pathname.new("/etc/config")
+    if root.exist?
+      Config::Project.new(root + "project", root)
+    else
+      Config::Project.new(Pathname.pwd, Pathname.pwd + ".data")
+    end
+  end
+
 end

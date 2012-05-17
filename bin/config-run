@@ -4,7 +4,7 @@ require 'config'
 
 Config.log_to $stdout
 
-project = Config::Project.new(File.expand_path("."))
+project = Config.project
 
 fqn = ARGV.shift || project.data_dir.fqn
 

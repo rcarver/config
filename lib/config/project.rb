@@ -23,9 +23,9 @@ module Config
       end
     end
 
-    def initialize(dir, data_dir=nil)
-      @path = Pathname.new(dir).cleanpath
-      @data_path = data_dir || @path + ".data"
+    def initialize(project_path, data_path)
+      @path = Pathname.new(project_path).cleanpath
+      @data_path = Pathname.new(data_path).cleanpath
       @data_dir = Config::Data::Dir.new(@data_path)
 
       @clusters = PathHash.new(@path)

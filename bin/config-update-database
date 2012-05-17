@@ -4,7 +4,7 @@ require 'config'
 
 blueprint_name = File.basename($0)
 
-project = Config::Project.new(Dir.pwd)
+project = Config.project
 
 Config.log_to $stdout
 Config.blueprint(blueprint_name) do

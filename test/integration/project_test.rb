@@ -2,7 +2,7 @@ require 'helper'
 
 describe "filesystem running items", Config::Project do
 
-  subject { Config::Project.new(tmpdir) }
+  subject { Config::Project.new(tmpdir, tmpdir + ".data") }
 
   before do
     (tmpdir + "blueprints").mkdir
@@ -98,7 +98,7 @@ end
 
 describe "filesystem loading assets", Config::Project do
 
-  subject { Config::Project.new(tmpdir) }
+  subject { Config::Project.new(tmpdir, tmpdir + ".data") }
 
   describe "#hub" do
 
