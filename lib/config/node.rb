@@ -1,6 +1,27 @@
 module Config
   class Node
 
+    # Parse a FQN or FQDN to create a Node.
+    #
+    # fqn - String.
+    #
+    # Examples
+    #
+    #   Node.from_fqn("prod-webserver-1")
+    #   Node.from_fqn("prod-webserver-1.example.com")
+    #   Node.from_fqn("prod-webserver-1.internal.example.com")
+    #
+    # Returns a Config::Node.
+    # Raises ArgumentError if the input cannot be interpreted as an fqn.
+    def self.from_fqn(fqn)
+      a, *_ = fqn.split(".")
+      parts = a.split("-")
+      unless parts.size == 3
+        raise ArgumentError, "Expected a fqn: #{a.inspect}"
+      end
+      new(*parts)
+    end
+
     def self.from_json(json)
       node = new(
         json["node"]["cluster"],
@@ -50,11 +71,15 @@ module Config
       }
     end
 
-    def eql?(other)
-      fqn == other.fqn && facts == other.facts
+    def ==(other)
+      fqn == other.fqn
     end
 
-    alias == eql?
+    alias eql? ==
+
+    def hash
+      fqn.hash
+    end
 
   end
 end

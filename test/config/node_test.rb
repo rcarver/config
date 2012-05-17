@@ -25,15 +25,20 @@ describe Config::Node do
     b = Config::Node.new("a", "b", "c")
     c = Config::Node.new("a", "b", "x")
 
-    a.must_equal b
-    b.must_equal a
-    a.wont_equal c
-    c.wont_equal a
+    (a == b).must_equal true
+    (b == a).must_equal true
+    (a == c).must_equal false
+    (c == a).must_equal false
+
+    (a.eql? b).must_equal true
+    (b.eql? a).must_equal true
+    (a.eql? c).must_equal false
+    (c.eql? a).must_equal false
 
     b.facts = Config::Core::Facts.new("info" => "here")
 
-    a.wont_equal b
-    b.wont_equal a
+    (a == b).must_equal true
+    (a.eql? b).must_equal true
   end
 
   specify "#as_json" do
@@ -54,5 +59,25 @@ describe Config::Node do
     node.blueprint_name.must_equal "webserver"
     node.identity.must_equal "xyz"
     node.facts.ec2.public_ipv4.must_equal "127.0.0.1"
+  end
+
+  describe ".from_fqn" do
+
+    it "parses an fqn" do
+      result = Config::Node.from_fqn(subject.fqn)
+      result.must_equal subject
+    end
+
+    it "parses a fqdn" do
+      result = Config::Node.from_fqn(subject.fqn + ".example.com")
+      result.must_equal subject
+      result = Config::Node.from_fqn(subject.fqn + ".internal.example.com")
+      result.must_equal subject
+    end
+
+    it "errors if the input is not an fqn" do
+      proc { Config::Node.from_fqn("a-b") }.must_raise ArgumentError
+      proc { Config::Node.from_fqn("a-b-c-d") }.must_raise ArgumentError
+    end
   end
 end
