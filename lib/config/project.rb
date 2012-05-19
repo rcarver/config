@@ -8,7 +8,7 @@ module Config
     class PathHash < Hash
       def initialize(path)
         @path = path
-        super()
+        super
       end
       def [](key)
         if key.include?("/")
@@ -18,7 +18,7 @@ module Config
             raise ArgumentError, "File does not exist #{key.inspect}"
           end
         else
-          super 
+          super
         end
       end
     end
@@ -27,10 +27,19 @@ module Config
       @path = Pathname.new(project_path).cleanpath
       @data_path = Pathname.new(data_path).cleanpath
       @data_dir = Config::Data::Dir.new(@data_path)
+      @git_repo = Config::Core::GitRepo.new(@path)
 
       @clusters = PathHash.new(@path)
       @blueprints = PathHash.new(@path)
       @nodes = PathHash.new(@data_dir.repo_path)
+    end
+
+    def update
+      return :dirty unless @git_repo.totally_clean?
+
+      @git_repo.reset_hard
+      @git_repo.pull_rebase
+      :updated
     end
 
     # Get the data directory. The data directory stores information
