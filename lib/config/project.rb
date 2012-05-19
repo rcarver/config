@@ -229,6 +229,8 @@ module Config
     # Internal / Dependency Injection
     #
 
+    attr_writer :git_repo
+
     attr_writer :database
 
     attr_writer :fact_inventor
