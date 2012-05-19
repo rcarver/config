@@ -91,7 +91,7 @@ module Config
     # fqn - String Node FQN.
     #
     # Returns a Config::Node.
-    def update_node!(fqn)
+    def update_node(fqn)
       begin
         node = get_node(fqn)
       rescue UnknownNode
@@ -109,7 +109,7 @@ module Config
     # fqn - String Node FQN.
     #
     # Returns nothing.
-    def remove_node!(fqn)
+    def remove_node(fqn)
       node = get_node(fqn)
       database.remove_node(node)
       nil
@@ -120,7 +120,7 @@ module Config
     # fqn - String Node FQN.
     #
     # Returns a Config::Node.
-    def execute_node!(fqn)
+    def execute_node(fqn)
       require_all
 
       node = get_node(fqn)

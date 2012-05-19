@@ -39,6 +39,6 @@ fqn = ARGV.shift || project.data_dir.fqn
 
 abort "Missing FQN to identify the Node" unless fqn
 
-project.update_node!(fqn)
-project.execute_node!(fqn)
+project.update_node(fqn)
+project.execute_node(fqn)
 

@@ -53,7 +53,7 @@ describe "filesystem running items", Config::Project do
       database.verify
     end
 
-    describe "#update_node!" do
+    describe "#update_node" do
 
       let(:facts) { Config::Core::Facts.new(a: "ok") }
 
@@ -64,32 +64,32 @@ describe "filesystem running items", Config::Project do
       it "updates the node's facts and stores it in the database" do
         database.expect(:find_node, node, [node.fqn])
         database.expect(:update_node, nil, [node])
-        subject.update_node!(node.fqn)
+        subject.update_node(node.fqn)
         node.facts.must_equal facts
       end
 
       it "creates a new node if none exists" do
         database.expect(:find_node, nil, [node.fqn])
         database.expect(:update_node, nil, [node])
-        updated_node = subject.update_node!(node.fqn)
+        updated_node = subject.update_node(node.fqn)
         updated_node.facts.must_equal facts
       end
     end
 
-    describe "#remove_node!" do
+    describe "#remove_node" do
 
       it "removes the node from the database" do
         database.expect(:find_node, node, [node.fqn])
         database.expect(:remove_node, nil, [node])
-        subject.remove_node!(node.fqn)
+        subject.remove_node(node.fqn)
       end
     end
 
-    describe "#execute_node!" do
+    describe "#execute_node" do
 
       it "executes the blueprint" do
         database.expect(:find_node, node, [node.fqn])
-        subject.execute_node!(node.fqn)
+        subject.execute_node(node.fqn)
         (tmpdir + "file1").read.must_equal "hello world"
       end
     end
