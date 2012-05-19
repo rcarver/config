@@ -1,12 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env ruby
+
+# This script is so much easier to write in bash, but we want to be able
+# to execute it via a gem wrapper, so immediately replace the ruby
+# process with a bash script.
+exec DATA.read
+
+# Everything below this line is the result of DATA.read.
+__END__
 
 set -e
-set -n
 
 if [ -z "$(git status --porcelain)" ]; then
 
-  git reset --hard
-  git pull --rebase
+  #git reset --hard
+  #git pull --rebase
 
   if [ -n "$(which bundle-config)" ]; then
     bundle-config install
@@ -16,6 +23,6 @@ if [ -z "$(git status --porcelain)" ]; then
 
   exit 0
 else
-  echo "Git repo is not totally clean" >&2
+  echo "git repo is not totally clean." >&2
   exit 1
 fi
