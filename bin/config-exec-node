@@ -1,34 +1,5 @@
 #!/usr/bin/env ruby
 
-#
-# First we fork and self update the project.
-#
-
-pid = fork {
-  require 'config'
-
-  Config.log_to $stdout
-
-  project = Config.project
-  status = project.update
-
-  case status
-  when :dirty
-    puts "Git repo is not totally clean"
-    exit 1
-  when :updated
-    `bundle install`
-    project.database.update
-  end
-}
-
-Process.wait(pid)
-exit $?.exitstatus unless $?.success?
-
-#
-# Now we can run with the latest version.
-#
-
 require 'config'
 
 Config.log_to $stdout

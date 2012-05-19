@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+set -n
+
+if [ -z "$(git status --porcelain)" ]; then
+
+  git reset --hard
+  git pull --rebase
+
+  if [ -n "$(which bundle-config)" ]; then
+    bundle-config install
+  else
+    bundle install
+  fi
+
+  exit 0
+else
+  echo "Git repo is not totally clean" >&2
+  exit 1
+fi

@@ -16,6 +16,6 @@ end
 
 Config.log << "Updating the database..."
 
-project.data_dir.database.update
+project.database.update
 
 

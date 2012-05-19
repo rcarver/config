@@ -13,13 +13,17 @@ else
   git fetch
 fi
 
-cd /etc/config/project
+# TODO: add flock so only one copy of config-run runs at a time.
 
-echo ['bundle install']
-bundle-config install
-
-echo '[cloning the database]'
-bundle-config exec config-update-database
+echo '[installing config-run]'
+echo '#!/bin/bash
+set -e
+set -n
+sudo cd /etc/config/project
+sudo bundle-config exec config-update-project
+sudo bundle-config exec config-update-database
+sudo bundle-config exec config-exec-node
+' > /usr/local/bin/config-run
 
 # TODO: We might want to add a --bootstrap flag to config-run
 # to indicate that this node should NOT exist. Otherwise you
@@ -28,4 +32,4 @@ bundle-config exec config-update-database
 # probably dependent on the project existing?
 
 echo '[starting config-run]'
-bundle-config exec config-run
+config-run
