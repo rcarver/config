@@ -8,7 +8,7 @@ module Config
     class PathHash < Hash
       def initialize(path)
         @path = path
-        super
+        super() # don't pass args
       end
       def [](key)
         if key.include?("/")
@@ -35,7 +35,7 @@ module Config
     end
 
     def update
-      return :dirty unless @git_repo.totally_clean?
+      return :dirty unless @git_repo.clean_status?
 
       @git_repo.reset_hard
       @git_repo.pull_rebase

@@ -10,7 +10,7 @@ pid = fork {
   Config.log_to $stdout
 
   project = Config.project
-  status = project.git_repo.update
+  status = project.update
 
   case status
   when :dirty
@@ -23,7 +23,7 @@ pid = fork {
 }
 
 Process.wait(pid)
-exit $? unless $? == 0
+exit $?.exitstatus unless $?.success?
 
 #
 # Now we can run with the latest version.
