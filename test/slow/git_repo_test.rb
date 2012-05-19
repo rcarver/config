@@ -77,6 +77,35 @@ describe "filesystem", Config::Core::GitRepo do
         end
       end
     end
+
+    describe "#clean_status?" do
+
+      before do
+        within(project_dir) { `echo world >> README.md` }
+      end
+
+      it "is false with an edited file" do
+        subject.wont_be :clean_status?
+      end
+
+      it "is false when a file is added to the index" do
+        subject.add "."
+        subject.wont_be :clean_status?
+      end
+
+      it "is true when the file is committed" do
+        subject.add "."
+        subject.commit "okok"
+        subject.must_be :clean_status?
+      end
+
+      it "is false when a new file is added" do
+        subject.add "."
+        subject.commit "okok"
+        within(project_dir) { `echo hello >> new_file` }
+        subject.wont_be :clean_status?
+      end
+    end
   end
 
   describe "working with remotes" do

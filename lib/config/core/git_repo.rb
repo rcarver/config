@@ -19,10 +19,23 @@ module Config
         end
 
         def run(command)
+          out, status = exec(command)
+          raise Failure, out unless status.exitstatus == 0
+        end
+
+        def status?(expected_exitstatus = 0, command)
+          out, status = exec(command)
+          status.exitstatus == expected_exitstatus
+        end
+
+      protected
+
+        def exec(command)
+          out, status = nil
           ::Dir.chdir(@dir) {
-            out, s = Open3.capture2e(command)
-            raise Failure, out unless s.exitstatus == 0
+            out, status = Open3.capture2e(command)
           }
+          return out, status
         end
       end
 
@@ -36,6 +49,14 @@ module Config
       # Returns a String.
       def path
         @path.to_s
+      end
+
+      # Determine if the repository is in a clean state. A clean state
+      # is no modified files and no untracked files.
+      #
+      # Returns a Boolean.
+      def clean_status?
+        @git.status?(0, "test -z \"$(git status --porcelain)\"")
       end
 
       # Pull from origin. Performs a pull with rebase to minimize merge
