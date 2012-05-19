@@ -10,19 +10,21 @@ __END__
 
 set -e
 
-if [ -z "$(git status --porcelain)" ]; then
-
-  #git reset --hard
-  #git pull --rebase
-
-  if [ -n "$(which bundle-config)" ]; then
-    bundle-config install
-  else
-    bundle install
-  fi
-
-  exit 0
-else
+# Require that the working directory has no uncommited changes.
+if [ -n "$(git status --porcelain)" ]; then
   echo "git repo is not totally clean." >&2
   exit 1
 fi
+
+# Pull in the latest changes cleanly.
+git pull --rebase
+
+# Determine whether we are running in a bootstrapped environment or a
+# development environment and update the project dependencies.
+if [ -n "$(which bundle-config)" ]; then
+  bundle-config install
+else
+  bundle install
+fi
+
+exit 0
