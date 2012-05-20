@@ -9,21 +9,26 @@ if [ ! -d project ]; then
   git clone <%= git_uri %> project
 else
   echo '[project exists]'
-  cd project
-  git fetch
 fi
+
+cd /etc/config/project
+
+echo '[bundle install]'
+bundle-config install
 
 # TODO: add flock so only one copy of config-run runs at a time.
 
 echo '[installing config-run]'
 echo '#!/bin/bash
+set -x
 set -e
-set -n
-sudo cd /etc/config/project
+cd /etc/config/project
 sudo bundle-config exec config-update-project
 sudo bundle-config exec config-update-database
 sudo bundle-config exec config-exec-node
-' > /usr/local/bin/config-run
+' > /usr/local/sbin/config-run
+
+chmod 755 /usr/local/sbin/config-run
 
 # TODO: We might want to add a --bootstrap flag to config-run
 # to indicate that this node should NOT exist. Otherwise you

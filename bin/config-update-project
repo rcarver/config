@@ -3,10 +3,7 @@
 # This script is so much easier to write in bash, but we want to be able
 # to execute it via a gem wrapper, so immediately replace the ruby
 # process with a bash script.
-exec DATA.read
-
-# Everything below this line is the result of DATA.read.
-__END__
+exec <<-STR
 
 set -e
 
@@ -28,3 +25,5 @@ else
 fi
 
 exit 0
+
+STR
