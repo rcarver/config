@@ -12,26 +12,50 @@ fi
 echo '[installing project scripts]'
 
 echo '#!/bin/bash
+# Update the project and execute on this node.
 set -e
 cd /etc/config/project
 <%= update_project_script %>
 bundle-config install
 bundle-config exec config-update-database
 bundle-config exec config-exec-node
-' > /usr/local/sbin/config-global-update
+' > /usr/local/sbin/config-update-all
 
-echo '!#/bin/bash
+echo '#!/bin/bash
+# Run config with protection.
 set -e
 if [ -f /etc/config/disabled ]; then
-  echo 'config is disabled. Remove /etc/config/disabled to enable' >&2
+  echo "config is disabled. Use config-enable or remove /etc/config/disabled" >&2
   exit 1
-else
-  flock -o -n /var/lock/config.lock -c config-global-update
 fi
+flock --nonblock --exclusive /var/lock/config --command config-update-all
+' > /usr/local/sbin/config-run-with-lock
+
+echo '#!/bin/bash
+# Run config with sudo.
+set -e
+sudo config-run-with-lock
 ' > /usr/local/sbin/config-run
 
-chmod 755 /usr/local/sbin/config-global-update
+echo '#!/bin/bash
+# Disable config.
+if [ ! -f /etc/config/disabled ]; then
+  sudo touch /etc/config/disabled
+fi
+' > /usr/local/sbin/config-disable
+
+echo '#!/bin/bash
+# Enable config.
+if [ -f /etc/config/disabled ]; then
+  sudo rm /etc/config/disabled
+fi
+' > /usr/local/sbin/config-enable
+
+chmod 755 /usr/local/sbin/config-update-all
+chmod 755 /usr/local/sbin/config-run-with-lock
 chmod 755 /usr/local/sbin/config-run
+chmod 755 /usr/local/sbin/config-disable
+chmod 755 /usr/local/sbin/config-enable
 
 # TODO: We might want to add a --bootstrap flag to config-run
 # to indicate that this node should NOT exist. Otherwise you
