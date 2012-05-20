@@ -1,10 +1,16 @@
 module Config
   module Data
     class GitDatabase
+      include Config::Core::Loggable
 
       def initialize(path, repo)
         @path = Pathname.new(path)
         @repo = repo
+      end
+
+      def version
+        sha, message = @repo.describe_head
+        "#{sha} \"#{message}\""
       end
 
       # Update the state of the database.
@@ -13,6 +19,7 @@ module Config
       def update
         @repo.reset_hard
         @repo.pull_rebase
+        log << "Database updated. Now at: #{version}"
       end
 
       # Get a node from the database.
@@ -35,7 +42,7 @@ module Config
       # Returns nothing.
       def update_node(node)
         file = node_file(node)
-        status = file.exist? ? "Updated" : "Added"
+        status = file.exist? ? "update" : "add"
 
         txn do
           (@path + "nodes").mkpath
@@ -48,7 +55,10 @@ module Config
             )
           end
           @repo.add file
-          @repo.commit "#{status} node #{node.fqn}"
+
+          message = "#{status} node #{node.fqn}"
+          @repo.commit message
+          log << "Database commit: #{message}"
         end
       end
 
@@ -62,7 +72,10 @@ module Config
 
         txn do
           @repo.rm node_file(node)
-          @repo.commit "Removed node #{node.fqn}"
+
+          message = "remove node #{node.fqn}"
+          @repo.commit message
+          log << "Database commit: #{message}"
         end
       end
 
@@ -85,8 +98,10 @@ module Config
           # pull from the origin and rebase our local changes.
           # Then try to push again.
           @repo.push
+          log << "Database pushed"
         rescue Config::Core::GitRepo::PushError => e
           @repo.pull_rebase
+          log << "Database pulled to resolve remote changes. Now at: #{version}"
           # NOTE: We should determine if retries should be slower
           # or if a backoff strategy should be designed.
           retry

@@ -14,7 +14,15 @@ describe "filesystem", Config::Core::GitRepo do
         cmd "git init ."
         cmd "echo hello > README.md"
         cmd "git add README.md"
-        cmd "git commit -m 'one'"
+        cmd "git commit -m 'here we go'"
+      end
+    end
+
+    describe "#describe_head" do
+      it "returns the SHA and commit message" do
+        sha, message = subject.describe_head
+        sha.must_match /^[a-z0-9]+$/
+        message.must_equal "here we go"
       end
     end
 

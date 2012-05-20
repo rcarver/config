@@ -19,7 +19,11 @@ describe "filesystem", Config::Data::GitDatabase do
     it "pulls the repo" do
       repo.expect(:reset_hard, nil)
       repo.expect(:pull_rebase, nil)
+      repo.expect(:describe_head, ["a", "message"])
       subject.update
+      log_string.must_equal <<-STR
+Database updated. Now at: a "message"
+       STR
     end
   end
 
@@ -49,7 +53,7 @@ describe "filesystem", Config::Data::GitDatabase do
     end
 
     it "creates a node file" do
-      repo.expect(:commit, nil, ["Added node prod-webserver-1"])
+      repo.expect(:commit, nil, ["add node prod-webserver-1"])
       subject.update_node(node)
       node_file.must_be :exist?
       # We care about the presentation of this file so 
@@ -65,6 +69,10 @@ describe "filesystem", Config::Data::GitDatabase do
   }
 }
       STR
+      log_string.must_equal <<-STR
+Database commit: add node prod-webserver-1
+Database pushed
+      STR
     end
 
     it "updates a nodes file" do
@@ -72,8 +80,12 @@ describe "filesystem", Config::Data::GitDatabase do
       node_file.open("w") do |f|
         f.print "ok"
       end
-      repo.expect(:commit, nil, ["Updated node prod-webserver-1"])
+      repo.expect(:commit, nil, ["update node prod-webserver-1"])
       subject.update_node(node)
+      log_string.must_equal <<-STR
+Database commit: update node prod-webserver-1
+Database pushed
+      STR
     end
   end
 
@@ -86,9 +98,13 @@ describe "filesystem", Config::Data::GitDatabase do
       end
       repo.expect(:reset_hard, nil)
       repo.expect(:rm, nil, [node_file])
-      repo.expect(:commit, nil, ["Removed node prod-webserver-1"])
+      repo.expect(:commit, nil, ["remove node prod-webserver-1"])
       repo.expect(:push, nil)
       subject.remove_node(node)
+      log_string.must_equal <<-STR
+Database commit: remove node prod-webserver-1
+Database pushed
+      STR
     end
 
     it "ignores a non-existent nodes file" do
@@ -118,6 +134,13 @@ describe "filesystem", Config::Data::GitDatabase do
           @pulls ||= 0
           @pulls += 1
         end
+
+        def describe_head
+          case @pulls
+          when 1 then ["1", "message one"]
+          when 2 then ["2", "message two"]
+          end
+        end
       end
     }
 
@@ -130,6 +153,11 @@ describe "filesystem", Config::Data::GitDatabase do
       end
       repo.pushes.must_equal 3
       repo.pulls.must_equal 2
+      log_string.must_equal <<-STR
+Database pulled to resolve remote changes. Now at: 1 "message one"
+Database pulled to resolve remote changes. Now at: 2 "message two"
+Database pushed
+      STR
     end
   end
 end

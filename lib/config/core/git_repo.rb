@@ -21,6 +21,7 @@ module Config
         def run(command)
           out, status = exec(command)
           raise Failure, out unless status.exitstatus == 0
+          return out, status
         end
 
         def status?(expected_exitstatus = 0, command)
@@ -49,6 +50,18 @@ module Config
       # Returns a String.
       def path
         @path.to_s
+      end
+
+      # Describe the current head commit.
+      #
+      # Returns String, String. The first string is a 7 character SHA of
+      # the commit. The second string is the one line commit message.
+      def describe_head
+        out, status = @git.run("git log --oneline | head -n1")
+        line = out.chomp
+        sha = line[/^([0-9a-z]+)/, 1]
+        message = line[/^.*?\s(.*)$/, 1]
+        return sha, message
       end
 
       # Determine if the repository is in a clean state. A clean state
