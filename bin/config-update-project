@@ -1,29 +1,12 @@
 #!/usr/bin/env ruby
 
-# This script is so much easier to write in bash, but we want to be able
-# to execute it via a gem wrapper, so immediately replace the ruby
-# process with a bash script.
+require 'config'
+
+project = Config.project
+
 exec <<-STR
-
+#!/bin/bash
 set -e
-
-# Require that the working directory has no uncommited changes.
-if [ -n "$(git status --porcelain)" ]; then
-  echo "git repo is not totally clean." >&2
-  exit 1
-fi
-
-# Pull in the latest changes cleanly.
-git pull --rebase
-
-# Determine whether we are running in a bootstrapped environment or a
-# development environment and update the project dependencies.
-if [ -n "$(which bundle-config)" ]; then
-  bundle-config install
-else
-  bundle install
-fi
-
-exit 0
-
+#{project.update_project_script}
+bundle install
 STR

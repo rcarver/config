@@ -24,7 +24,6 @@ describe Config::Project do
 
     it "returns :updated and updates the repo" do
       git_repo.expect(:clean_status?, true)
-      git_repo.expect(:reset_hard, nil)
       git_repo.expect(:pull_rebase, nil)
 
       subject.update.must_equal :updated

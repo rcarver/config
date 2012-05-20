@@ -37,9 +37,29 @@ module Config
     def update
       return :dirty unless @git_repo.clean_status?
 
-      @git_repo.reset_hard
       @git_repo.pull_rebase
       :updated
+    end
+
+    # This is a bash implementation of #update along with bundle
+    # install. It's written in bash so that it can be used during the
+    # bootstrap process. It's stored here so that it can be used both in
+    # the config-update-project command and the node-based config-run
+    # command. It's also stored here so that the script is visible
+    # alongside logically similar code.
+    #
+    # Returns a String.
+    def update_project_script
+      <<-STR
+# Require that the working directory has no uncommited changes.
+if [ -n "$(git status --porcelain)" ]; then
+  echo "git repo is not totally clean." >&2
+  exit 1
+fi
+
+# Pull in the latest changes cleanly.
+git pull --rebase
+      STR
     end
 
     # Get the data directory. The data directory stores information

@@ -7,27 +7,30 @@ cd /etc/config
 if [ ! -d project ]; then
   echo '[cloning project: <%= git_uri %>]'
   git clone <%= git_uri %> project
-else
-  echo '[project exists]'
 fi
 
-cd /etc/config/project
+echo '[installing project scripts]'
 
-echo '[bundle install]'
-bundle-config install
-
-# TODO: add flock so only one copy of config-run runs at a time.
-
-echo '[installing config-run]'
 echo '#!/bin/bash
-set -x
 set -e
 cd /etc/config/project
-sudo bundle-config exec config-update-project
-sudo bundle-config exec config-update-database
-sudo bundle-config exec config-exec-node
+<%= update_project_script %>
+bundle-config install
+bundle-config exec config-update-database
+bundle-config exec config-exec-node
+' > /usr/local/sbin/config-global-update
+
+echo '!#/bin/bash
+set -e
+if [ -f /etc/config/disabled ]; then
+  echo 'config is disabled. Remove /etc/config/disabled to enable' >&2
+  exit 1
+else
+  flock -o -n /var/lock/config.lock -c config-global-update
+fi
 ' > /usr/local/sbin/config-run
 
+chmod 755 /usr/local/sbin/config-global-update
 chmod 755 /usr/local/sbin/config-run
 
 # TODO: We might want to add a --bootstrap flag to config-run

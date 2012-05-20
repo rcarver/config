@@ -11,6 +11,7 @@ describe Config::Bootstrap::Project do
   specify "validity" do
     subject.path = "/tmp/file"
     subject.git_uri = "git@github.com:test/this.git"
+    subject.update_project_script = "bundle install"
     subject.error_messages.must_be_empty
   end
 end
@@ -23,6 +24,7 @@ describe "filesystem", Config::Bootstrap::Project do
 
     subject.path = tmpdir + "config"
     subject.git_uri = "git@github.com:test/this.git"
+    subject.update_project_script = "bundle install"
 
     execute_pattern
 
@@ -30,5 +32,6 @@ describe "filesystem", Config::Bootstrap::Project do
     contents = (tmpdir + "config").read
 
     contents.must_include "git clone git@github.com:test/this.git project"
+    contents.must_include "bundle install"
   end
 end

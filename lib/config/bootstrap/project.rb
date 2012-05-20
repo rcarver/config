@@ -10,6 +10,9 @@ module Config
       desc "URI of the project's git repo"
       key  :git_uri
 
+      desc "Bash script used to update the project"
+      attr :update_project_script
+
       def call
         file path do |f|
           f.template = "project.erb"
