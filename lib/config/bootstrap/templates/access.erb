@@ -3,7 +3,9 @@ set -e
 mkdir -p /root/.ssh
 chmod 700 /root/.ssh
 
-rm /root/.ssh/config
+if [ -f /root/.ssh/config ]; then
+  rm /root/.ssh/config
+fi
 
 <% ssh_configs.each do |config| %>
 echo '<%= config %>' >> /root/.ssh/config
