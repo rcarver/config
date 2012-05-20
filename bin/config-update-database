@@ -16,6 +16,6 @@ end
 
 Config.log << "Updating the database..."
 
-project.database.update
-
-
+Config.log.indent do
+  project.database.update
+end
