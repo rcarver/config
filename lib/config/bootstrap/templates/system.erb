@@ -4,7 +4,7 @@ echo '[updating packages]'
 aptitude update -q
 aptitude safe-upgrade -y -q
 
-aptitude install build-essential zlib1g-dev libreadline5-dev libyaml-dev -y -q
+aptitude install build-essential zlib1g-dev libreadline5-dev libyaml-dev openssl-dev -y -q
 
 echo '[installing git <%= git_version %>]'
 aptitude install git-core=<%= apt_git_version %>
