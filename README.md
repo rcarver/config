@@ -8,8 +8,8 @@ A modern server maintenance tool.
 * A clear and obvious way to do things.
 * An API and supporting tools that naturally reduces errors.
 * Useful information when things do go wrong.
-* Git-native change management for all aspects of the system
-* Supports branching for development.
+* Git-native change management for all aspects of the system.
+* Branch-based development for ops.
 
 ## Concepts
 
@@ -18,13 +18,12 @@ A modern server maintenance tool.
 * __Cluster__ A collection of Nodes that work together.
 * __Pattern__ A reusable concept that makes up a Blueprint or another
   Pattern. All Pattern operations are idempotent.
-* __Fact__ A bit of information about a Node that cannot be changed,
-  such as memory or IP address.
+* __Fact__ A bit of information that's implicit to a Node.
 * __Variable__ A part of a Blueprint that may be configured. Variables
-  may be set on either the Node or Blueprint.
+  may be set on either the Node or Cluster.
 * __Service__ A long running application, generally managed by Upstart.
   A Service may be notified that something it depends on has changed.
-When that happens the Service typically restarts.
+  When that happens the Service typically restarts.
 * __Hub__ A special node that is used to bootstrap other nodes. This can
   be any node in the system or your development computer.
 * __TODO__ is monitoring/alerting a core concept?
@@ -40,19 +39,24 @@ Blueprints that use them.
   or a String.
 * __Link__ A symbolic (or hard) link.
 * __Package__ Install a 3rd party library via apt.
-* __Script__ Any executable code.
+* __Script__ Any executable code (generally bash).
 
 ## Basic Use
 
-Config stores everything in a git repository. And by everything we mean both
-the Patterns and Blueprints that describe how we want a Node to behave, and the
-Nodes themselves.
+Config stores everything in a git repository. And by everything we mean
+both the Patterns and Blueprints that describe how we want a Node to
+behave, and the Nodes themselves. To do this, Config uses two git
+repositories. The first, called the "project" repo, stores code and
+configuration that you write. The second, called the "data" repo is
+maintained automatically the nodes. It acts as a database describing the
+state of your system.
 
-To generate a new project
+To initialize  project
 
     $ mkdir myproject
     $ cd myproject
-    $ config-create-project
+    $ git init
+    $ config-init-project
 
 The project layout
 
@@ -64,10 +68,8 @@ The project layout
       [blueprint].rb
     clusters
       [cluster].rb
-      [cluster]/
-        [node_id].rb
-    facts
-      [cluster]/[node_id].rb
+    nodes
+      [node_fqn].rb
 
 To create a new server, begin by creating a Blueprint
 
@@ -130,37 +132,25 @@ Next we'll create a Cluster to contain the server. Let's call it
 
     $ config-create-cluster production
     $ vim clusters/production.rb
-    # nothing to see here yet.
+    # Nothing to see here yet. In the future we can use this file to
+    # configure the production cluster differently than another cluster.
 
 Check these files into git and push to your remote repository. You're
 now ready to boot a server.
 
-    $ config-ec2-create-node --blueprint=webserver --cluster=production
+    $ config-ec2-create-node --cluster=production --blueprint=webserver
 
 Here we've specified the two required parameters: The Blueprint used to
 configure the server, and the Cluster that the resulting Node will
 belong to. We wait for AWS to provision us a server, and once the server
 boots it will automatically configure itself and store its information
-in this git repo. Once those commits exist, pull them down. Use the
-`--wait` flag to let Config do that for you.
+in the data repo.
 
-    $ git pull
-    + clusters/production/[node_id].rb
-    + facts/production_[node_id].json
+    $ config-update-database
 
-Two new files appear. One contains our configuration of the Node, at
-this point its only the Blueprint and Cluster we've configured. You can
-use this file in the future to set Variables used by the blueprint just
-like a Cluster file.
-
-    $ cat clusters/production/[node_id].rb
-    cluster   :production
-    blueprint :webserver
-
-The facts file is contains information gathered by Ohai.
-
-    $ cat facts/production/[node_id].json
-    { "ec2": { "instance_id": "i-91923", "ip_address": "127.0.0.1", ... } }
+The database now contains our new node. Specifically, it contains the
+file `nodes/production-webserver-i9999.json` which contains a wealth of
+information about the server (provided by Ohai).
 
 ## Testing
 
@@ -168,31 +158,17 @@ Because developing and testing against a real server is slow, Config
 provides several tools to help you understand what will happen before
 you get there.
 
-### Validate
-
-Config can validate that your files are well formed and that all required
-variables have been specified.
-
-    $ config-validate
-
-If something is invalid, Config will tell you.
-
-    blueprints/test.rb
-    Nginx::Site missing value for :name (The hostname that the site should respond to)
-
-    patterns/nginx/service.rb
-    Nginx::Service missing description for attribute :service_name
-
 ### Try a Blueprint
 
 Once the parts are valid, you might want to get an idea of what the
 result of a Blueprint will be.
 
-    $ config-try-blueprint blueprints/production.rb
+    $ config-try-blueprint webserver production
 
-The result of this command is a record of everything that would happen.
-It might look something like this, showing the hierarchy of patterns
-used and their results.
+The result of this command is a record of everything that would happen
+if a webserver executes within the production clsuter. It might look
+something like this, showing the hierarchy of patterns used and their
+results.
 
     # Nginx::Service
       # Config::Patterns::Package
@@ -218,25 +194,31 @@ used and their results.
       Created /etc/nginx/sites-available/example.com => /etc/nginx/sites-enabled/example.com
     Notify nginx
 
+You can also try a blueprint without specifying a cluster. Doing so uses
+a "spy" cluster to collect all of the variables required to execute the
+blueprint.
+
+    $ config-try-blueprint production
+
 ## What is a Blueprint
 
-A Blueprint uses one or more Patterns to describe a server. It may be
-configured via Variables from the current Node or the current Cluster.
+A Blueprint uses one or more patterns to describe a node. It may be
+configured via variables from the current node or the current cluster.
 Blueprints are stored in `blueprints/[name].rb`.
 
 ### How a Blueprint is executed
 
 Blueprint execution occurs in a few steps:
 
-1. **Accumulate** Recursively traverse all Patterns.
-1. **Validate** Ensure that all Patterns have been defined correctly and
-   that all Attributes have been set.
-1. **Resolve** Detect conflicting Patterns. Mark duplicate Patterns to
+1. **Accumulate** Recursively traverse all patterns.
+1. **Validate** Ensure that all patterns have been defined correctly and
+   that all attributes have been set.
+1. **Resolve** Detect conflicting Patterns. Mark duplicate patterns to
    execute in *skip* mode.
-1. **Destroy** If a previous execution exists, find any Patterns that
-   executed previously but would not execute now. Mark those Patterns
+1. **Destroy** If a previous execution exists, find any patterns that
+   executed previously but would not execute now. Mark those patterns
    to execute in *destroy* mode.
-1. **Execute** Execute all Patterns.
+1. **Execute** Execute all patterns.
 
 ## What is a Pattern
 
@@ -246,7 +228,8 @@ as `File` and `Package` are provided by Config. You can use these
 patterns to create your own, higher level patterns. Patterns are stored
 in `patterns/[topic]/[name].rb`.
 
-All patterns inherit from `Config::Pattern`. A trivial example.
+All patterns inherit from `Config::Pattern`. A trivial example looks
+like this.
 
     class LastRunAt < Config::Pattern
       def call
@@ -268,18 +251,16 @@ rewrite it without the helper.
       end
     end
 
-With this we've exposed another important method in Pattern's API,
-`add`. `add` takes a Pattern class and an optional configuration block.
-More importantly, we've exposed that by instantiating a Pattern we have
-not executed it. Put another way: there are two phases to using a
-Pattern: Accumulation and Execution. To configure a server, obviously we
-need to Execute the Pattern. Before doing so, Config accumulates all of
-the patterns that will run in order to validate, detect duplicates and
-comflicts.
+With this we've exposed an important method in Pattern's API.  `add`
+takes a Pattern class and an optional configuration block. You can use
+the `add` method to accumulate any pattern class. It's also worth noting
+here that the `call` method should never modify the underlying system.
+It *only* describes the actions that will occur should you decide to do
+so. This separation is critical to Config's builtin testing tools.
 
 ### Attributes
 
-To be useful in more than one situation, a Pattern uses variables to
+To be useful in more than one situation, a pattern uses variables to
 alter its behavior. We call those Attributes and they are another of the
 APIs that `Config::Pattern` exposes. Let's look at what
 `Config::Patterns::File` as used above might look like.
@@ -292,9 +273,7 @@ APIs that `Config::Pattern` exposes. Let's look at what
       desc "The contents of the file"
       attr :content
 
-      def call
-        ...
-      end
+      ...
     end
 
 The Attributes API has three methods. `desc` describes the purpose of an
@@ -305,13 +284,13 @@ Pass a second argument to `attr` or `key` to set a default value.
 
     attr :content, "Hello"
 
-**Important** All attributes of a Pattern must have a value. If nil is
+**Important** All attributes of a pattern must have a value. If nil is
 an acceptable value, you must set that as the default.
 
 #### Keys
 
-A Pattern's Key attributes describe what it means to be a unique
-instance of a Pattern. For example in our File example, the `path` is
+A pattern's Key attributes describe what it means to be a unique
+instance of a pattern. For example in our `File` example, the `path` is
 defined as Key. By defining `path` as a Key, Config will ensure that we
 have one and only one file at that path.
 
@@ -410,37 +389,22 @@ stored in `clusters/[name].rb`
 
     $ config-create-cluster production
     $ vim clusters/production.rb
-    blueprint :webserver,
+    configure :web,
       host: "example.com",
       enabled: true
 
 Here we have created a `production` cluster and configured some
-variables for the `webserver`. When a Blueprint executes within this
-Cluster, it may access variables to alter its behavior.
+variables dealing with "web". When a Blueprint executes within this
+Cluster, it may access variables to alter its behavior. You may define
+as many sets of variables as you'd like. If you execute a pattern the
+tries to access a variable that is not defined, Config will throw an
+error.
 
     $ vim blueprints/webserver.rb
     add Nginx::Site do |site|
-      site.host = cluster.host
-      site.enabled = cluster.enabled
+      site.host = cluster.web.host
+      site.enabled = cluster.web.enabled
     end
-
-*TODO: Should variables be blueprint specific, grouped in to arbitrary
-buckets, or something else?`
-
-**Ideas** I believe that the configuration of each blueprint should be
-clear, and that within the blueprint you should not pull variables from
-many locations. The minimum locations should be kept to 1) cluster 2)
-node variables, 3) node facts. However, there is a need for multiple
-blueprints to need access to the same variables while keeping the
-definition of those values DRY. Some kind of reference system could be
-useful.
-
-    set :shared_variables,
-      website_host: "example.com"
-
-    blueprint :webserver,
-      host: -> { shared_variables.website_host },
-      enabled: true
 
 **Ideas** Another dimension of reuse might be blueprint inheritance. I
 could definitely see it useful to define a "base" blueprint from which
@@ -466,7 +430,7 @@ others can inherit. What might that look like?
 
 ### Nodes
 
-A cluster is only useful once Nodes are running within it. Each Node has
+A cluster is only useful once nodes are running within it. Each node has
 access to the configuration of other nodes within its cluster, and
 *only* within its cluster. You need not fear creating a staging cluster
 whose configuration points to the production database.
@@ -488,7 +452,7 @@ secret keys are stored, so that they may be distributed to new nodes.
 You may use a different key for each cluster. By default, we'll have
 one key for everything, called "default".
 
-    config-create-secret [NAME]
+    echo "shh" | config-store-secret [NAME]
 
 The project and data git repositories are also passed from the hub to
 nodes. By default, Config uses the project's origin to determine the
@@ -508,13 +472,13 @@ example), this form will allow you to specify the details.
 
     project_repo do |p|
       p.repo = 'git@github-project:rcarver/config-example.git'
-      p.ssh_key = 'project'
       p.hostname = 'github.com'
+      p.ssh_key = 'project'
     end
     data_repo do |p|
       p.repo = 'git@github-data:rcarver/config-example-data.git'
-      p.ssh_key = 'data'
       p.hostname = 'github.com'
+      p.ssh_key = 'data'
     end
 
 The resulting `.ssh/config` looks something like this.
@@ -534,21 +498,21 @@ To allow a node to manage itself it must be boostrapped. Bootstrapping
 installs system requirements, installs the secret and clones the git
 repos. To bootstrap any server, run the bootstrap script (written in
 bash) on it. To generate a bootstrap script, identify the cluster,
-blueprint and a unique name for the node. This name becomes its
-`hostname` and forms the basis of consistent identification for all
-nodes. Here we bootstrap a new production webserver, called "1".
+blueprint and a unique name for the node. We call this name the "FQN"
+(fully qualified name). Here we bootstrap a new production webserver,
+called "1".
 
-    config-bootstrap production-webserver-1 | ssh IP_ADDRESS "sudo bash"
+    config-create-bootstrap production-webserver-1 | ssh IP_ADDRESS "sudo bash"
 
 That's it. When the script completes the server will have a functional
-copy of the project and will add itself as a node in our system. To see
-information about the new node, ask for it.
+copy of the project and will have added itself to the database (the
+"data" repo). To see information about the new node, ask for it.
 
     config-show-node production-webserver-1
 
-Behind the scenes, Config will sync the data repository and then extract
-node facts and other information. You can see the raw data stored at
-`.data/git/facts/production-webserver-1.json`.
+Behind the scenes, Config will sync the data repo and then extract node
+facts and other information. You can see the raw data stored at
+`.data/project-data/nodes/production-webserver-1.json`.
 
 ## Advanced Configuration
 
@@ -575,7 +539,8 @@ Something here about a workflow like this:
 
 * Create a new branch
 * Make changes to patterns, etc
-* Create nodes
+* Create nodes. Should they be stored or referenced by a "branch"
+  pointer in the data repo?
 * Merging this to master would be weird, right?
 * Should a Cluster indicate the branch(es) that are valid to boot from?
 * Is this how one might do development?
