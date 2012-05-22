@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+
+require 'config'
+
+usage = "config-know-host [HOST]"
+
+host = ARGV.shift
+
+Config.log_to $stdout
+project = Config.project
+
+if host
+  hosts = [host]
+else
+  hosts = project.hub.ssh_hosts
+end
+
+hosts.each do |host|
+  $stderr.puts "Generating signature for #{host}"
+  out, err, status = Open3.capture3("ssh-keyscan -H #{host}")
+
+  if status.exitstatus == 0
+    signature = out
+    project.data_dir.ssh_host_signature(host).write(signature)
+  else
+    $stdout.puts out unless out.empty?
+    $stderr.puts err unless err.empty?
+    exit status.exitstatus
+  end
+end
