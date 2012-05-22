@@ -11,20 +11,23 @@ describe Config::Core::Executor do
     it "recursively calls patterns until all are found" do
       called = []
 
-      a = lambda { called << "a" }
-      b = lambda { called << "b"; accumulation << a }
-      c = lambda { called << "c" }
-      d = lambda { called << "d"; accumulation << c; accumulation << b }
-      e = lambda { called << "e" }
-      f = lambda { called << "f"; accumulation << d }
-      g = lambda { called << "g"; accumulation << e }
+      a, b, c, d, e, f, g = nil
 
-      accumulation.concat [f, g]
+      g = lambda       { called << "g"; accumulation << e }
+        e = lambda     { called << "e" }
+      f = lambda       { called << "f"; accumulation << d }
+        d = lambda     { called << "d"; accumulation << c; accumulation << b }
+          c = lambda   { called << "c" }
+          b = lambda   { called << "b"; accumulation << a }
+            a = lambda { called << "a" }
+
+      accumulation.concat [g, f]
 
       subject.accumulate
 
-      called.must_equal %w(f g d e c b a)
-      accumulation.must_equal [f, g, d, e, c, b, a]
+      called.size.must_equal 7
+      called.must_equal %w(g e f d c b a)
+      accumulation.must_equal [g, f, e, d, c, b, a]
     end
   end
 

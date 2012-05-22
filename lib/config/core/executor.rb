@@ -7,15 +7,17 @@ module Config
       end
 
       def accumulate
-        index = 0
-        loop do
-          size = @accumulation.size
-          slice = @accumulation.to_a.slice(index..-1)
-          slice.each do |p|
-            p.call
-          end
-          break if size == @accumulation.size
-          index = size
+        roots = @accumulation.to_a.slice(0..-1)
+        roots.each do |p|
+          traverse(@accumulation, p)
+        end
+      end
+
+      def traverse(accumulation, pattern)
+        size = accumulation.size
+        pattern.call
+        accumulation.to_a.slice(size..-1).each do |p|
+          traverse(accumulation, p)
         end
       end
 
