@@ -103,10 +103,24 @@ module Config
       end
     end
 
+    # Public: Add a package.
+    #
+    # name - String name of the package.
+    #
+    # Yields a Config::Patterns::Package.
+    #
+    def package(name, &block)
+      add Config::Patterns::Package do |p|
+        p.name = name
+        yield p if block_given?
+      end
+    end
+
     # Autoload builtin patterns.
 
     autoload :Directory, 'config/patterns/directory'
     autoload :File, 'config/patterns/file'
+    autoload :Package, 'config/patterns/package'
     autoload :Script, 'config/patterns/script'
 
   end

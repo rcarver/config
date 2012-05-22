@@ -88,6 +88,24 @@ describe Config::Patterns do
       end
     end
   end
+
+  describe "#package" do
+
+    let(:pattern) { Config::Patterns::Package }
+
+    it "sets the name and adds the pattern" do
+      mock.expect(:name=, nil, ["nginx"])
+      subject.package "nginx"
+    end
+
+    it "calls the block" do
+      mock.expect(:name=, nil, ["nginx"])
+      mock.expect(:other=, nil, ["1.1"])
+      subject.package "nginx" do |s|
+        s.other = "1.1"
+      end
+    end
+  end
 end
 
 describe Config::Patterns::FileTemplate do
