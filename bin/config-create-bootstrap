@@ -98,6 +98,3 @@ puts access_file.read
 puts
 puts "echo; echo '[Project]'"
 puts project_file.read
-
-#libssl-dev
-#yaml
