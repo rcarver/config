@@ -34,8 +34,8 @@ describe Config::Patterns::Package do
       subject.name = "nginx"
       patterns = call_pattern
       patterns.size.must_equal 1
-      patterns.first.code.must_equal "apt-get install nginx"
-      patterns.first.reverse.must_equal "apt-get remove nginx"
+      patterns.first.code.must_equal "apt-get install nginx -y -q"
+      patterns.first.reverse.must_equal "apt-get remove nginx -y -q"
     end
 
     it "installs with a version" do
@@ -43,8 +43,8 @@ describe Config::Patterns::Package do
       subject.version = "1.1"
       patterns = call_pattern
       patterns.size.must_equal 1
-      patterns.first.code.must_equal "apt-get install nginx --version=1.1"
-      patterns.first.reverse.must_equal "apt-get remove nginx"
+      patterns.first.code.must_equal "apt-get install nginx --version=1.1 -y -q"
+      patterns.first.reverse.must_equal "apt-get remove nginx -y -q"
     end
   end
 end

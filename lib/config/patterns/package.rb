@@ -20,14 +20,14 @@ module Config
         if version
           add Config::Patterns::Script do |s|
             s.name = "install #{name} at #{version}"
-            s.code = "apt-get install #{name} --version=#{version}" 
-            s.reverse = "apt-get remove #{name}"
+            s.code = "apt-get install #{name} --version=#{version} -y -q"
+            s.reverse = "apt-get remove #{name} -y -q"
           end
         else
           add Config::Patterns::Script do |s|
             s.name = "install #{name}"
-            s.code = "apt-get install #{name}" 
-            s.reverse = "apt-get remove #{name}"
+            s.code = "apt-get install #{name} -y -q"
+            s.reverse = "apt-get remove #{name} -y -q"
           end
         end
       end
