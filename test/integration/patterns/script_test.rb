@@ -110,6 +110,39 @@ describe "filesystem", Config::Patterns::Script do
       STR
     end
   end
+
+  describe "#destroy" do
+
+    before do
+      subject.reverse = <<-STR
+        if [ -f #{path} ]; then
+          rm #{path}
+        else
+          exit 1
+        fi
+      STR
+    end
+
+    it "runs the script" do
+      path.open("w") { |f| f.print "here" }
+      execute :destroy
+      path.wont_be :exist?
+    end
+
+    it "fails if the script returns non-zero status" do
+      proc { execute :destroy }.must_raise Config::Error
+    end
+  end
+
+  describe "#destroy when no reverse is given" do
+
+    it "logs" do
+      execute :destroy
+      log_string.must_equal <<-STR
+No reverse code was given
+      STR
+    end
+  end
 end
 
 
