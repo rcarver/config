@@ -7,8 +7,14 @@ module Config
       end
 
       def accumulate
-        roots = @accumulation.to_a.slice(0..-1)
+        # Get the root patterns.
+        roots = @accumulation.to_a.dup
+        # Reset the accumulation.
+        @accumulation.clear
+        # Rebuild the accumulation as a depth-first
+        # traversal of each root.
         roots.each do |p|
+          @accumulation << p
           traverse(@accumulation, p)
         end
       end

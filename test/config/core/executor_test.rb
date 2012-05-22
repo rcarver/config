@@ -27,7 +27,7 @@ describe Config::Core::Executor do
 
       called.size.must_equal 7
       called.must_equal %w(g e f d c b a)
-      accumulation.must_equal [g, f, e, d, c, b, a]
+      accumulation.must_equal [g, e, f, d, c, b, a]
     end
   end
 

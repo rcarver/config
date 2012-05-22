@@ -81,6 +81,11 @@ module Config
         @patterns.size
       end
 
+      # Internal: Clear the current Patterns.
+      def clear
+        @patterns.clear
+      end
+
       # Internal: Iterate over the Patterns.
       def each(&block)
         @patterns.each(&block)
