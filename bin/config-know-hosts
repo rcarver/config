@@ -2,15 +2,13 @@
 
 require 'config'
 
-usage = "config-know-host [HOST]"
-
-host = ARGV.shift
+usage = "config-know-host [HOST] [HOST]"
 
 Config.log_to $stdout
 project = Config.project
 
-if host
-  hosts = [host]
+if ARGV.any?
+  hosts = ARGV
 else
   hosts = project.hub.ssh_hosts
 end
