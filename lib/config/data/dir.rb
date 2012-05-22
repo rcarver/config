@@ -34,6 +34,15 @@ module Config
         Config::Data::File.new(@dir + "ssh-key-#{name}")
       end
 
+      # Manage the signature for an SSH known host.
+      #
+      # host - String name of the host.
+      #
+      # Returns a Config::Data::File.
+      def ssh_host_signature(host)
+        Config::Data::File.new(@dir + "ssh-host-#{host}")
+      end
+
       # Get a database that manages information about your nodes.
       #
       # Returns a Config::Data::Database.

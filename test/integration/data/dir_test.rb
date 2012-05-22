@@ -20,4 +20,13 @@ describe "filesystem", Config::Data::Dir do
       file.path.must_equal (tmpdir + "ssh-key-default").to_s
     end
   end
+
+  describe "#ssh_host_signature" do
+
+    it "returns a file" do
+      file = subject.ssh_host_signature("github.com")
+      file.must_be_instance_of Config::Data::File
+      file.path.must_equal (tmpdir + "ssh-host-github.com").to_s
+    end
+  end
 end

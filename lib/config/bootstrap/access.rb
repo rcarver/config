@@ -12,6 +12,9 @@ module Config
       desc "Array of SSH keys to install. Hash of { name: content }"
       attr :ssh_keys
 
+      desc "Array of SSH known hosts. Hash of { host: signature }"
+      attr :ssh_known_hosts
+
       def call
         file path do |f|
           f.template = "access.erb"

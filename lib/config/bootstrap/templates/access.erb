@@ -3,6 +3,10 @@ set -e
 mkdir -p /root/.ssh
 chmod 700 /root/.ssh
 
+#
+# Install ssh config.
+#
+
 if [ -f /root/.ssh/config ]; then
   rm /root/.ssh/config
 fi
@@ -13,6 +17,28 @@ echo '<%= config %>' >> /root/.ssh/config
 <% end %>
 
 chmod 600 /root/.ssh/config
+
+#
+# Install known hosts.
+#
+
+if [ -f /root/.ssh/known_hosts ]; then
+  rm /root/.ssh/known_hosts
+fi
+
+# TODO: we could use ssh-keygen -F [host] to determine if we need to
+# install it. Or, remove and reinstall it. Or any number of things
+# whereby we wouldn't need to rm known_hosts each time.
+<% ssh_known_hosts.each do |host, signature| %>
+echo '<%= signature %>' >> /root/.ssh/known_hosts
+
+<% end %>
+
+chmod 600 /root/.ssh/known_hosts
+
+#
+# Install ssh keys.
+#
 
 <% ssh_keys.each do |path, content| %>
 echo '<%= content %>' > <%= path %>

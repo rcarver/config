@@ -35,5 +35,9 @@ module Config
     # Returns an Array of Config::Core::SSHConfig.
     attr :ssh_configs
 
+    def ssh_hosts
+      ssh_configs.map { |c| c.hostname }.uniq
+    end
+
   end
 end
