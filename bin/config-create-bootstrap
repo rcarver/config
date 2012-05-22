@@ -62,6 +62,14 @@ Config.blueprint(blueprint_name) do
       end
       keys
     end
+    p.ssh_known_hosts = begin
+      hosts = {}
+      hub.ssh_hosts.each do |host|
+        # TODO: handle the host is missing locally.
+        hosts[host] = data_dir.ssh_host_signature(host).read
+      end
+      hosts
+    end
   end
 
   # Initialize and run the project.
