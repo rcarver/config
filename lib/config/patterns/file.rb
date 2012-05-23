@@ -85,7 +85,7 @@ module Config
 
       def prepare
         if content
-          @new_content = content
+          @new_content = String(content)
           log_content = @new_content
         else
           template = ::File.read(template_path)

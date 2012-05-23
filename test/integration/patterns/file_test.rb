@@ -73,6 +73,23 @@ describe Config::Patterns::File do
       ]
     end
   end
+
+  describe "#prepare" do
+
+    it "logs explicit content" do
+      skip
+    end
+
+    it "logs template content" do
+      skip
+    end
+
+    it "converts non-String content to String" do
+      subject.content = 123
+      subject.prepare
+      subject.instance_variable_get(:@new_content).must_equal "123"
+    end
+  end
 end
 
 describe "filesystem", Config::Patterns::File do
