@@ -41,6 +41,7 @@ module Config
       end
 
       class Value
+        include Config::Core::Loggable
 
         def initialize(chain)
           @chain = chain
@@ -56,7 +57,13 @@ module Config
         end
 
         def to_s
-          "fake:#{@chain.join('.')}"
+          value = "fake:#{@chain.join('.')}"
+          log << "Read #{@chain.join('.')} => #{value.inspect}"
+          value
+        end
+
+        def to_str
+          to_s
         end
 
         def [](key)

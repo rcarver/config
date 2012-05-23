@@ -36,6 +36,7 @@ describe Config::Spy::Facts::Value do
 
   specify "#to_s" do
     subject.to_s.must_equal "fake:one.two"
+    log_string.must_equal %(Read one.two => "fake:one.two"\n)
   end
 
   specify "#[]" do
