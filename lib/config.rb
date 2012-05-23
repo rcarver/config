@@ -64,6 +64,7 @@ module Config
 
   module Spy
     autoload :Configuration, "config/spy/configuration"
+    autoload :Facts, "config/spy/facts"
   end
 
   # Public: This exception may be raised by a Pattern if a problem is
