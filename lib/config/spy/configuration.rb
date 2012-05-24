@@ -45,6 +45,13 @@ module Config
           @keys = Set.new
         end
 
+        def to_s
+          "fake:#{@name}"
+        end
+
+        # Behave like a String.
+        alias to_str to_s
+
         # Internal: Retrieve the keys that have been accessed. Use this
         # to find out what happened.
         #

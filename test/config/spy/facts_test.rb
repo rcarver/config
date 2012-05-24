@@ -60,5 +60,9 @@ Read one.two.three => "fake:one.two.three"
 Read one.two.three.four => "fake:one.two.three.four"
     STR
   end
+
+  it "behaves like a string" do
+    String(subject).must_equal "fake:one.two"
+  end
 end
 

@@ -61,4 +61,12 @@ describe Config::Spy::Configuration::Group do
     subject.bar
     subject.get_accessed_keys.must_equal [:foo, :bar]
   end
+
+  specify "#to_s" do
+    subject.to_s.must_equal "fake:sample"
+  end
+
+  it "behaves like a string" do
+    String(subject).must_equal "fake:sample"
+  end
 end

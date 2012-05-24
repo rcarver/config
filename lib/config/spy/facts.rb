@@ -60,6 +60,9 @@ module Config
           "fake:#{@chain.join('.')}"
         end
 
+        # Behave like a String.
+        alias to_str to_s
+
         def [](key)
           @values[key.to_s] ||= begin
             chain = @chain + [key.to_s]
