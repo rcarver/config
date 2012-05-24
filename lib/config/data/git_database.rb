@@ -22,11 +22,11 @@ module Config
         log << "Database updated. Now at: #{version}"
       end
 
-      # Get a node from the database.
+      # Find a node in the database.
       #
       # fqn - String the fully qualified node name.
       #
-      # Returns a Config::Node.
+      # Returns a Config::Node or nil.
       def find_node(fqn)
         file = node_file(fqn, false)
         if file.exist?

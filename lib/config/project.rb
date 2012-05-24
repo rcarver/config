@@ -5,33 +5,11 @@ module Config
     UnknownCluster = Class.new(StandardError)
     UnknownBlueprint = Class.new(StandardError)
 
-    class PathHash < Hash
-      def initialize(path)
-        @path = path
-        super() # don't pass args
-      end
-      def [](key)
-        if key.include?("/")
-          if (@path + key).exist?
-            super File.basename(key, ".rb")
-          else
-            raise ArgumentError, "File does not exist #{key.inspect}"
-          end
-        else
-          super
-        end
-      end
-    end
-
     def initialize(project_path, data_path)
-      @path = Pathname.new(project_path).cleanpath
+      @loader = Config::Core::ProjectLoader.new(project_path)
       @data_path = Pathname.new(data_path).cleanpath
       @data_dir = Config::Data::Dir.new(@data_path)
       @git_repo = Config::Core::GitRepo.new(@path)
-
-      @clusters = PathHash.new(@path)
-      @blueprints = PathHash.new(@path)
-      @nodes = PathHash.new(@data_dir.repo_path)
     end
 
     def update
@@ -83,25 +61,7 @@ git pull --rebase
     #
     # Returns a Config::Hub.
     def hub
-      @hub ||= begin
-        file = @path + "hub.rb"
-
-        hub = file.exist? ? Config::Hub.from_file(@path + "hub.rb") : Hub.new
-
-        hub.project_config ||= Config::Core::GitConfig.new
-        hub.data_config    ||= Config::Core::GitConfig.new
-
-        if !hub.project_config.url
-          repo = `cd #{@path} && git config --get remote.origin.url`
-          hub.project_config.url = repo.empty? ? nil : repo.chomp
-        end
-
-        if hub.project_config.url && !hub.data_config.url
-          hub.data_config.url = hub.project_config.url.sub(/\.git/, '-data.git')
-        end
-
-        hub
-      end
+      @hub ||= @loader.get_hub
     end
 
     # Update the stored node data by inspecting the current execution
@@ -111,15 +71,9 @@ git pull --rebase
     #
     # Returns a Config::Node.
     def update_node(fqn)
-      begin
-        node = get_node(fqn)
-      rescue UnknownNode
-        node = Config::Node.from_fqn(fqn)
-      end
-
+      node = database.find_node(fqn) || Config::Node.from_fqn(fqn)
       node.facts = fact_inventor.call
       database.update_node(node)
-
       node
     end
 
@@ -129,13 +83,8 @@ git pull --rebase
     #
     # Returns nothing.
     def remove_node(fqn)
-      begin
-        node = get_node(fqn)
-        database.remove_node(node)
-      rescue UnknownNode
-        # Nothing
-      end
-
+      node = database.find_node(fqn)
+      database.remove_node(node) if node
       nil
     end
 
@@ -145,7 +94,7 @@ git pull --rebase
     #
     # Returns a Config::Node.
     def execute_node(fqn) #, previous_accumulation = nil)
-      require_all
+      @loader.require_all
 
       node = get_node(fqn)
       cluster = get_cluster(node.cluster_name)
@@ -169,7 +118,7 @@ git pull --rebase
     #
     # Returns nothing.
     def try_blueprint(blueprint_name, cluster_name = nil)
-      require_all
+      @loader.require_all
 
       blueprint = get_blueprint(blueprint_name)
 
@@ -191,62 +140,12 @@ git pull --rebase
       blueprint.execute
     end
 
-    def require_all
-      require_patterns
-      require_clusters
-      require_blueprints
-    end
-
-    def require_patterns
-      return if @required_patterns; @required_patterns = true
-
-      Dir[(@path + "patterns/**/*.rb")].each do |f|
-        begin
-          require f
-        rescue NameError => e
-          # This allows files to be written as `class Topic::Pattern`
-          # instead of `module Topic; class Pattern` which makes the
-          # file nicer because it reduces the indentation. However, we
-          # need to perform this trick so that Ruby doesn't choke on the
-          # undefined constant `Topic`. An alternative approach would be
-          # to infer the module name from the file name. This would be
-          # good because it enforces naming convensions but it also
-          # feels less obvious.
-          name = e.message[/^uninitialized constant\s([A-Z].*)$/, 1]
-          if name
-            Object.const_set(name, Module.new)
-            retry
-          else
-            raise "Could not auto-define a constant in #{f}. The message was #{e.message.inspect}"
-          end
-        end
-      end
-    end
-
-    def require_clusters
-      return if @required_clusters; @required_clusters = true
-
-      Dir[(@path + "clusters/*.rb")].each do |f|
-        cluster = Cluster.from_file(f)
-        @clusters[cluster.name] = cluster
-      end
-    end
-
-    def require_blueprints
-      return if @required_blueprints; @required_blueprints = true
-
-      Dir[(@path + "blueprints/*.rb")].each do |f|
-        blueprint = Blueprint.from_file(f)
-        @blueprints[blueprint.name] = blueprint
-      end
-    end
-
     def get_cluster(name)
-      @clusters[name] or raise UnknownCluster, "Cluster #{name.inspect} was not found"
+      @loader.get_cluster(name) or raise UnknownCluster, "Cluster #{name.inspect} was not found"
     end
 
     def get_blueprint(name)
-      @blueprints[name] or raise UnknownBlueprint, "Blueprint #{name.inspect} was not found"
+      @loader.get_blueprint(name) or raise UnknownBlueprint, "Blueprint #{name.inspect} was not found"
     end
 
     def get_node(name)
@@ -257,10 +156,9 @@ git pull --rebase
     # Internal / Dependency Injection
     #
 
+    attr_writer :loader
     attr_writer :git_repo
-
     attr_writer :database
-
     attr_writer :fact_inventor
 
     def fact_inventor
