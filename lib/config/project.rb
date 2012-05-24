@@ -41,11 +41,10 @@ module Config
       :updated
     end
 
-    # This is a bash implementation of #update along with bundle
-    # install. It's written in bash so that it can be used during the
-    # bootstrap process. It's stored here so that it can be used both in
-    # the config-update-project command and the node-based config-run
-    # command. It's also stored here so that the script is visible
+    # This is a bash implementation of #update It's written in bash so that it
+    # can be used during the bootstrap process. It's stored here so that it can
+    # be used both in the config-update-project command and the node-based
+    # config-run command. It's also stored here so that the script is visible
     # alongside logically similar code.
     #
     # Returns a String.
