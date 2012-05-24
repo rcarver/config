@@ -71,6 +71,10 @@ describe "filesystem running items", Config::Project do
         (tmpdir + "file1").read.must_equal "hello world"
         (tmpdir + "file2").read.must_equal "127.0.0.1"
       end
+
+      it "executes the blueprint with a previous accumulation" do
+        skip "TODO"
+      end
     end
   end
 
