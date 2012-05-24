@@ -130,8 +130,13 @@ git pull --rebase
     #
     # Returns nothing.
     def remove_node(fqn)
-      node = get_node(fqn)
-      database.remove_node(node)
+      begin
+        node = get_node(fqn)
+        database.remove_node(node)
+      rescue UnknownNode
+        # Nothing
+      end
+
       nil
     end
 
@@ -140,19 +145,21 @@ git pull --rebase
     # fqn - String Node FQN.
     #
     # Returns a Config::Node.
-    def execute_node(fqn)
+    def execute_node(fqn) #, previous_accumulation = nil)
       require_all
 
       node = get_node(fqn)
       cluster = get_cluster(node.cluster_name)
       blueprint = get_blueprint(node.blueprint_name)
 
+      blueprint.facts = node.facts
       blueprint.configuration = cluster.configuration
-      blueprint.accumulate
+      #blueprint.previous_accumulation = previous_accumulation
+      accumulation = blueprint.accumulate
       blueprint.validate
       blueprint.execute
 
-      node
+      accumulation
     end
 
     # Execute a blueprint in noop mode.
@@ -173,6 +180,8 @@ git pull --rebase
       else
         blueprint.configuration = Config::Spy::Configuration.new
       end
+
+      blueprint.facts = Config::Spy::Facts.new
 
       accumulation = blueprint.accumulate
       accumulation.each do |pattern|

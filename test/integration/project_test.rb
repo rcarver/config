@@ -4,45 +4,80 @@ describe "filesystem running items", Config::Project do
 
   subject { Config::Project.new(tmpdir, tmpdir + ".data") }
 
-  before do
-    (tmpdir + "blueprints").mkdir
-    (tmpdir + "blueprints/message.rb").open("w") do |f|
-      f.puts <<-STR
-        file "#{tmpdir}/file1" do |f|
-          f.content = configure.messages.greeting
-        end
-      STR
+  describe "executing a blueprint" do
+
+    before do
+      (tmpdir + "blueprints").mkdir
+      (tmpdir + "blueprints/message.rb").open("w") do |f|
+        f.puts <<-STR
+          file "#{tmpdir}/file1" do |f|
+            f.content = configure.messages.greeting
+          end
+          file "#{tmpdir}/file2" do |f|
+            f.content = node.ec2.ip_address
+          end
+        STR
+      end
+
+      (tmpdir + "clusters").mkdir
+      (tmpdir + "clusters/production.rb").open("w") do |f|
+        f.puts <<-STR
+          configure :messages,
+            greeting: "hello world"
+        STR
+      end
     end
 
-    (tmpdir + "clusters").mkdir
-    (tmpdir + "clusters/production.rb").open("w") do |f|
-      f.puts <<-STR
-        configure :messages,
-          greeting: "hello world"
-      STR
+    describe "#try_blueprint" do
+
+      it "executes the blueprint in noop mode" do
+        subject.try_blueprint("message", "production")
+        log_string.must_include("Create [File #{tmpdir}/file1]")
+        log_string.must_include("Create [File #{tmpdir}/file2]")
+        log_string.must_include("hello world")
+        (tmpdir + "file1").wont_be :exist?
+        (tmpdir + "file2").wont_be :exist?
+      end
+
+      it "executes the blueprint with a spy cluster and spy node" do
+        subject.try_blueprint("message")
+        log_string.must_include("Create [File #{tmpdir}/file1]")
+        log_string.must_include("Create [File #{tmpdir}/file2]")
+        log_string.must_include("fake:messages.greeting")
+        log_string.must_include("fake:ec2.ip_address")
+        (tmpdir + "file1").wont_be :exist?
+        (tmpdir + "file2").wont_be :exist?
+      end
     end
-  end
 
-  describe "#try_blueprint" do
+    describe "#execute_node" do
 
-    it "executes the blueprint in noop mode" do
-      subject.try_blueprint("message", "production")
-      log_string.must_include("Create [File #{tmpdir}/file1]")
-      log_string.must_include("hello world")
-      (tmpdir + "file1").wont_be :exist?
-    end
+      let(:node) { Config::Node.new("production", "message", "one") }
+      let(:facts) { Config::Core::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
+      let(:database) { MiniTest::Mock.new }
 
-    it "executes the blueprint with a spy cluster" do
-      subject.try_blueprint("message")
-      log_string.must_include("Create [File #{tmpdir}/file1]")
-      log_string.must_include("fake:messages.greeting")
-      (tmpdir + "file1").wont_be :exist?
+      before do
+        node.facts = facts
+        subject.database = database
+      end
+
+      after do
+        database.verify
+      end
+
+      it "executes the blueprint" do
+        database.expect(:find_node, node, [node.fqn])
+        subject.execute_node(node.fqn)
+        (tmpdir + "file1").read.must_equal "hello world"
+        (tmpdir + "file2").read.must_equal "127.0.0.1"
+      end
     end
   end
 
   describe "node operations" do
 
     let(:node) { Config::Node.new("production", "message", "one") }
+    let(:facts) { Config::Core::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
     let(:database) { MiniTest::Mock.new }
 
     before do
@@ -54,8 +89,6 @@ describe "filesystem running items", Config::Project do
     end
 
     describe "#update_node" do
-
-      let(:facts) { Config::Core::Facts.new(a: "ok") }
 
       before do
         subject.fact_inventor = -> { facts }
@@ -83,14 +116,10 @@ describe "filesystem running items", Config::Project do
         database.expect(:remove_node, nil, [node])
         subject.remove_node(node.fqn)
       end
-    end
 
-    describe "#execute_node" do
-
-      it "executes the blueprint" do
-        database.expect(:find_node, node, [node.fqn])
-        subject.execute_node(node.fqn)
-        (tmpdir + "file1").read.must_equal "hello world"
+      it "does nothing if the node does not exist" do
+        database.expect(:find_node, nil, [node.fqn])
+        subject.remove_node(node.fqn)
       end
     end
   end
