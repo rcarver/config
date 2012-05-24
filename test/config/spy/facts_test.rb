@@ -36,16 +36,29 @@ describe Config::Spy::Facts::Value do
 
   specify "#to_s" do
     subject.to_s.must_equal "fake:one.two"
-    log_string.must_equal %(Read one.two => "fake:one.two"\n)
   end
 
   specify "#[]" do
     subject[:three].must_be_instance_of Config::Spy::Facts::Value
     subject[:three].to_s.must_equal "fake:one.two.three"
+    assert subject[:three] === subject["three"]
+    assert subject["three"] === subject.three
   end
 
   specify "#method_missing" do
     subject.three.must_be_instance_of Config::Spy::Facts::Value
+  end
+
+  it "logs when a key is first accessed" do
+    subject.three
+    log_string.must_equal <<-STR
+Read one.two.three => "fake:one.two.three"
+    STR
+    subject.three.four
+    log_string.must_equal <<-STR
+Read one.two.three => "fake:one.two.three"
+Read one.two.three.four => "fake:one.two.three.four"
+    STR
   end
 end
 

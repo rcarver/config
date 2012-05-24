@@ -57,17 +57,16 @@ module Config
         end
 
         def to_s
-          value = "fake:#{@chain.join('.')}"
-          log << "Read #{@chain.join('.')} => #{value.inspect}"
-          value
-        end
-
-        def to_str
-          to_s
+          "fake:#{@chain.join('.')}"
         end
 
         def [](key)
-          @values[key.to_s] ||= self.class.new(@chain + [key.to_s])
+          @values[key.to_s] ||= begin
+            chain = @chain + [key.to_s]
+            value = self.class.new(chain)
+            log << "Read #{chain.join('.')} => #{value.to_s.inspect}"
+            value
+          end
         end
 
         def method_missing(message, *args, &block)
