@@ -40,6 +40,10 @@ module Config
         @root[message]
       end
 
+      def ==(other)
+        get_accessed_chains == other.get_accessed_chains
+      end
+
       class Value
         include Config::Core::Loggable
 

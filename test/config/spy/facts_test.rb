@@ -28,6 +28,12 @@ describe Config::Spy::Facts do
       "z"
     ]
   end
+
+  specify "#==" do
+    subject.must_equal Config::Spy::Facts.new
+    subject.a
+    subject.wont_equal Config::Spy::Facts.new
+  end
 end
 
 describe Config::Spy::Facts::Value do

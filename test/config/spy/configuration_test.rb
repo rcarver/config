@@ -32,6 +32,12 @@ describe Config::Spy::Configuration do
     subject.bar
     subject.get_accessed_groups.size.must_equal 2
   end
+
+  specify "#==" do
+    subject.must_equal Config::Spy::Configuration.new
+    subject.a
+    subject.wont_equal Config::Spy::Configuration.new
+  end
 end
 
 describe Config::Spy::Configuration::Group do

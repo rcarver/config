@@ -37,6 +37,10 @@ module Config
         self[message]
       end
 
+      def ==(other)
+        get_accessed_groups == other.get_accessed_groups
+      end
+
       class Group
         include Config::Core::Loggable
 
