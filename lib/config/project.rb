@@ -93,7 +93,7 @@ git pull --rebase
     # fqn - String Node FQN.
     #
     # Returns a Config::Node.
-    def execute_node(fqn) #, previous_accumulation = nil)
+    def execute_node(fqn, previous_accumulation = nil)
       @loader.require_all
 
       node = get_node(fqn)
@@ -102,7 +102,7 @@ git pull --rebase
 
       blueprint.facts = node.facts
       blueprint.configuration = cluster.configuration
-      #blueprint.previous_accumulation = previous_accumulation
+      blueprint.previous_accumulation = previous_accumulation if previous_accumulation
       accumulation = blueprint.accumulate
       blueprint.validate
       blueprint.execute
@@ -138,6 +138,8 @@ git pull --rebase
 
       blueprint.validate
       blueprint.execute
+
+      accumulation
     end
 
     def get_cluster(name)
