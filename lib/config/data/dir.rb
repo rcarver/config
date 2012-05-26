@@ -12,8 +12,17 @@ module Config
       #
       # Returns a String or nil.
       def fqn
-        value = Config::Data::File.new(@dir + "fqn").read
+        value = fqn_file.read
         value.chomp if value
+      end
+
+      # Set the FQN of the current node.
+      #
+      # fqn - String FQN.
+      #
+      # Returns nothing.
+      def fqn=(fqn)
+        fqn_file.write(fqn)
       end
 
       # Manage a secret.
@@ -50,6 +59,23 @@ module Config
         Config::Data::GitDatabase.new(repo.path, repo)
       end
 
+      # Get the stored accumulation.
+      #
+      # Returns a Config::Core::Accumulation or nil.
+      def accumulation
+        data = accumulation_file.read
+        Config::Core::Accumulation.from_string(data) if data
+      end
+
+      # Store the accumulation.
+      #
+      # accumulation - Config::Core::Accumulation.
+      #
+      # Returns nothing.
+      def accumulation=(accumulation)
+        accumulation_file.write(accumulation.serialize)
+      end
+
       # Get the path at which the git database lives.
       #
       # Returns a String.
@@ -58,6 +84,14 @@ module Config
       end
 
     protected
+
+      def accumulation_file
+        Config::Data::File.new(@dir + "accumulation.marshall")
+      end
+
+      def fqn_file
+        Config::Data::File.new(@dir + "fqn")
+      end
 
       def repo
         Config::Core::GitRepo.new(repo_path)

@@ -5,10 +5,22 @@ describe "filesystem", Config::Data::Dir do
   subject { Config::Data::Dir.new(tmpdir) }
 
   describe "#fqn" do
-    it "reads the value from disk if it exists" do
+
+    it "returns nil if no file exists" do
       subject.fqn.must_equal nil
+    end
+
+    it "reads from a file" do
       (tmpdir + "fqn").open("w") { |f| f.puts "xyz" }
       subject.fqn.must_equal "xyz"
+    end
+  end
+
+  describe "#fqn=" do
+
+    it "writes the value to disk" do
+      subject.fqn = "foo-bar-baz"
+      (tmpdir + "fqn").must_be :exist?
     end
   end
 
@@ -27,6 +39,28 @@ describe "filesystem", Config::Data::Dir do
       file = subject.ssh_host_signature("github.com")
       file.must_be_instance_of Config::Data::File
       file.path.must_equal (tmpdir + "ssh-host-github.com").to_s
+    end
+  end
+
+  describe "#accumulation" do
+
+    it "returns nil if no file exits" do
+      subject.accumulation.must_equal nil
+    end
+
+    it "reads from a file" do
+      a = Config::Core::Accumulation.new([1, 2, 3])
+      (tmpdir + "accumulation.marshall").open("w") { |f| f.print Marshal.dump(a) }
+      b = subject.accumulation
+      a.must_equal b
+    end
+  end
+
+  describe "#accumulation=" do
+
+    it "writes a file" do
+      subject.accumulation = Config::Core::Accumulation.new([1, 2, 3])
+      (tmpdir + "accumulation.marshall").must_be :exist?
     end
   end
 end
