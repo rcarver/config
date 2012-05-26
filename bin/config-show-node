@@ -10,6 +10,7 @@ fqn = ARGV.shift || project.data_dir.fqn
 
 abort "Missing FQN to identify the Node" unless fqn
 
+project.database.update
 node = project.get_node(fqn)
 
 puts JSON.generate(
