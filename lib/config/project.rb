@@ -12,6 +12,10 @@ module Config
       @git_repo = Config::Core::GitRepo.new(@path)
     end
 
+    def require_all
+      @loader.require_all
+    end
+
     def update
       return :dirty unless @git_repo.clean_status?
 
@@ -100,9 +104,12 @@ git pull --rebase
       cluster = get_cluster(node.cluster_name)
       blueprint = get_blueprint(node.blueprint_name)
 
+      # Configure.
       blueprint.facts = node.facts
       blueprint.configuration = cluster.configuration
       blueprint.previous_accumulation = previous_accumulation if previous_accumulation
+
+      # Execute.
       accumulation = blueprint.accumulate
       blueprint.validate
       blueprint.execute
@@ -122,20 +129,20 @@ git pull --rebase
 
       blueprint = get_blueprint(blueprint_name)
 
+      # Configure.
       if cluster_name
         cluster = get_cluster(cluster_name)
         blueprint.configuration = cluster.configuration
       else
         blueprint.configuration = Config::Spy::Configuration.new
       end
-
       blueprint.facts = Config::Spy::Facts.new
 
+      # Execute.
       accumulation = blueprint.accumulate
       accumulation.each do |pattern|
         pattern.noop!
       end
-
       blueprint.validate
       blueprint.execute
 
