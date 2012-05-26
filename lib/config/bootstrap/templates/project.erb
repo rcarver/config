@@ -14,12 +14,16 @@ echo '[installing project scripts]'
 echo '#!/bin/bash
 # Update the project and execute on this node.
 set -e
+if [ $UID -ne 0 ]; then
+  echo 'Must run as root'
+  exit 1
+fi
 cd /etc/config/project
 <%= update_project_script %>
 bundle-config install
 bundle-config exec config-update-database
 bundle-config exec config-exec-node
-' > /usr/local/sbin/config-update-all
+' > /usr/local/sbin/config-run-now
 
 echo '#!/bin/bash
 # Run config with protection.
@@ -28,7 +32,7 @@ if [ -f /etc/config/disabled ]; then
   echo "config is disabled. Use config-enable or remove /etc/config/disabled" >&2
   exit 1
 fi
-flock --nonblock --exclusive /var/lock/config --command config-update-all
+flock --nonblock --exclusive /var/lock/config --command config-run-now
 ' > /usr/local/sbin/config-run-with-lock
 
 echo '#!/bin/bash
@@ -51,7 +55,7 @@ if [ -f /etc/config/disabled ]; then
 fi
 ' > /usr/local/sbin/config-enable
 
-chmod 755 /usr/local/sbin/config-update-all
+chmod 755 /usr/local/sbin/config-run-now
 chmod 755 /usr/local/sbin/config-run-with-lock
 chmod 755 /usr/local/sbin/config-run
 chmod 755 /usr/local/sbin/config-disable
@@ -60,7 +64,7 @@ chmod 755 /usr/local/sbin/config-enable
 # TODO: We might want to add a --bootstrap flag to config-run
 # to indicate that this node should NOT exist. Otherwise you
 # might be creating a duplicate node. If we did that, we'd want
-# to call config-run with/without --bootstrap as appropriate, 
+# to call config-run with/without --bootstrap as appropriate,
 # probably dependent on the project existing?
 
 echo '[starting config-run]'
