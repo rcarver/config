@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'config'
+
+Config.log_to $stdout
+
+project = Config.project
+
+fqn = ARGV.shift || project.data_dir.fqn
+
+abort "Missing FQN to identify the Node" unless fqn
+
+node = project.get_node(fqn)
+
+puts JSON.generate(
+  node.as_json,
+  object_nl: "\n",
+  indent: "  ",
+  space: " "
+)
