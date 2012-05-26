@@ -57,6 +57,12 @@ describe Config::Core::Facts do
     subject.languages.ruby.version.must_equal "1.9.3"
   end
 
+  it "retrieves a full path" do
+    subject.at_path("languages.ruby.version").must_equal "1.9.3"
+    subject.at_path("languages.ruby.foo").must_equal nil
+    subject.at_path("languages.foo.bar").must_equal nil
+  end
+
   it "describes each chain link" do
     subject.languages.to_s.must_equal "[FactChain languages => ruby]"
     subject.languages.ruby.to_s.must_equal "[FactChain languages.ruby => platform,version]"

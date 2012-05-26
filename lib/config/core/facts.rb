@@ -45,6 +45,20 @@ module Config
         @chain.public_send(message, *args, &block)
       end
 
+      # Retrieve a value by its full path.
+      #
+      # Examples
+      #
+      #   facts.at_path("foo.bar.baz")
+      #
+      # Returns an object or nil.
+      def at_path(path)
+        parts = path.split(".")
+        parts.inject(@data) do |a, d|
+          a[d] if a
+        end
+      end
+
       attr_reader :data
 
       def eql?(other)
