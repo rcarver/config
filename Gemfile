@@ -10,3 +10,7 @@ group :test do
   gem 'fivemat'
   gem 'simple_mock'
 end
+
+group :development do
+  gem 'ronn'
+end

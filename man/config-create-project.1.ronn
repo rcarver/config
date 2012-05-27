@@ -1,0 +1,18 @@
+config-create-project(1) -- create a project template
+=====================================================
+
+## SYNOPSIS
+
+`config-create-project` <name>
+
+## DESCRIPTION
+
+**config-create-project** generates a project skeleton for use with the
+config(1) server configuration tool.
+
+Run this command at the root of a git repository that will become your config
+project.
+
+## SEE ALSO
+
+config(1), config(7)

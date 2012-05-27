@@ -22,3 +22,37 @@ end
 # desc "Run the server"
 # task :run do
 # end
+#
+
+desc 'Build the manual'
+task :man do
+  require 'ronn'
+  require 'config/version'
+  ENV['RONN_MANUAL']  = "Config Manual"
+  ENV['RONN_ORGANIZATION'] = "Config #{Config::VERSION}"
+  sh "ronn --warnings --style toc --html man/*.ronn"
+end
+
+desc 'Publish to github pages'
+task :pages => :man do
+  puts '----------------------------------------------'
+  puts 'Rebuilding pages ...'
+  verbose(true) {
+    rm_rf 'pages'
+    push_url = `git remote show origin`.split("\n").grep(/Push.*URL/).first[/git@.*/]
+    sh <<-STR, :verbose => true
+      set -e
+      git fetch -q origin
+      rev=$(git rev-parse origin/gh-pages)
+      git clone -q -b gh-pages . pages
+      cd pages
+      git reset --hard $rev
+      rm -f ronn*.html index.html
+      cp -rp ../man/ronn*.html ../man/index.txt ../man/index.html ./
+      git add -u ronn*.html index.html index.txt
+      git commit -m 'rebuild manual'
+      git push #{push_url} gh-pages
+    STR
+  }
+end
+

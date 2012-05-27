@@ -1,0 +1,116 @@
+config(5) - core concepts
+=========================
+
+## SYNOPSIS
+
+A config(1) project is made up of a number of concepts. Each concept is
+represented by one or more files.
+
+## DESCRIPTION
+
+config(1) defines the following high level concepts:
+
+  * `project`:
+    The project as a whole. The project must be maintained by git(1) and
+    accessible via ssh(1). See config-project(1).
+
+  * `data`:
+    Supporting files and information that are *not* checked into the
+    project. Examples of data are ssh keys, configuration secrets and
+    the project database.
+
+  * `project database`:
+    A second git(1) repository that stores metadata about the state of
+    the system. The database is syncronized to each node. See
+    config-update-database(1).
+
+  * `node`:
+    A server maintained by config(1). A node exists in one and only one
+    cluster and is configured to execute one and only one blueprint. A
+    node may override the configuration defined by its cluster.
+
+  * `fqn`:
+    The fully qualified name of a node. The fully qualified name
+    contains three parts separated by a dash:
+    `<cluster_name>-<blueprint_name>-<identifier>`. The FQN alone
+    determines which cluster and blueprint a node operates within.
+
+  * `facts`:
+    Information inherent to a node. Facts are stored in the project
+    database. See config-update-node(1).
+
+  * `cluster`:
+    A set of nodes that function together. A cluster defines
+    configuration variables that may be used by a blueprint. See
+    config-cluster(1).
+
+  * `configuration`:
+    A set of variables that define the specific behavior of a cluster or
+    a node.
+
+  * `blueprint`:
+    A set of instructions used to configure a node. A blueprint is made
+    up of patterns, and executed within the context of a cluster and a
+    node. See config-blueprint(1).
+
+  * `pattern`:
+    A reusable description of how to modify a system. A pattern may be
+    of any granularity - from a single file, to the installation and
+    management of a web server and beyond. A pattern may manipulate the
+    system directly, or do so by composing other patterns. See
+    config-pattern(1).
+
+  * `attribute`:
+    A variable aspect of a pattern. A pattern exposes its interface as
+    attributes that may or must be defined.
+
+## EXAMPLES
+
+The following is a simple example of how a pattern, blueprint, cluster
+and node fit together.
+
+A `pattern` is defined in `patterns/<topic>/<name>.rb`. It is a ruby(1)
+class that inherits from `Config::Pattern`. See config-pattern(1).
+
+    $ cat patterns/sample/last_update.rb
+    class Sample::LastUpdate < Config::Pattern
+      def call
+        file "/var/log/last_update" do |f|
+          f.content = Time.now.to_i
+        end
+      end
+    end
+
+A `blueprint` uses one or more patterns to describe the full state of a
+node. Blueprints are stored at `blueprints/<name>.rb`. This `blueprint`
+uses the `Sample::LastUpdate` pattern as well as creating another file.
+That files content is generated using variables made available to the
+`blueprint` via a `cluster`. See config-blueprint(1).
+
+    $ cat blueprints/sample.rb
+    add Sample::LastUpdate
+
+    file "/var/log/info" do |f|
+      f.content <<-STR
+    The cluster is: #{cluster.name}
+    The greeting is: #{samples.greeting}
+    The node's public ip is: #{node.ec2.public_ipv4}
+      STR
+    end
+
+In order to execute this blueprint, a `cluster` must define the
+necessary variables. Clusters are stored `clusters/<name>.rb`. See
+config-cluster(1).
+
+    $ cat clusters/production.rb
+    configure :samples,
+      greeting: "Hello!"
+
+A `node` may override any configuration value. Nodes are stored at
+`nodes/<fqn>.rb`. A node file only needs to be defined in order to
+customize its behavior. See config-node(1).
+
+    $ cat nodes/production-sample-1.rb
+    configure :samples,
+      greeting: "Node says Hello!"
+

@@ -1,0 +1,18 @@
+config-create-blueprint(1) -- create a blueprint template
+=========================================================
+
+## SYNOPSIS
+
+`config-create-blueprint` <name>
+
+## DESCRIPTION
+
+**config-create-blueprint** generates a blueprint skeleton for use with the
+config(1) server configuration tool.
+
+Run this command at the root of your project repository.
+
+## SEE ALSO
+
+config(1)
+
