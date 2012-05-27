@@ -33,6 +33,7 @@ task :man do
   sh "ronn --warnings --style toc --html man/*.ronn"
 end
 
+# https://github.com/rtomayko/ronn/blob/master/Rakefile
 desc 'Publish to github pages'
 task :pages => :man do
   puts '----------------------------------------------'
@@ -47,8 +48,9 @@ task :pages => :man do
       git clone -q -b gh-pages . pages
       cd pages
       git reset --hard $rev
-      rm -f man/ronn*.html
-      cp -rp ../man/ronn*.html ./man
+      mkdir -p man
+      rm -f man/*.html
+      cp -rp ../man/*.html ./man
       git add man
       git commit -m 'rebuild manual'
       git push #{push_url} gh-pages
