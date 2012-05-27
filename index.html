@@ -1,0 +1,715 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Config by rcarver</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Config</h1>
+        <p>A modern, distributed server configuration tool</p>
+        <p class="view"><a href="https://github.com/rcarver/config">View the Project on GitHub <small>rcarver/config</small></a></p>
+        <ul>
+          <li><a href="https://github.com/rcarver/config/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/rcarver/config/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/rcarver/config">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>Goals</h2>
+
+<ul>
+<li>Simple and minimal interface and implementation. No magic.</li>
+<li>A clear and obvious way to do things.</li>
+<li>An API and supporting tools that naturally reduces errors.</li>
+<li>Useful information when things do go wrong.</li>
+<li>Git-native change management for all aspects of the system.</li>
+<li>Branch-based development for ops.</li>
+</ul><h2>Concepts</h2>
+
+<ul>
+<li>
+<strong>Node</strong> A server. A Node has a Blueprint and belongs to a Cluster.</li>
+<li>
+<strong>Blueprint</strong> The complete set of Patterns that describe a Node.</li>
+<li>
+<strong>Cluster</strong> A collection of Nodes that work together.</li>
+<li>
+<strong>Pattern</strong> A reusable concept that makes up a Blueprint or another
+Pattern. All Pattern operations are idempotent.</li>
+<li>
+<strong>Fact</strong> A bit of information that's implicit to a Node.</li>
+<li>
+<strong>Variable</strong> A part of a Blueprint that may be configured. Variables
+may be set on either the Node or Cluster.</li>
+<li>
+<strong>Service</strong> A long running application, generally managed by Upstart.
+A Service may be notified that something it depends on has changed.
+When that happens the Service typically restarts.</li>
+<li>
+<strong>Hub</strong> A special node that is used to bootstrap other nodes. This can
+be any node in the system or your development computer.</li>
+<li>
+<strong>TODO</strong> is monitoring/alerting a core concept?</li>
+</ul><h3>Patterns</h3>
+
+<p>Config comes with a set of useful Patterns built in. These Patterns form
+the building blocks for your own higher level Patterns and the
+Blueprints that use them.</p>
+
+<ul>
+<li>
+<strong>Directory</strong> A directory on disk.</li>
+<li>
+<strong>File</strong> A file on disk. The contents may come from an ERB template
+or a String.</li>
+<li>
+<strong>Link</strong> A symbolic (or hard) link.</li>
+<li>
+<strong>Package</strong> Install a 3rd party library via apt.</li>
+<li>
+<strong>Script</strong> Any executable code (generally bash).</li>
+</ul><h2>Basic Use</h2>
+
+<p>Config stores everything in a git repository. And by everything we mean
+both the Patterns and Blueprints that describe how we want a Node to
+behave, and the Nodes themselves. To do this, Config uses two git
+repositories. The first, called the "project" repo, stores code and
+configuration that you write. The second, called the "data" repo is
+maintained automatically the nodes. It acts as a database describing the
+state of your system.</p>
+
+<p>To initialize  project</p>
+
+<pre><code>$ mkdir myproject
+$ cd myproject
+$ git init
+$ config-init-project
+</code></pre>
+
+<p>The project layout</p>
+
+<pre><code>patterns
+  [topic]/README.md
+  [topic]/[pattern].rb
+  [topic]/templates/[file].erb
+blueprints
+  [blueprint].rb
+clusters
+  [cluster].rb
+nodes
+  [node_fqn].rb
+</code></pre>
+
+<p>To create a new server, begin by creating a Blueprint</p>
+
+<pre><code>$ config-create-blueprint webserver
+$ vim blueprints/webserver.rb
+it "Configures a server to run example.com"
+
+add Nginx::Service
+add Nginx::Site do |site|
+  site.host = "example.com"
+  site.enabled = true
+end
+</code></pre>
+
+<p>This Blueprint uses two Patterns. Those Patterns might look something like this</p>
+
+<pre><code>$ config-create-pattern nginx/service
+$ vim patterns/nginx/service.rb
+class Nginx::Service &lt; Config::Pattern
+
+  it "Installs nginx and creates a service to run it"
+
+  desc "The name of the service to run"
+  key :service_name, "nginx"
+
+  def call
+    package "nginx"
+    file "/etc/nginx/nginx.conf" do |f|
+      f.template = "nginx.conf"
+    end
+    service service_name
+    notify service_name
+  end
+end
+
+$ config-create-pattern nginx/site
+$ vim patterns/nginx/site.rb
+class Nginx::Site &lt; Config::Pattern
+
+  it "Installs a website to be hosted via nginx"
+
+  desc "The hostname that the site should respond to"
+  key :host
+
+  desc "Whether or not the site should be enabled"
+  attr :enabled, true
+
+  def call
+    file "/etc/nginx/sites-available/#{host}" do |f|
+      f.template = "site.erb"
+    end
+    if enabled
+      link "/etc/nginx/sites-available/#{host}" =&gt; "/etc/nginx/sites-enabled/#{host}"
+    end
+    notify "nginx"
+  end
+end
+</code></pre>
+
+<p>Next we'll create a Cluster to contain the server. Let's call it
+'production'.</p>
+
+<pre><code>$ config-create-cluster production
+$ vim clusters/production.rb
+# Nothing to see here yet. In the future we can use this file to
+# configure the production cluster differently than another cluster.
+</code></pre>
+
+<p>Check these files into git and push to your remote repository. You're
+now ready to boot a server.</p>
+
+<pre><code>$ config-ec2-create-node --cluster=production --blueprint=webserver
+</code></pre>
+
+<p>Here we've specified the two required parameters: The Blueprint used to
+configure the server, and the Cluster that the resulting Node will
+belong to. We wait for AWS to provision us a server, and once the server
+boots it will automatically configure itself and store its information
+in the data repo.</p>
+
+<pre><code>$ config-update-database
+</code></pre>
+
+<p>The database now contains our new node. Specifically, it contains the
+file <code>nodes/production-webserver-i9999.json</code> which contains a wealth of
+information about the server (provided by Ohai).</p>
+
+<h2>Testing</h2>
+
+<p>Because developing and testing against a real server is slow, Config
+provides several tools to help you understand what will happen before
+you get there.</p>
+
+<h3>Try a Blueprint</h3>
+
+<p>Once the parts are valid, you might want to get an idea of what the
+result of a Blueprint will be.</p>
+
+<pre><code>$ config-try-blueprint webserver production
+</code></pre>
+
+<p>The result of this command is a record of everything that would happen
+if a webserver executes within the production clsuter. It might look
+something like this, showing the hierarchy of patterns used and their
+results.</p>
+
+<pre><code># Nginx::Service
+  # Config::Patterns::Package
+  Installed nginx
+  # Config::Patterns::File
+  Created /etc/nginx/nginx.conf
+      user www;
+      worker_processes 1;
+      ...
+  Set owner of /etc/nginx/nginx.conf to www
+  # Config::Patterns::File
+  Created /etc/init.d/nginx.conf
+      ...
+      exec /etc/nginx/bin/nginx -c /etc/nginx/nginx.conf
+      ...
+  Set owner of /etc/init.d/nginx.conf to root
+  ...
+# Nginx::Site
+  # Config::Patterns::File
+  Created /etc/nginx/sites-available/example.com
+      ...
+  # Config::Patterns::Link
+  Created /etc/nginx/sites-available/example.com =&gt; /etc/nginx/sites-enabled/example.com
+Notify nginx
+</code></pre>
+
+<p>You can also try a blueprint without specifying a cluster. Doing so uses
+a "spy" cluster to collect all of the variables required to execute the
+blueprint.</p>
+
+<pre><code>$ config-try-blueprint production
+</code></pre>
+
+<h2>What is a Blueprint</h2>
+
+<p>A Blueprint uses one or more patterns to describe a node. It may be
+configured via variables from the current node or the current cluster.
+Blueprints are stored in <code>blueprints/[name].rb</code>.</p>
+
+<h3>How a Blueprint is executed</h3>
+
+<p>Blueprint execution occurs in a few steps:</p>
+
+<ol>
+<li>
+<strong>Accumulate</strong> Recursively traverse all patterns.</li>
+<li>
+<strong>Validate</strong> Ensure that all patterns have been defined correctly and
+that all attributes have been set.</li>
+<li>
+<strong>Resolve</strong> Detect conflicting Patterns. Mark duplicate patterns to
+execute in <em>skip</em> mode.</li>
+<li>
+<strong>Destroy</strong> If a previous execution exists, find any patterns that
+executed previously but would not execute now. Mark those patterns
+to execute in <em>destroy</em> mode.</li>
+<li>
+<strong>Execute</strong> Execute all patterns.</li>
+</ol><h2>What is a Pattern</h2>
+
+<p>A Pattern is a reusable bit of configuration. Patterns are composable,
+and so therefore may be of any size and scope. Low level patterns such
+as <code>File</code> and <code>Package</code> are provided by Config. You can use these
+patterns to create your own, higher level patterns. Patterns are stored
+in <code>patterns/[topic]/[name].rb</code>.</p>
+
+<p>All patterns inherit from <code>Config::Pattern</code>. A trivial example looks
+like this.</p>
+
+<pre><code>class LastRunAt &lt; Config::Pattern
+  def call
+    file "/etc/config_was_run" do |f|
+      f.content = Time.now.to_s
+    end
+  end
+end
+</code></pre>
+
+<p>This Pattern simply stores the last time that Config was run at
+<code>/etc/config_was_run</code>. We defined <code>call</code> to use the builtin <code>File</code>
+pattern via the <code>file</code> helper. To expose what's going on here, let's
+rewrite it without the helper.</p>
+
+<pre><code>def call
+  add Config::Patterns::File do |f|
+    f.path = "/etc/config_was_run"
+    f.content = Time.now.to_s
+  end
+end
+</code></pre>
+
+<p>With this we've exposed an important method in Pattern's API.  <code>add</code>
+takes a Pattern class and an optional configuration block. You can use
+the <code>add</code> method to accumulate any pattern class. It's also worth noting
+here that the <code>call</code> method should never modify the underlying system.
+It <em>only</em> describes the actions that will occur should you decide to do
+so. This separation is critical to Config's builtin testing tools.</p>
+
+<h3>Attributes</h3>
+
+<p>To be useful in more than one situation, a pattern uses variables to
+alter its behavior. We call those Attributes and they are another of the
+APIs that <code>Config::Pattern</code> exposes. Let's look at what
+<code>Config::Patterns::File</code> as used above might look like.</p>
+
+<pre><code>class Config::Patterns::File &lt; Config::Pattern
+
+  desc "The path of the file"
+  key  :path
+
+  desc "The contents of the file"
+  attr :content
+
+  ...
+end
+</code></pre>
+
+<p>The Attributes API has three methods. <code>desc</code> describes the purpose of an
+attribute, <code>key</code> defines an attribute that must be unique for all
+instances of this Pattern, and <code>attr</code> defines a simple variable.</p>
+
+<p>Pass a second argument to <code>attr</code> or <code>key</code> to set a default value.</p>
+
+<pre><code>attr :content, "Hello"
+</code></pre>
+
+<p><strong>Important</strong> All attributes of a pattern must have a value. If nil is
+an acceptable value, you must set that as the default.</p>
+
+<h4>Keys</h4>
+
+<p>A pattern's Key attributes describe what it means to be a unique
+instance of a pattern. For example in our <code>File</code> example, the <code>path</code> is
+defined as Key. By defining <code>path</code> as a Key, Config will ensure that we
+have one and only one file at that path.</p>
+
+<h4>Uniqueness, Conflict and Equality</h4>
+
+<p>An instance of a Pattern class is said to be <em>unique</em> if the value of its
+keys is different from another. These two files are unique because they
+are at different paths.</p>
+
+<pre><code>add Config::Patterns::File do |f|
+  f.path = "/tmp/file_1"
+end
+add Config::Patterns::File do |f|
+  f.path = "/tmp/file_2"
+end
+</code></pre>
+
+<p>On the other hand, these two files are in <em>conflict</em> because they have
+identical keys, but the rest of their attributes are not identical.
+Config will not allow you to execute a set of patterns that are in
+conflict.</p>
+
+<pre><code>add Config::Patterns::File do |f|
+  f.path = "/tmp/file"
+  f.content = "hello"
+end
+add Config::Patterns::File do |f|
+  f.path = "/tmp/file"
+  f.content = "world"
+end
+</code></pre>
+
+<p>Two instances of a Pattern are said to be <em>equal</em> if all of their
+attributes are equal. Config will only execute the first of these
+patterns, noting explicitly that the second was skipped.</p>
+
+<pre><code>add Config::Patterns::File do |f|
+  f.path = "/tmp/file"
+  f.content = "hello"
+end
+add Config::Patterns::File do |f|
+  f.path = "/tmp/file"
+  f.content = "hello"
+end
+</code></pre>
+
+<p>It's worth noting that if a Pattern defines no keys, it is always unique
+among other instances of that Pattern. Be careful if your Pattern has
+this quality as it may indicate a deeper problem with the design.</p>
+
+<h3>Describe &amp; Logging</h3>
+
+<p>Config's logging is one the most important tools to understand what's
+happening on your nodes. The Pattern API allows you to specify a name
+for your pattern via either the <code>describe</code> method or the <code>to_s</code> method.
+<code>to_s</code> is used to identify the pattern when it's logged.</p>
+
+<pre><code># The default implementation of #to_s includes the class name
+# and the key attributes.
+# =&gt; "[File path:\"/var/log/nginx.log\"]"
+
+# Override `describe` to change what's within the square brackets.
+def describe
+  "A file at #{path}"
+end
+# =&gt; "[A file at /var/log/nginx.log]"
+
+# Override `to_s` to change the full description
+def to_s
+  "&lt;#{path}&gt;
+end
+# =&gt; "&lt;/var/log/nginx.log&gt;"
+</code></pre>
+
+<h3>Create &amp; Destroy</h3>
+
+<p>The Pattern API has two additional methods: <code>create</code> and <code>destroy</code>.</p>
+
+<p>During the Accumulation phase, Config collects all of the patterns and
+determines uniqueness. Once the set of patterns is found, each pattern
+is executed by calling either its <code>create</code> or <code>destroy</code> method.</p>
+
+<ul>
+<li>
+<code>create</code> Alter the node.</li>
+<li>
+<code>destroy</code> Reverse the alteration.</li>
+</ul><p><em>If your Pattern only uses other patterns, there is no need to
+implement <code>create</code> or <code>destroy</code>.</em></p>
+
+<p>A Pattern is destroyed when it has been removed from the set since the
+last execution. Config tracks the set of Patterns on each execution to
+determine what has been removed. See Lifecycle for more information.</p>
+
+<h2>What is a Cluster</h2>
+
+<p>A Cluster is a set of Nodes that work together. The simplest way to use
+clusters is to create multiple instances of your application (typically
+called an 'environment'). Besides acting as a grouping mechanism, a
+Cluster allows configuration of your blueprints. Cluster definitions are
+stored in <code>clusters/[name].rb</code></p>
+
+<pre><code>$ config-create-cluster production
+$ vim clusters/production.rb
+configure :web,
+  host: "example.com",
+  enabled: true
+</code></pre>
+
+<p>Here we have created a <code>production</code> cluster and configured some
+variables dealing with "web". When a Blueprint executes within this
+Cluster, it may access variables to alter its behavior. You may define
+as many sets of variables as you'd like. If you execute a pattern the
+tries to access a variable that is not defined, Config will throw an
+error.</p>
+
+<pre><code>$ vim blueprints/webserver.rb
+add Nginx::Site do |site|
+  site.host = cluster.web.host
+  site.enabled = cluster.web.enabled
+end
+</code></pre>
+
+<p><strong>Ideas</strong> Another dimension of reuse might be blueprint inheritance. I
+could definitely see it useful to define a "base" blueprint from which
+others can inherit. What might that look like?</p>
+
+<pre><code>$ blueprints/base.rb
+file "~/.ssh/authorized_keys" do |f|
+  f.template = "authorized_keys.erb"
+end
+
+$ blueprints/webserver.rb
+inherit :base
+# Obviously the question of multiple inheritance should be asked
+# here. I default to no for simplicity sake but there doesn't seem
+# to be any real harm.
+add Nginx::Server
+
+$ cat clusters/production.rb
+blueprint :base,
+  ssh_keys: ["..."]
+blueprint :webserver,
+  host: "example.com"
+</code></pre>
+
+<h3>Nodes</h3>
+
+<p>A cluster is only useful once nodes are running within it. Each node has
+access to the configuration of other nodes within its cluster, and
+<em>only</em> within its cluster. You need not fear creating a staging cluster
+whose configuration points to the production database.</p>
+
+<p>To access facts about another node in the cluster, you may perform
+simple queries.</p>
+
+<pre><code>node = cluster.find_node(MySQL::Server =&gt; { master: true })
+node.facts.public_ip
+</code></pre>
+
+<h2>What is a Hub</h2>
+
+<p>A Hub acts as the coordinator for nodes within a cluster. You'll
+typically have one hub, but you could have a different one for each
+cluster if desired. A hub only differs from any other checkout of your
+project in a few ways. Most importantly, it is the place where your
+secret keys are stored, so that they may be distributed to new nodes.</p>
+
+<p>You may use a different key for each cluster. By default, we'll have
+one key for everything, called "default".</p>
+
+<pre><code>echo "shh" | config-store-secret [NAME]
+</code></pre>
+
+<p>The project and data git repositories are also passed from the hub to
+nodes. By default, Config uses the project's origin to determine the
+repos. If your project repo is <code>my-project.git</code> the data repo should be
+named <code>my-project-data.git</code>. To use different repos, specify them in
+<code>hub.rb</code>.</p>
+
+<p>If you want to use the same ssh key for both repos, this configuration
+should suffice.</p>
+
+<pre><code>$ vim hub.rb
+project_repo 'git@github.com:rcarver/config-example.git'
+data_repo    'git@github.com:rcarver/config-example-data.git'
+</code></pre>
+
+<p>If you wish to use a different key for each repo (GitHub deploy keys for
+example), this form will allow you to specify the details.</p>
+
+<pre><code>project_repo do |p|
+  p.repo = 'git@github-project:rcarver/config-example.git'
+  p.hostname = 'github.com'
+  p.ssh_key = 'project'
+end
+data_repo do |p|
+  p.repo = 'git@github-data:rcarver/config-example-data.git'
+  p.hostname = 'github.com'
+  p.ssh_key = 'data'
+end
+</code></pre>
+
+<p>The resulting <code>.ssh/config</code> looks something like this.</p>
+
+<pre><code>Host github-project
+  User git
+  Hostname github.com
+  IdentityFile /etc/config/ssh-key-project
+Host github-data
+  User git
+  Hostname github.com
+  IdentityFile /etc/config/ssh-key-data
+</code></pre>
+
+<h3>Bootstrap</h3>
+
+<p>To allow a node to manage itself it must be boostrapped. Bootstrapping
+installs system requirements, installs the secret and clones the git
+repos. To bootstrap any server, run the bootstrap script (written in
+bash) on it. To generate a bootstrap script, identify the cluster,
+blueprint and a unique name for the node. We call this name the "FQN"
+(fully qualified name). Here we bootstrap a new production webserver,
+called "1".</p>
+
+<pre><code>config-create-bootstrap production-webserver-1 | ssh IP_ADDRESS "sudo bash"
+</code></pre>
+
+<p>That's it. When the script completes the server will have a functional
+copy of the project and will have added itself to the database (the
+"data" repo). To see information about the new node, ask for it.</p>
+
+<pre><code>config-show-node production-webserver-1
+</code></pre>
+
+<p>Behind the scenes, Config will sync the data repo and then extract node
+facts and other information. You can see the raw data stored at
+<code>.data/project-data/nodes/production-webserver-1.json</code>.</p>
+
+<h2>Advanced Configuration</h2>
+
+<p>Following are more advanced ways to use Config. You can probably do a lot
+without these techniques.</p>
+
+<h3>Extending a Pattern</h3>
+
+<p>At times you may need to further extend an existing Pattern. For example, Our
+<code>Nginx::Service</code> pattern is a high level service. It install Nginx and then
+uses Upstart to run it. Say we like this pattern, but need to more carefully
+control when the underlying Upstart service starts. Use the <code>intercept</code> method
+to tap that Upstart service and change its configuration.</p>
+
+<pre><code>add Nginx::Service do |nginx|
+  nginx.intercept Config::Patterns::Upstart do |upstart|
+    upstart.start_on = "some event"
+  end
+end
+</code></pre>
+
+<h3>Branch-based development</h3>
+
+<p>Something here about a workflow like this:</p>
+
+<ul>
+<li>Create a new branch</li>
+<li>Make changes to patterns, etc</li>
+<li>Create nodes. Should they be stored or referenced by a "branch"
+pointer in the data repo?</li>
+<li>Merging this to master would be weird, right?</li>
+<li>Should a Cluster indicate the branch(es) that are valid to boot from?</li>
+<li>Is this how one might do development?</li>
+</ul><h2>Reference</h2>
+
+<p>A brief overview of Config's APIs and tools.</p>
+
+<h3>The Hub API</h3>
+
+<p>DSL for <code>hub.rb</code>.</p>
+
+<ul>
+<li>
+<code>project_repo</code> Set the git url for the project.</li>
+<li>
+<code>data_repo</code> Set the git url for the project data.</li>
+</ul><h3>The Pattern API</h3>
+
+<p>Class methods DSL.</p>
+
+<ul>
+<li>
+<code>desc</code> Describe an attribute.</li>
+<li>
+<code>key</code> Define a key attribute.</li>
+<li>
+<code>attr</code> Define an attribute.</li>
+</ul><p>Methods you may override in your Pattern subclass.</p>
+
+<ul>
+<li>
+<code>validate</code> Perform deeper validation of attributes before execution.</li>
+<li>
+<code>call</code> Add other Patterns. Don't perform any operations that alter the
+node, do that in <code>create</code>.</li>
+<li>
+<code>prepare</code> Prepare and log data before execution.</li>
+<li>
+<code>create</code> Perform operations that alter the Node.</li>
+<li>
+<code>destroy</code> Perform operations that undo the alteration of the Node.</li>
+<li>
+<code>describe</code> Change the string representation of your Pattern.</li>
+<li>
+<code>to_s</code> Change the full string representation of your Pattern.</li>
+</ul><p>Helpers available during Pattern execution.</p>
+
+<ul>
+<li>
+<code>validation_errors</code> An appendable (<code>&lt;&lt;</code>) object that accumulates
+issues during <code>validate</code>.</li>
+<li>
+<code>log</code> A <code>Config::Log</code> object. Write to it with <code>&lt;&lt;</code>.</li>
+<li>
+<code>add(klass, &amp;block)</code> Add a sub-pattern. Provide a block to set
+attributes on the instantiated pattern.</li>
+<li>The <code>Config::Patterns</code> helpers.</li>
+</ul><h3>The Blueprint API</h3>
+
+<p>The Blueprint API is a subset of the Pattern API. Blueprints act as a
+single entrypoint for a set of patterns.</p>
+
+<ul>
+<li><code>log</code></li>
+<li><code>add</code></li>
+<li>The <code>Config::Patterns</code> helpers.</li>
+</ul><h3>Config::Patterns helpers</h3>
+
+<p><code>Config::Patterns</code> contains a number of methods to make using the core
+patterns simpler. You may extend this module to add your own helpers.</p>
+
+<ul>
+<li>
+<code>file(path)</code> Add a <code>Config::Patterns::File</code>. Using this helper
+also provides the <code>template=</code> method. Use this method to assign the
+template file name, expected to live at
+<code>patterns/[topic]/templates/[file]</code>.</li>
+<li>
+<code>dir(path)</code> Add a <code>Config::Patterns::Directory</code>.</li>
+</ul><h2>Authors</h2>
+
+<ul>
+<li>Ryan Carver (<a href="mailto:ryan@ryancarver.com">ryan@ryancarver.com</a> / <a href="https://github.com/rcarver" class="user-mention">@rcarver</a>)</li>
+</ul><h2>License</h2>
+
+<p>Copyright 2012 Ryan Carver. Licensed under MIT.</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/rcarver">rcarver</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>
