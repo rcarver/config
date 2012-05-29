@@ -4,6 +4,38 @@ describe Config::Project do
 
   subject { Config::Project.new("/tmp/project", "/tmp/data") }
 
+  describe "loader operations" do
+
+    let(:loader) { MiniTest::Mock.new }
+
+    before do
+      subject.loader = loader
+    end
+
+    after do
+      loader.verify
+    end
+
+    describe "#require_all" do
+
+      it "delegates to the loader" do
+        loader.expect(:require_all, nil)
+        subject.require_all
+      end
+    end
+
+    describe "#ssh_hosts" do
+
+      it "delegates to the hub" do
+        hub = MiniTest::Mock.new
+        loader.expect(:get_hub, hub)
+        hub.expect(:ssh_hosts, ["a", "b"])
+        subject.loader = loader
+        subject.ssh_hosts.must_equal ["a", "b"]
+      end
+    end
+  end
+
   describe "#update" do
 
     let(:git_repo) { MiniTest::Mock.new }
