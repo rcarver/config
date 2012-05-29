@@ -29,6 +29,7 @@ module Config
     config "create-blueprint", :CreateBlueprint
     config "create-cluster", :CreateCluster
     config "create-pattern", :CreatePattern
+    config "init-project", :InitProject
     config "know-hosts", :KnowHosts
 
     class Base
