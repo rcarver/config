@@ -30,6 +30,7 @@ module Config
     config "create-cluster", :CreateCluster
     config "create-pattern", :CreatePattern
     config "create-topic", :CreateTopic
+    config "exec-node", :ExecNode
     config "init-project", :InitProject
     config "know-hosts", :KnowHosts
 
