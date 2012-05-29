@@ -3,7 +3,6 @@ require 'simple_mock'
 require 'fivemat/minitest/autorun'
 
 require 'fileutils'
-require 'ostruct'
 require 'pathname'
 require 'tmpdir'
 
@@ -92,7 +91,9 @@ end
 
 class CliSpec < MiniTest::Spec
 
-  register_spec_type(self) { |desc| desc.to_s =~ /Config::CLI/ }
+  register_spec_type(self) { |desc|
+    desc.is_a?(Class) && desc.superclass == Config::CLI::Base
+  }
 
   class FakeKernel
 
@@ -105,7 +106,7 @@ class CliSpec < MiniTest::Spec
     attr_reader :exitstatus
 
     def abort(msg)
-      stderr.puts(msg)
+      @stderr.puts msg
       exit(1)
     end
 
@@ -161,6 +162,12 @@ class CliSpec < MiniTest::Spec
     file
   end
 
+  # Expect that the program will fail, and print usage information.
+  def expect_fail_with_usage(&block)
+    proc(&block).must_throw :exit
+    stderr.string.chomp.must_equal cli.usage
+  end
+
   # Fake the config world.
   let(:project)  { MiniTest::Mock.new }
   let(:data_dir) { MiniTest::Mock.new }
@@ -173,6 +180,7 @@ class CliSpec < MiniTest::Spec
   let(:system)   { MiniTest::Mock.new }
 
   before do
+    cli.noop!
     cli.project = project
     cli.data_dir = data_dir
     cli.kernel = kernel

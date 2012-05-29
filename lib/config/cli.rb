@@ -1,5 +1,6 @@
 require 'config'
 require 'optparse'
+require 'ostruct'
 
 module Config
   module CLI
@@ -25,6 +26,7 @@ module Config
       @binaries ||= {}
     end
 
+    config "create-blueprint", :CreateBlueprint
     config "know-hosts", :KnowHosts
 
     class Base
@@ -34,12 +36,14 @@ module Config
         @stdin = stdin
         @stdout = stdout
         @stderr = stderr
+        @options = OpenStruct.new
       end
 
       attr :name
       attr :stdin
       attr :stdout
       attr :stderr
+      attr :options
 
       def run(argv, env)
         parse!(argv, env)
@@ -51,7 +55,7 @@ module Config
         parse(options, argv, env)
       end
 
-      def options(opts)
+      def add_options(opts)
         # noop
       end
 
@@ -70,13 +74,30 @@ module Config
       def parse_options!(argv)
         options = OptionParser.new { |opts|
           opts.banner = "usage: #{usage}"
-          options(opts)
+          add_options(opts)
+          opts.on_tail("-n", "--noop") do
+            noop!
+          end
+          opts.on_tail("-v", "--version") do
+            abort Config::VERSION
+          end
           opts.on_tail("-h", "--help") do
             abort opts.to_s
           end
         }
         options.parse!
         options
+      end
+
+      # Set noop mode on the program. In noop mode, no changes should occur on
+      # the filesystem.
+      def noop!
+        @options.noop = true
+      end
+
+      # Check for noop mode on the program.
+      def noop?
+        @options.noop
       end
 
       # Returns a Config::Project.
@@ -113,10 +134,36 @@ module Config
         kernel.abort(*args)
       end
 
+      # Execute a blueprint.
+      def blueprint(&block)
+        blueprint = Config::Blueprint.new(name, &block)
+        @accumulation = blueprint.accumulate
+        blueprint.noop! if options.noop
+        blueprint.execute
+      end
+
+      # Test: Get the patterns that were executed as part of the blueprint.
+      #
+      # klass - Class of the pattern.
+      #
+      # Returns an Array of Config::Pattern.
+      def blueprints(klass)
+        (@accumulation || []).find_all { |p| klass === p }
+      end
+
       # Run a system command.
       #
-      # Returns [String (stdout), String (stderr), Integer (status)].
+      # Yields [String (stdout), String (stderr), Integer (status)].
+      #
+      # Returns nothing.
       def capture3(command)
+
+        if noop? && Open3 === open3
+          # Print the command and don't yield.
+          stdout.puts "+ #{command}"
+          return
+        end
+
         out, err, status = open3.capture3(command)
 
         if status.exitstatus != 0
@@ -126,7 +173,9 @@ module Config
           exit status.exitstatus
         end
 
-        return out, err, status.exitstatus
+        yield out, err, status.exitstatus
+
+        return
       end
 
     end

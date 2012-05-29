@@ -15,8 +15,9 @@ module Config
       def execute
         @hosts.each do |host|
           stderr.puts "Generating signature for #{host.inspect}"
-          signature, err, status = capture3("ssh-keyscan -H #{host}")
-          data_dir.ssh_host_signature(host).write(signature)
+          capture3("ssh-keyscan -H #{host}") do |out, err, status|
+            data_dir.ssh_host_signature(host).write(out)
+          end
         end
       end
 
