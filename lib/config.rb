@@ -50,6 +50,8 @@ module Config
     autoload :System, "config/bootstrap/system"
   end
 
+  autoload :CLI, "config/cli"
+
   module Data
     autoload :FakeDatabase, "config/data/fake_database"
   end
