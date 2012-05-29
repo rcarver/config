@@ -27,6 +27,7 @@ module Config
     end
 
     config "create-blueprint", :CreateBlueprint
+    config "create-cluster", :CreateCluster
     config "know-hosts", :KnowHosts
 
     class Base
