@@ -18,7 +18,7 @@ module Config
         blueprint do
           blueprint_names.each do |name|
             add Config::Meta::Blueprint do |p|
-              p.root = File.expand_path(".")
+              p.root = Dir.pwd
               p.name = name
             end
           end
