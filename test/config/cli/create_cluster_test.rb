@@ -29,5 +29,3 @@ describe Config::CLI::CreateCluster do
     end
   end
 end
-
-

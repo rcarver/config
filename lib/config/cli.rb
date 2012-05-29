@@ -28,6 +28,7 @@ module Config
 
     config "create-blueprint", :CreateBlueprint
     config "create-cluster", :CreateCluster
+    config "create-pattern", :CreatePattern
     config "know-hosts", :KnowHosts
 
     class Base
@@ -138,7 +139,8 @@ module Config
       # Execute a blueprint.
       def blueprint(&block)
         blueprint = Config::Blueprint.new(name, &block)
-        @accumulation = blueprint.accumulate
+        @accumulations ||= []
+        @accumulations << blueprint.accumulate
         blueprint.noop! if options.noop
         blueprint.execute
       end
@@ -149,7 +151,7 @@ module Config
       #
       # Returns an Array of Config::Pattern.
       def find_blueprints(klass)
-        (@accumulation || []).find_all { |p| klass === p }
+        (@accumulations || []).map { |a| a.find_all { |p| klass === p } }.flatten
       end
 
       # Run a system command.
