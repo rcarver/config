@@ -147,7 +147,7 @@ module Config
       # klass - Class of the pattern.
       #
       # Returns an Array of Config::Pattern.
-      def blueprints(klass)
+      def find_blueprints(klass)
         (@accumulation || []).find_all { |p| klass === p }
       end
 

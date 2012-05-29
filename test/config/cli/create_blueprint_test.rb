@@ -22,7 +22,7 @@ describe Config::CLI::CreateBlueprint do
     it "executes a blueprint" do
       cli.blueprint_names = ["a", "b"]
       cli.execute
-      blueprints = cli.blueprints(Config::Meta::Blueprint)
+      blueprints = cli.find_blueprints(Config::Meta::Blueprint)
       blueprints.size.must_equal 2
       blueprints[0].name.must_equal "a"
       blueprints[1].name.must_equal "b"
