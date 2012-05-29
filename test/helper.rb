@@ -2,9 +2,10 @@ require 'minitest/spec'
 require 'simple_mock'
 require 'fivemat/minitest/autorun'
 
-require 'tmpdir'
 require 'fileutils'
+require 'ostruct'
 require 'pathname'
+require 'tmpdir'
 
 require 'config'
 
@@ -182,7 +183,6 @@ class CliSpec < MiniTest::Spec
   after do
     project.verify
     kernel.verify
-    open3.verify
     system.verify
     @files.each { |f| f.verify }
   end

@@ -1,9 +1,8 @@
 require 'helper'
-require 'ostruct'
 
-describe Config::CLI::CreateBlueprint do
+describe Config::CLI::KnowHosts do
 
-  subject { Config::CLI::CreateBlueprint }
+  subject { Config::CLI::KnowHosts }
 
   specify "#usage" do
     cli.usage.must_equal "test-command [HOST]"
