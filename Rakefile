@@ -51,7 +51,7 @@ task :pages => :man do
       mkdir -p man
       rm -f man/*.html
       cp -rp ../man/*.html ./man
-      git add man
+      git add man/*.html
       git commit -m 'rebuild manual'
       git push #{push_url} gh-pages
     STR
