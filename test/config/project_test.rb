@@ -148,7 +148,6 @@ describe Config::Project do
       blueprint.expect(:facts=, nil, [facts])
 
       # Execute the blueprint.
-      blueprint.expect(:accumulate, accumulation)
       blueprint.expect(:validate, nil)
       blueprint.expect(:execute, nil)
     end
@@ -158,7 +157,7 @@ describe Config::Project do
       let(:facts) { Config::Spy::Facts.new }
 
       before do
-        pattern.expect(:noop!, nil)
+        blueprint.expect(:noop!, accumulation)
       end
 
       describe "with a cluster" do
@@ -204,6 +203,7 @@ describe Config::Project do
 
         project_loader.expect(:get_cluster, cluster, ["production"])
         cluster.expect(:configuration, configuration)
+        blueprint.expect(:accumulate, accumulation)
       end
 
       it "executes the blueprint" do

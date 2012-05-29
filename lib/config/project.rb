@@ -146,10 +146,7 @@ git pull --rebase
       blueprint.facts = Config::Spy::Facts.new
 
       # Execute.
-      accumulation = blueprint.accumulate
-      accumulation.each do |pattern|
-        pattern.noop!
-      end
+      accumulation = blueprint.noop!
       blueprint.validate
       blueprint.execute
 

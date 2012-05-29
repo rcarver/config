@@ -54,6 +54,12 @@ module Config
       @accumulation
     end
 
+    def noop!
+      accumulate.each do |pattern|
+        pattern.noop!
+      end
+    end
+
     def validate
       return if @validated
       @validated = true
