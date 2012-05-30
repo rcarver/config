@@ -34,6 +34,7 @@ module Config
     config "init-project", :InitProject
     config "know-hosts", :KnowHosts
     config "show-node", :ShowNode
+    config "store-secret", :StoreSecret
 
     class Base
 
@@ -75,6 +76,14 @@ module Config
 
       def usage
         name
+      end
+
+      def read_stdin
+        if stdin.tty?
+          stdin.read
+        else
+          abort "Expected data on STDIN. #{usage}"
+        end
       end
 
       def parse_options!(argv)

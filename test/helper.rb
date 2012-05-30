@@ -128,8 +128,15 @@ class CliSpec < MiniTest::Spec
     end
   end
 
+  class StringIOTTY < StringIO
+    def tty?
+      true
+    end
+  end
+
   # The CLI execution environment.
-  let(:stdin)  { StringIO.new }
+  let(:tty)    { nil }
+  let(:stdin)  { tty ? StringIOTTY.new(tty) : StringIO.new }
   let(:stdout) { StringIO.new }
   let(:stderr) { StringIO.new }
   let(:argv) { "" }
