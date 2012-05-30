@@ -1,2 +1,2 @@
 #!/usr/bin/env ruby
-require 'config/cli/run'
+require 'config/cli/exec'

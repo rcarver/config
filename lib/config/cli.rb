@@ -5,7 +5,7 @@ require 'ostruct'
 module Config
   module CLI
 
-    def self.run
+    def self.exec
       Config.log_to STDOUT
       cli = self.new(File.basename($0), STDIN, STDOUT, STDERR)
       cli.run(ARGV, ENV)

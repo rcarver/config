@@ -33,7 +33,7 @@ task :binaries do
     File.open("bin/#{name}", "w") do |f|
       f.print <<-STR
 #!/usr/bin/env ruby
-require 'config/cli/run'
+require 'config/cli/exec'
       STR
     end
     chmod 0755, "bin/#{name}"
