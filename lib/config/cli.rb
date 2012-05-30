@@ -27,6 +27,7 @@ module Config
     end
 
     config "create-blueprint", :CreateBlueprint
+    config "create-bootstrap", :CreateBootstrap
     config "create-cluster", :CreateCluster
     config "create-pattern", :CreatePattern
     config "create-topic", :CreateTopic
