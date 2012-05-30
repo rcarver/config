@@ -1,8 +1,8 @@
 module Config
   module CLI
-    class StoreSecret < Config::CLI::Base
+    class StoreSSHKey < Config::CLI::Base
 
-      attr_accessor :secret_name
+      attr_accessor :ssh_key_name
 
       attr_accessor :data
 
@@ -12,14 +12,15 @@ module Config
 
       def parse(options, argv, env)
         @data = read_stdin
-        @secret_name = argv.shift || "default"
+        @ssh_key_name = argv.shift || "default"
       end
 
       def execute
-        data_dir.secret(secret_name).write(data)
+        data_dir.ssh_key(ssh_key_name).write(data)
       end
 
     end
   end
 end
+
 

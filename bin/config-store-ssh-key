@@ -1,17 +1,3 @@
 #!/usr/bin/env ruby
-
-require 'config'
-
-if $stdin.tty?
-  abort "Expected ssh key data on STDIN"
-end
-
-usage = "config-store-ssh-key [NAME]"
-
-name = ARGV.shift or "default"
-
-Config.log_to $stdout
-project = Config.project
-
-project.data_dir.ssh_key(name).write($stdin.read)
-
+require 'config/cli'
+Config::CLI.run

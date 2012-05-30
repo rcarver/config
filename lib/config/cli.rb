@@ -35,6 +35,7 @@ module Config
     config "know-hosts", :KnowHosts
     config "show-node", :ShowNode
     config "store-secret", :StoreSecret
+    config "store-ssh-key", :StoreSSHKey
 
     class Base
 
