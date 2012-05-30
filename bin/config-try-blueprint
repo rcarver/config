@@ -1,14 +1,3 @@
 #!/usr/bin/env ruby
-
-require 'config'
-
-usage = "usage: config-try-blueprint BLUEPRINT_NAME CLUSTER_NAME"
-blueprint_name = ARGV.shift
-blueprint_name or abort usage
-
-cluster_name = ARGV.shift
-
-Config.log_to $stdout
-
-project = Config.project
-project.try_blueprint(blueprint_name, cluster_name)
+require 'config/cli'
+Config::CLI.run
