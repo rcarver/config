@@ -33,6 +33,7 @@ module Config
     config "exec-node", :ExecNode
     config "init-project", :InitProject
     config "know-hosts", :KnowHosts
+    config "show-node", :ShowNode
 
     class Base
 

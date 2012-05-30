@@ -60,6 +60,13 @@ git pull --rebase
       @database or data_dir.database
     end
 
+    # Update the database.
+    #
+    # Returns nothing.
+    def update_database
+      database.update
+    end
+
     # Get the project Hub. The Hub describes centralized aspects of your
     # system.
     #

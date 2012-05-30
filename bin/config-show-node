@@ -1,33 +1,3 @@
 #!/usr/bin/env ruby
-
-require 'config'
-
-Config.log_to $stderr
-
-project = Config.project
-
-fqn = ARGV.shift || project.data_dir.fqn
-path = ARGV.shift
-
-abort "Missing FQN to identify the Node" unless fqn
-
-project.database.update
-node = project.get_node(fqn)
-
-if path
-  data = node.facts.at_path(path)
-else
-  data = node.as_json
-end
-
-if data.is_a?(Hash)
-  puts JSON.generate(
-    data,
-    object_nl: "\n",
-    array_nl: "\n",
-    indent: "  ",
-    space: " "
-  )
-else
-  puts data
-end
+require 'config/cli'
+Config::CLI.run
