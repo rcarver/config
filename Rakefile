@@ -24,6 +24,20 @@ end
 # end
 #
 
+desc "Update the binaries"
+task :build_binaries do
+  require 'config/cli'
+  #rm_rf "bin/*"
+  Config::CLI.binaries.keys.each do |name|
+    File.open("bin/#{name}", "w") do |f|
+      f.print <<-STR
+#!/usr/bin/env ruby
+require 'config/cli/run'
+      STR
+    end
+  end
+end
+
 desc 'Build the manual'
 task :man do
   require 'ronn'
