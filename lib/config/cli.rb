@@ -37,6 +37,7 @@ module Config
     config "store-secret", :StoreSecret
     config "store-ssh-key", :StoreSSHKey
     config "try-blueprint", :TryBlueprint
+    config "update-database", :UpdateDatabase
 
     class Base
 

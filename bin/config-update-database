@@ -1,21 +1,3 @@
 #!/usr/bin/env ruby
-
-require 'config'
-
-blueprint_name = File.basename($0)
-
-project = Config.project
-
-Config.log_to $stdout
-Config.blueprint(blueprint_name) do
-  add Config::Meta::CloneDatabase do |p|
-    p.path = project.data_dir.repo_path
-    p.url = project.hub.data_config.url
-  end
-end
-
-Config.log << "Updating the database..."
-
-Config.log.indent do
-  project.database.update
-end
+require 'config/cli'
+Config::CLI.run
