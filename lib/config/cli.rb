@@ -38,6 +38,7 @@ module Config
     config "store-ssh-key", :StoreSSHKey
     config "try-blueprint", :TryBlueprint
     config "update-database", :UpdateDatabase
+    config "update-project", :UpdateProject
 
     class Base
 
@@ -141,6 +142,11 @@ module Config
         @open3 ||= Open3
       end
       attr_writer :open3
+
+      # Replace the current process.
+      def exec(code)
+        kernel.exec(code)
+      end
 
       # Set the shell exit status and quit.
       def exit(status)

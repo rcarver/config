@@ -1,12 +1,3 @@
 #!/usr/bin/env ruby
-
-require 'config'
-
-project = Config.project
-
-exec <<-STR
-#!/bin/bash
-set -e
-#{project.update_project_script}
-bundle install
-STR
+require 'config/cli'
+Config::CLI.run
