@@ -7,7 +7,7 @@ module Config
       attr_accessor :path
 
       def usage
-        "#{name} [<fqn>]"
+        "#{name} [<fqn>] [<json path>]"
       end
 
       def parse(options, argv, env)

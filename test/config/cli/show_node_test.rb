@@ -5,7 +5,7 @@ describe Config::CLI::ShowNode do
   subject { Config::CLI::ShowNode }
 
   specify "#usage" do
-    cli.usage.must_equal "test-command [<fqn>]"
+    cli.usage.must_equal "test-command [<fqn>] [<json path>]"
   end
 
   describe "#parse" do
