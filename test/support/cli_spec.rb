@@ -4,6 +4,7 @@ class CliSpec < MiniTest::Spec
     desc.is_a?(Class) && desc.superclass == Config::CLI::Base
   end
 
+  # A replacement for Kernel that doesn't exit the process.
   class FakeKernel
 
     def initialize(stdout, stderr)
@@ -25,6 +26,7 @@ class CliSpec < MiniTest::Spec
     end
   end
 
+  # A replacement for Open3 that doesn't talk to the OS.
   class FakeOpen3
 
     def initialize(system)
@@ -37,22 +39,39 @@ class CliSpec < MiniTest::Spec
     end
   end
 
+  # A StringIO that responds true to `tty?`.
   class StringIOTTY < StringIO
     def tty?
       true
     end
   end
 
+  #
   # The CLI execution environment.
-  let(:tty)    { nil }
-  let(:stdin)  { tty ? StringIOTTY.new(tty) : StringIO.new }
-  let(:stdout) { StringIO.new }
-  let(:stderr) { StringIO.new }
-  let(:argv) { "" }
-  let(:env)  { Hash.new }
+  #
 
-  # The subject for this test case.
+  # Set to a String to simulate STDIN.
+  let(:tty) { nil }
+
+  # The STDIN stream.
+  let(:stdin) { tty ? StringIOTTY.new(tty) : StringIO.new }
+
+  # The STDOUT stream.
+  let(:stdout) { StringIO.new }
+
+  # The STDERR stream.
+  let(:stderr) { StringIO.new }
+
+  # The ARGV Array.
+  let(:argv) { [] }
+
+  # The ENV Hash.
+  let(:env) { Hash.new }
+
+
+  # The subject for this test case. Use `cli` instead of `subject`.
   let(:cli) { subject.new("test-command", stdin, stdout, stderr) }
+
 
   # Mock a system call will occur.
   #
@@ -84,7 +103,7 @@ class CliSpec < MiniTest::Spec
     stderr.string.chomp.must_equal cli.usage
   end
 
-  # Fake the config world.
+  # Fake the Config world.
   let(:project)  { MiniTest::Mock.new }
   let(:data_dir) { MiniTest::Mock.new }
 
@@ -92,15 +111,21 @@ class CliSpec < MiniTest::Spec
   let(:kernel)   { SimpleMock.new(FakeKernel.new(stdout, stderr)) }
 
   # Fake system calls.
-  let(:open3)    { FakeOpen3.new(system) }
   let(:system)   { MiniTest::Mock.new }
+  let(:open3)    { FakeOpen3.new(system) }
 
   before do
+
+    # Never execute against the filesystem.
     cli.noop!
+
+    # Inject fake objects.
     cli.project = project
     cli.data_dir = data_dir
     cli.kernel = kernel
     cli.open3 = open3
+
+    # Accumulate fake files that we use.
     @files = []
   end
 
