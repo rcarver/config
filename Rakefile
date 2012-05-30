@@ -25,9 +25,10 @@ end
 #
 
 desc "Update the binaries"
-task :build_binaries do
+task :binaries do
   require 'config/cli'
-  #rm_rf "bin/*"
+  rm_rf "bin"
+  mkdir "bin"
   Config::CLI.binaries.keys.each do |name|
     File.open("bin/#{name}", "w") do |f|
       f.print <<-STR
@@ -35,6 +36,7 @@ task :build_binaries do
 require 'config/cli/run'
       STR
     end
+    chmod 0755, "bin/#{name}"
   end
 end
 
