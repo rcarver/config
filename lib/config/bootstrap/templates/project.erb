@@ -22,7 +22,7 @@ cd /etc/config/project
 <%= update_project_script %>
 bundle-config install
 bundle-config exec config-update-database
-bundle-config exec config-exec-node
+bundle-config exec config-exec-node `hostname`
 ' > /usr/local/sbin/config-run-now
 
 echo '#!/bin/bash
