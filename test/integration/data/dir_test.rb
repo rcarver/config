@@ -4,26 +4,6 @@ describe "filesystem", Config::Data::Dir do
 
   subject { Config::Data::Dir.new(tmpdir) }
 
-  describe "#fqn" do
-
-    it "returns nil if no file exists" do
-      subject.fqn.must_equal nil
-    end
-
-    it "reads from a file" do
-      (tmpdir + "fqn").open("w") { |f| f.puts "xyz" }
-      subject.fqn.must_equal "xyz"
-    end
-  end
-
-  describe "#fqn=" do
-
-    it "writes the value to disk" do
-      subject.fqn = "foo-bar-baz"
-      (tmpdir + "fqn").must_be :exist?
-    end
-  end
-
   describe "#ssh_key" do
 
     it "returns a file" do

@@ -8,23 +8,6 @@ module Config
         @dir = Pathname.new(dir)
       end
 
-      # Get the FQN of the current node.
-      #
-      # Returns a String or nil.
-      def fqn
-        value = fqn_file.read
-        value.chomp if value
-      end
-
-      # Set the FQN of the current node.
-      #
-      # fqn - String FQN.
-      #
-      # Returns nothing.
-      def fqn=(fqn)
-        fqn_file.write(fqn)
-      end
-
       # Manage a secret.
       #
       # name - Symbol name of the secret.
@@ -87,10 +70,6 @@ module Config
 
       def accumulation_file
         Config::Data::File.new(@dir + "accumulation.marshall")
-      end
-
-      def fqn_file
-        Config::Data::File.new(@dir + "fqn")
       end
 
       def repo
