@@ -185,7 +185,7 @@ Learn about core concepts.
 * [WORKFLOW](WORKFLOW.md) Learn how to write, test and execute changes
   to your configuration.
 
-Get details on configuration.
+Get details for configuring Config.
 
 * [HUB](HUB.md) Learn about managing a hub and configuring a few
   centralized aspects of Config.
