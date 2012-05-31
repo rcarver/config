@@ -1,23 +1,22 @@
 # Getting Started with Config
 
-Config aims to make setting up an environment as easy as possible. That
-said, there are number of pieces to put into place. This document
-details exactly what you need to do and why. After finishing this guide,
-you'll be ready to use Config to manage your servers.
+Config aims to make getting started as easy as possible. That said,
+there are number of pieces to put into place before things get fun. This
+document details exactly what you need to do and why. After finishing
+this guide, you'll be ready to use Config to manage your servers.
 
 #### System dependencies
 
-Config requires ruby 1.9 and bundler. You'll need to have these minimum
+Config requires ruby 1.9.3 and bundler. You'll need to have these minimum
 dependencies in order to create a Config project.
 
-    # Install ruby.
+    # Install ruby 1.9.3 or above.
     gem install bundler
 
 ## Create the project repo
 
-The first step is to create your initialize a Config project. The
-project repository is where you write code that will execute on remote
-servers.
+The first step is to create your Config project. The project repository
+is where you write code that will execute on remote servers.
 
     # A working directory.
     mkdir myproject
@@ -35,8 +34,7 @@ servers.
     bundle exec config-init-project
 
 Check in the files and push it to a remote repository. If you're using
-GitHub, first create a repository in your account. Config requires SSH
-access to the repository.
+GitHub, first create a repository in your account.
 
     git add .
     git commit -m 'initial comit'
@@ -57,21 +55,23 @@ The "hub" of your project is a machine that can bootstrap other
 machines. In order to bootstrap a machine, it must have access to some
 sensitive information. This information is one of the few things that
 are *not* stored in the git repositories. Instead, Config manages files
-within `./.data`, which is ignored by git.
+within `.data`, which is ignored by git.
 
-The easiest way to get started is to simply use your development machine
-as the hub. We can easily make another machine the hub at another time.
+The easiest way to get started is to use your development machine as the
+hub. We can easily make a remote machine the hub at another time. Doing
+so allows us to use things like AWS AutoScale. For the time being, we'll
+focus on the basics and create servers one at a time.
 
-### Store the git SSH key
+### Store the git ssh key
 
 In order for Config to access your git repos from remote servers, we
-need to give it an SSH key. To do that, pipe your *private* key to
+need to give it an ssh key. To do that, pipe your *private* key to
 `config-store-ssh-key`.
 
     cat ~/.ssh/id_rsa | bundle exec config-store-ssh-key
 
-The result is a copy of your SSH key stored at
-`./.data/ssh-key-default`. See [GIT](GIT.md) If you require different
+The result is a copy of your ssh key stored at
+`.data/ssh-key-default`. See [GIT](GIT.md) If you require different
 keys for the project and data repos. See [GITHUB](GITHUB.md) for
 specifics on how to best manage repos, users and keys at GitHub.
 
@@ -86,7 +86,7 @@ To store a secret, pipe it to `config-store-secret`.
 
     cat $secret_file | bundle exec config-store-secret
 
-The result is a copy of your secret stored at `./.data/secret-default`.
+The result is a copy of your secret stored at `.data/secret-default`.
 See [SECRETS](SECRETS.md) to learn about using more than one secret.
 
 ## Create a blueprint
@@ -96,7 +96,7 @@ a webserver, let's create a `webserver` blueprint.
 
     bundle exec config-create-blueprint webserver
 
-The result is a file at `./blueprints/webserver.rb`. We can leave the
+The result is a file at `blueprints/webserver.rb`. We can leave the
 file empty for now. Check this file in and `git push`.
 
 ## Create a cluster
@@ -106,7 +106,7 @@ node, live. Let's create a `production` cluster.
 
     bundle exec config-create-cluster production
 
-The result is a file at `./clusters/production.rb`. We can leave this
+The result is a file at `clusters/production.rb`. We can leave this
 file empty for now. Check this file in and `git push`.
 
 ## Bootstrap a node
@@ -124,7 +124,7 @@ doesn't do a lot of good, but you might find it interesting to inspect
 it. Instead, what we need to do is run that script on a fresh server.
 The simplest way to do that is to pipe it over ssh.
 
-**not covered here** is how to create a fresh server. We'll continue
+**Not covered here** is how to create a fresh server. We'll continue
 assuming you have created a new machine and can ssh to it using
 `$user@$ip_address`.
 
@@ -153,14 +153,13 @@ data down, pass a path to the structure you'd like to see.
     bundle exec config-show-node production-webserver-1 ec2
 
 What's happening here? Config pulls down the latest data repo (stored in
-`./.data/project-data`) and then reads the contents of
+`.data/project-data`) and then reads the contents of
 `project-data/nodes/production-webserver-1.json`.
 
 ## For real this time
 
 That's it. Everything is set up and ready to be customized. We can start
-configuring our webserver to serve content. Unfortunately, that's out of
-scope of this getting started guide. 
+configuring our webserver to serve content.
 
 ### Next up
 
@@ -180,6 +179,6 @@ Get details on configuration.
   example, how did Config know where the data repo lives?
 * [GITHUB](GITHUB.md) Tips and techniques for storing Config repos at
   GitHub.
-* [SSH](SSH.md) Additional information on SSH issues.
+* [SSH](SSH.md) Additional information on ssh issues.
 * [SECRETS](SECRETS.md) Tips on generating and using secrets
 
