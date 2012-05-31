@@ -6,7 +6,6 @@ module Config
   module CLI
 
     def self.exec
-      Config.log_to STDOUT
       cli = self.new(File.basename($0), STDIN, STDOUT, STDERR)
       cli.run(ARGV, ENV)
     end
@@ -81,6 +80,11 @@ module Config
 
       def usage
         name
+      end
+
+      # Specify where config should log.
+      def config_log_stream
+        stdout
       end
 
       def read_stdin
@@ -161,6 +165,7 @@ module Config
 
       # Execute a blueprint.
       def blueprint(&block)
+        Config.log_to config_log_stream
         blueprint = Config::Blueprint.new(name, &block)
         @accumulations ||= []
         @accumulations << blueprint.accumulate

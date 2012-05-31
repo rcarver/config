@@ -8,6 +8,10 @@ module Config
       attr_accessor :blueprint_name
       attr_accessor :identity
 
+      def config_log_stream
+        StringIO.new
+      end
+
       def usage
         "#{name} <cluster> <blueprint> <identity>"
       end
