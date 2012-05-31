@@ -59,6 +59,7 @@ module Config
 
       def run(argv, env)
         parse!(argv, env)
+        Config.log_to(config_log_stream)
         execute
       end
 
@@ -171,7 +172,6 @@ module Config
 
       # Execute a blueprint.
       def blueprint(&block)
-        Config.log_to config_log_stream
         blueprint = Config::Blueprint.new(name, &block)
         @accumulations ||= []
         @accumulations << blueprint.accumulate
