@@ -7,9 +7,10 @@ this guide, you'll be ready to use Config to manage your servers.
 
 #### System dependencies
 
-Config requires ruby 1.9.3 and bundler. You'll need to have these minimum
-dependencies in order to create a Config project.
+Config requires git, ruby 1.9.3 and bundler. You'll need to have these
+minimum dependencies in order to create a Config project.
 
+    # Install git
     # Install ruby 1.9.3 or above.
     gem install bundler
 
