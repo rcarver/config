@@ -2,6 +2,7 @@ set -e
 
 mkdir -p /etc/config
 
+
 echo '[setting hostname]'
 
 # In order to properly set the hostname we must do three things:
@@ -19,9 +20,7 @@ if [ -z "$(grep <%= fqn %> /etc/hosts)" ]; then
   echo "$ip_address <%= fqdn %> <%= fqn %>" >> /etc/hosts
 fi
 
-echo <%= fqn %> > /etc/config/fqn
 
 echo '[storing secret]'
 echo '<%= secret %>' > /etc/config/secret
-
 chmod 600 /etc/config/secret
