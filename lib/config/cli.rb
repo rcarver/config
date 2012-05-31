@@ -149,11 +149,6 @@ module Config
       end
       attr_writer :open3
 
-      def socket
-        @socket ||= Socket
-      end
-      attr_writer :socket
-
       # Replace the current process.
       def exec(code)
         kernel.exec(code)
