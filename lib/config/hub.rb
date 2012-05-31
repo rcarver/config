@@ -14,6 +14,7 @@ module Config
         dsl.instance_eval(string)
       end
       hub = self.new
+      hub.dns = dsl[:dns]
       hub.project_config = dsl[:project_config]
       hub.data_config = dsl[:data_config]
       hub.ssh_configs.concat dsl[:ssh_configs]
@@ -23,6 +24,9 @@ module Config
     def initialize
       @ssh_configs = []
     end
+
+    # Get/Set the project DNS
+    attr_accessor :dns
 
     # Get/Set the project Config::Core::GitConfig.
     attr_accessor :project_config

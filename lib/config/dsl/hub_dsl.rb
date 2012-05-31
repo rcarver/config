@@ -76,6 +76,16 @@ module Config
         @data[:ssh_configs] << config.ssh_config
       end
 
+      # Public: Set the DNS Zone that nodes will be a part of. A node's
+      # FQDN is "<node.fqn>.<hub.dns>"
+      #
+      # name - String.
+      #
+      # Returns nothing.
+      def dns(name)
+        @data[:dns] = name
+      end
+
       def to_s
         "<Hub>"
       end

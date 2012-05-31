@@ -2,7 +2,23 @@ set -e
 
 mkdir -p /etc/config
 
-echo '[setting fqn]'
+echo '[setting hostname]'
+
+# In order to properly set the hostname we must do three things:
+# #
+# 1. Call `hostname` with the short name.
+hostname <%= fqn %>
+#
+# 2. Store the short name in /etc/hostname.
+echo <%= fqn %> > /etc/hostname
+#
+# 3. Set the short name and fully qualified domain name in /etc/hosts.
+if [ -z "$(grep <%= fqn %> /etc/hosts)" ]; then
+  ip_address="$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')"
+  echo "# Added by config bootstrap" >> /etc/hosts
+  echo "$ip_address <%= fqdn %> <%= fqn %>" >> /etc/hosts
+fi
+
 echo <%= fqn %> > /etc/config/fqn
 
 echo '[storing secret]'

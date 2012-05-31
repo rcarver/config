@@ -16,6 +16,9 @@ module Config
       desc "A unique id for the node"
       key :identity
 
+      desc "The DNS name to which the FQN will be added, eg: 'internal.example.com'"
+      key :dns_domain_name
+
       desc "The secret"
       attr :secret
 
@@ -29,6 +32,10 @@ module Config
 
       def fqn
         Config::Node.new(cluster, blueprint, identity).fqn
+      end
+
+      def fqdn
+        "#{fqn}.#{dns_domain_name}"
       end
 
     end
