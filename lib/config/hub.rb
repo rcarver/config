@@ -14,7 +14,7 @@ module Config
         dsl.instance_eval(string)
       end
       hub = self.new
-      hub.dns = dsl[:dns]
+      hub.domain = dsl[:domain]
       hub.project_config = dsl[:project_config]
       hub.data_config = dsl[:data_config]
       hub.ssh_configs.concat dsl[:ssh_configs]
@@ -25,8 +25,9 @@ module Config
       @ssh_configs = []
     end
 
-    # Get/Set the project DNS
-    attr_accessor :dns
+    # Get/Set the node's domain. The node's FQDN is determined by
+    # <node.fqn>.<hub.domain>.
+    attr_accessor :domain
 
     # Get/Set the project Config::Core::GitConfig.
     attr_accessor :project_config

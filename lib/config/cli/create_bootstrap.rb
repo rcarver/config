@@ -67,7 +67,7 @@ module Config
             p.blueprint = blueprint_name
             p.identity = identity
             # TODO: allow the dns_domain_name to be configured per cluster.
-            p.dns_domain_name = hub.dns
+            p.dns_domain_name = hub.domain
             # TODO: allow secret to be configured per cluster.
             p.secret = data_dir.secret(:default).read
           end

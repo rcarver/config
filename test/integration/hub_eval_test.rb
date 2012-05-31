@@ -7,12 +7,12 @@ describe Config::Hub do
     it "works with a simple config" do
 
       hub = Config::Hub.from_string <<-STR
-        dns "internal.example.com"
+        domain "internal.example.com"
         project_repo "git@github.com:rcarver/config-example.git"
         data_repo    "git@github.com:rcarver/config-example-data.git"
       STR
 
-      hub.dns.must_equal "internal.example.com"
+      hub.domain.must_equal "internal.example.com"
 
       hub.project_config.url.must_equal "git@github.com:rcarver/config-example.git"
       hub.project_config.ssh_config.host.must_equal "github.com"
