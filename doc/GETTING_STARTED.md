@@ -1,0 +1,185 @@
+# Getting Started with Config
+
+Config aims to make setting up an environment as easy as possible. That
+said, there are number of pieces to put into place. This document
+details exactly what you need to do and why. After finishing this guide,
+you'll be ready to use Config to manage your servers.
+
+#### System dependencies
+
+Config requires ruby 1.9 and bundler. You'll need to have these minimum
+dependencies in order to create a Config project.
+
+    # Install ruby.
+    gem install bundler
+
+## Create the project repo
+
+The first step is to create your initialize a Config project. The
+project repository is where you write code that will execute on remote
+servers.
+
+    # A working directory.
+    mkdir myproject
+    cd myproject
+    git init
+
+    # Initialize a bundler project.
+    bundle init
+
+    # Depend on config and install dependencies.
+    echo 'config' >> Gemfile
+    bundle install
+
+    # Initialize your config project.
+    bundle exec config-init-project
+
+Check in the files and push it to a remote repository. If you're using
+GitHub, first create a repository in your account. Config requires SSH
+access to the repository.
+
+    git add .
+    git commit -m 'initial comit'
+    git remote add origin <remote repo ssh url>
+    git push -u origin master
+
+## Create the data repo
+
+Config uses a second repository to store the state of your system. This
+provides a change-by-change history of everything that has happened.
+Typically, this repository is called `myproject-data`. Go ahead and
+create this second remote repository. Once it's created, config will
+manage it for you.
+
+## Designate a "hub"
+
+The "hub" of your project is a machine that can bootstrap other
+machines. In order to bootstrap a machine, it must have access to some
+sensitive information. This information is one of the few things that
+are *not* stored in the git repositories. Instead, Config manages files
+within `./.data`, which is ignored by git.
+
+The easiest way to get started is to simply use your development machine
+as the hub. We can easily make another machine the hub at another time.
+
+### Store the git SSH key
+
+In order for Config to access your git repos from remote servers, we
+need to give it an SSH key. To do that, pipe your *private* key to
+`config-store-ssh-key`.
+
+    cat ~/.ssh/id_rsa | bundle exec config-store-ssh-key
+
+The result is a copy of your SSH key stored at
+`./.data/ssh-key-default`. See [GIT](GIT.md) If you require different
+keys for the project and data repos. See [GITHUB](GITHUB.md) for
+specifics on how to best manage repos, users and keys at GitHub.
+
+### Store a secret
+
+So that we can store sensitive information securely in our project repo,
+config uses a secret to encrypt and decrypt that information at runtime.
+
+    # TODO: how to generate a secret?
+
+To store a secret, pipe it to `config-store-secret`.
+
+    cat $secret_file | bundle exec config-store-secret
+
+The result is a copy of your secret stored at `./.data/secret-default`.
+See [SECRETS](SECRETS.md) to learn about using more than one secret.
+
+## Create a blueprint
+
+A blueprint is the template for managing a server. To begin configuring
+a webserver, let's create a `webserver` blueprint.
+
+    bundle exec config-create-blueprint webserver
+
+The result is a file at `./blueprints/webserver.rb`. We can leave the
+file empty for now. Check this file in and `git push`.
+
+## Create a cluster
+
+A cluster is the environment in which a blueprint, and the resulting
+node, live. Let's create a `production` cluster.
+
+    bundle exec config-create-cluster production
+
+The result is a file at `./clusters/production.rb`. We can leave this
+file empty for now. Check this file in and `git push`.
+
+## Bootstrap a node
+
+We're now ready to manage a server with Config. To bootstrap a server,
+we must specify the `cluster`, the `blueprint` and a unique `identity`
+for the node. The identity must be unique for other nodes with the same
+cluster and blueprint. By convention we'll call the node `1` and
+generate a bootstrap script.
+
+    bundle exec config-create-bootstrap production webserver 1
+
+The result of this command is a bash script written to STDOUT. That
+doesn't do a lot of good, but you might find it interesting to inspect
+it. Instead, what we need to do is run that script on a fresh server.
+The simplest way to do that is to pipe it over ssh.
+
+**not covered here** is how to create a fresh server. We'll continue
+assuming you have created a new machine and can ssh to it using
+`$user@$ip_address`.
+
+    bundle exec config-create-bootstrap production webserver 1 \
+      ssh $user@$ip_address "sudo bash"
+
+This command generates a bootstrap script, then executes it on the
+remote server as root. Once it finishes we have:
+
+1. A fully functional Config node. The node can be updated at any time
+   by ssh'ing to it and executing `config-run`.
+2. The first node in our system. It's called `production-webserver-1`
+   and has a FQDN of `production-webserver-1.internal.example.com`.
+3. An entry in the data repo. Whenever a node is updated via
+   `config-run`, it stores its state in the data repo.
+
+Back at the hub, try running
+
+    bundle exec config-show-node production-webserver-1
+
+The result is a (large) JSON blob containing
+[Ohai](http://wiki.opscode.com/display/chef/Ohai) data. To filter that
+data down, pass a path to the structure you'd like to see.
+
+    bundle exec config-show-node production-webserver-1 kernel
+    bundle exec config-show-node production-webserver-1 ec2
+
+What's happening here? Config pulls down the latest data repo (stored in
+`./.data/project-data`) and then reads the contents of
+`project-data/nodes/production-webserver-1.json`.
+
+## For real this time
+
+That's it. Everything is set up and ready to be customized. We can start
+configuring our webserver to serve content. Unfortunately, that's out of
+scope of this getting started guide. 
+
+### Next up
+
+Learn about core concepts.
+
+* [BLUEPRINT](BLUEPRINT.md) Learn how blueprints can describe the entire
+  state of a server.
+* [CLUSTER](CLUSTER.md) Learn about how clusters group nodes and
+  configure blueprints.
+* [NODE](NODE.md) Learn about managing and configuring nodes.
+* [HUB](HUB.md) Learn about managing a hub and configuring a few
+  centralized aspects of Config.
+
+Get details on configuration.
+
+* [GIT](GIT.md) Details about how git is used and configured. For
+  example, how did Config know where the data repo lives?
+* [GITHUB](GITHUB.md) Tips and techniques for storing Config repos at
+  GitHub.
+* [SSH](SSH.md) Additional information on SSH issues.
+* [SECRETS](SECRETS.md) Tips on generating and using secrets
+
