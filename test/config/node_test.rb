@@ -78,6 +78,8 @@ describe Config::Node do
     it "errors if the input is not an fqn" do
       proc { Config::Node.from_fqn("a-b") }.must_raise ArgumentError
       proc { Config::Node.from_fqn("a-b-c-d") }.must_raise ArgumentError
+      proc { Config::Node.from_fqn("") }.must_raise ArgumentError
+      proc { Config::Node.from_fqn(nil) }.must_raise ArgumentError
     end
   end
 end

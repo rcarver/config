@@ -7,12 +7,11 @@ module Config
       attr_accessor :path
 
       def usage
-        "#{name} [<fqn>] [<json path>]"
+        "#{name} <fqn> [<json path>]"
       end
 
       def parse(options, argv, env)
-        @fqn = argv.shift || data_dir.fqn
-        @fqn or abort usage
+        @fqn = argv.shift or abort usage
         @path = argv.shift
       end
 

@@ -5,12 +5,11 @@ module Config
       attr_accessor :fqn
 
       def usage
-        "#{name} [<fqn>]"
+        "#{name} <fqn>"
       end
 
       def parse(options, argv, env)
-        @fqn = argv.shift || data_dir.fqn
-        @fqn or abort usage
+        @fqn = argv.shift or abort usage
       end
 
       def execute

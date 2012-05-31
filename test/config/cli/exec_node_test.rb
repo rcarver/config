@@ -5,7 +5,7 @@ describe Config::CLI::ExecNode do
   subject { Config::CLI::ExecNode }
 
   specify "#usage" do
-    cli.usage.must_equal "test-command [<fqn>]"
+    cli.usage.must_equal "test-command <fqn>"
   end
 
   describe "#parse" do
@@ -13,13 +13,7 @@ describe Config::CLI::ExecNode do
       cli.parse! %w(a-b-c)
       cli.fqn.must_equal "a-b-c"
     end
-    it "falls back to the data dir's fqn" do
-      data_dir.expect(:fqn, "a-b-c")
-      cli.parse!
-      cli.fqn.must_equal "a-b-c"
-    end
-    it "fails if no fqn is available" do
-      data_dir.expect(:fqn, nil)
+    it "fails if no args are given" do
       expect_fail_with_usage { cli.parse! }
     end
   end

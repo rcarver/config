@@ -1,6 +1,7 @@
 require 'config'
 require 'optparse'
 require 'ostruct'
+require 'socket'
 
 module Config
   module CLI
@@ -147,6 +148,11 @@ module Config
         @open3 ||= Open3
       end
       attr_writer :open3
+
+      def socket
+        @socket ||= Socket
+      end
+      attr_writer :socket
 
       # Replace the current process.
       def exec(code)

@@ -14,8 +14,8 @@ module Config
     # Returns a Config::Node.
     # Raises ArgumentError if the input cannot be interpreted as an fqn.
     def self.from_fqn(fqn)
-      a, *_ = fqn.split(".")
-      parts = a.split("-")
+      a, *_ = (fqn || "").split(".")
+      parts = (a || "").split("-")
       unless parts.size == 3
         raise ArgumentError, "Expected a fqn: #{a.inspect}"
       end
