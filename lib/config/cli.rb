@@ -1,7 +1,6 @@
 require 'config'
 require 'optparse'
 require 'ostruct'
-require 'socket'
 
 module Config
   module CLI
