@@ -75,6 +75,18 @@ The result is a copy of your ssh key stored at
 keys for the project and data repos. See [GITHUB](GITHUB.md) for
 specifics on how to best manage repos, users and keys at GitHub.
 
+### Know your hosts
+
+In order for a fresh server to trust the host serving our git repos, we
+need to generate entries for the `known_hosts` file.
+
+    bundle exec config-know-hosts
+
+The result of this is a file in `.data` for each host we'll need to
+access during bootstrapping. In this example, if your repos are stored
+at GitHub, we'd have created the file `.data/ssh-host-github.com`. See
+[SSH](SSH.md) for more information.
+
 ### Store a secret
 
 So that we can store sensitive information securely in our project repo,
@@ -170,11 +182,13 @@ Learn about core concepts.
 * [CLUSTER](CLUSTER.md) Learn about how clusters group nodes and
   configure blueprints.
 * [NODE](NODE.md) Learn about managing and configuring nodes.
-* [HUB](HUB.md) Learn about managing a hub and configuring a few
-  centralized aspects of Config.
+* [WORKFLOW](WORKFLOW.md) Learn how to write, test and execute changes
+  to your configuration.
 
 Get details on configuration.
 
+* [HUB](HUB.md) Learn about managing a hub and configuring a few
+  centralized aspects of Config.
 * [GIT](GIT.md) Details about how git is used and configured. For
   example, how did Config know where the data repo lives?
 * [GITHUB](GITHUB.md) Tips and techniques for storing Config repos at
