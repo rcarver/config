@@ -16,8 +16,9 @@ minimum dependencies in order to create a Config project.
 
 ## Create the project repo
 
-The first step is to create your Config project. The project repository
-is where you write code that will execute on remote servers.
+The first step is to create your Config project. In a nutshell, the
+project repository is when you write code. When you commit and push it
+to the master branch, it will execute on your servers.
 
     # A working directory.
     mkdir myproject
@@ -28,18 +29,19 @@ is where you write code that will execute on remote servers.
     bundle init
 
     # Depend on config and install dependencies.
-    echo 'gem "config"' >> Gemfile
+    echo 'gem "config", :git => "git@github.com:rcarver/config.git"' >> Gemfile
     bundle install --binstubs
 
     # Initialize your config project.
     bin/config-init-project
 
 Check in the files and push it to a remote repository. If you're using
-GitHub, first create a repository in your account.
+GitHub, first create a repository in your account and use the repo ssh
+url that GitHub provides.
 
     git add .
     git commit -m 'initial comit'
-    git remote add origin <remote repo ssh url>
+    git remote add origin <repo ssh url>
     git push -u origin master
 
 By the way, `config-init-project` is written in Config. The output it
@@ -142,10 +144,10 @@ The simplest way to do that is to pipe it over ssh.
 
 **Not covered here** is how to create a fresh server. We'll continue
 assuming you have created a new machine and can ssh to it using
-`$user@$ip_address`.
+`$hostname` See [SSH](SSH.md) for tips on ssh configuration.
 
     bin/config-create-bootstrap production webserver 1 \
-      ssh $user@$ip_address "sudo bash"
+      ssh $hostname 'sudo bash'
 
 This command generates a bootstrap script, then executes it on the
 remote server as root. Once it finishes we have:
