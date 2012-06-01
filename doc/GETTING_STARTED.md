@@ -29,10 +29,10 @@ is where you write code that will execute on remote servers.
 
     # Depend on config and install dependencies.
     echo 'gem "config"' >> Gemfile
-    bundle install
+    bundle install --binstubs
 
     # Initialize your config project.
-    bundle exec config-init-project
+    bin/config-init-project
 
 Check in the files and push it to a remote repository. If you're using
 GitHub, first create a repository in your account.
@@ -41,6 +41,9 @@ GitHub, first create a repository in your account.
     git commit -m 'initial comit'
     git remote add origin <remote repo ssh url>
     git push -u origin master
+
+By the way, `config-init-project` is written in Config. The output it
+generated is just like what you'll see when you execute your patterns.
 
 ## Create the data repo
 
@@ -69,7 +72,7 @@ In order for Config to access your git repos from remote servers, we
 need to give it an ssh key. To do that, pipe your *private* key to
 `config-store-ssh-key`.
 
-    cat ~/.ssh/id_rsa | bundle exec config-store-ssh-key
+    cat ~/.ssh/id_rsa | bin/config-store-ssh-key
 
 The result is a copy of your ssh key stored at
 `.data/ssh-key-default`. See [GIT](GIT.md) If you require different
@@ -81,7 +84,7 @@ specifics on how to best manage repos, users and keys at GitHub.
 In order for a fresh server to trust the host serving our git repos, we
 need to generate entries for the `known_hosts` file.
 
-    bundle exec config-know-hosts
+    bin/config-know-hosts
 
 The result of this is a file in `.data` for each host we'll need to
 access during bootstrapping. In this example, if your repos are stored
@@ -97,7 +100,7 @@ config uses a secret to encrypt and decrypt that information at runtime.
 
 To store a secret, pipe it to `config-store-secret`.
 
-    cat $secret_file | bundle exec config-store-secret
+    cat $secret_file | bin/config-store-secret
 
 The result is a copy of your secret stored at `.data/secret-default`.
 See [SECRETS](SECRETS.md) to learn about using more than one secret.
@@ -107,7 +110,7 @@ See [SECRETS](SECRETS.md) to learn about using more than one secret.
 A blueprint is the template for managing a server. To begin configuring
 a webserver, let's create a `webserver` blueprint.
 
-    bundle exec config-create-blueprint webserver
+    bin/config-create-blueprint webserver
 
 The result is a file at `blueprints/webserver.rb`. We can leave the
 file empty for now. Check this file in and `git push`.
@@ -117,7 +120,7 @@ file empty for now. Check this file in and `git push`.
 A cluster is the environment in which a blueprint, and the resulting
 node, live. Let's create a `production` cluster.
 
-    bundle exec config-create-cluster production
+    bin/config-create-cluster production
 
 The result is a file at `clusters/production.rb`. We can leave this
 file empty for now. Check this file in and `git push`.
@@ -130,7 +133,7 @@ for the node. The identity must be unique for other nodes with the same
 cluster and blueprint. By convention we'll call the node `1` and
 generate a bootstrap script.
 
-    bundle exec config-create-bootstrap production webserver 1
+    bin/config-create-bootstrap production webserver 1
 
 The result of this command is a bash script written to STDOUT. That
 doesn't do a lot of good, but you might find it interesting to inspect
@@ -141,7 +144,7 @@ The simplest way to do that is to pipe it over ssh.
 assuming you have created a new machine and can ssh to it using
 `$user@$ip_address`.
 
-    bundle exec config-create-bootstrap production webserver 1 \
+    bin/config-create-bootstrap production webserver 1 \
       ssh $user@$ip_address "sudo bash"
 
 This command generates a bootstrap script, then executes it on the
@@ -156,14 +159,14 @@ remote server as root. Once it finishes we have:
 
 Back at the hub, try running
 
-    bundle exec config-show-node production-webserver-1
+    bin/config-show-node production-webserver-1
 
 The result is a (large) JSON blob containing
 [Ohai](http://wiki.opscode.com/display/chef/Ohai) data. To filter that
 data down, pass a path to the structure you'd like to see.
 
-    bundle exec config-show-node production-webserver-1 kernel
-    bundle exec config-show-node production-webserver-1 ec2
+    bin/config-show-node production-webserver-1 kernel
+    bin/config-show-node production-webserver-1 ec2
 
 What's happening here? Config pulls down the latest data repo (stored in
 `.data/project-data`) and then reads the contents of
