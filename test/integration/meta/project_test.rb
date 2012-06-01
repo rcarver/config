@@ -26,6 +26,8 @@ describe "filesystem", Config::Meta::Project do
 
     (tmpdir + ".gitignore").must_be :exist?
     (tmpdir + ".gitignore").read.must_equal <<-STR
+bin
+.bundle
 .data
     STR
 
