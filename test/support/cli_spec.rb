@@ -39,8 +39,8 @@ class CliSpec < MiniTest::Spec
     end
   end
 
-  # A StringIO that responds true to `tty?`.
-  class StringIOTTY < StringIO
+  # Simulate STDIN where no input stream is present.
+  class FakeTTY
     def tty?
       true
     end
@@ -51,10 +51,10 @@ class CliSpec < MiniTest::Spec
   #
 
   # Set to a String to simulate STDIN.
-  let(:tty) { nil }
+  let(:input_stream) { nil }
 
   # The STDIN stream.
-  let(:stdin) { tty ? StringIOTTY.new(tty) : StringIO.new }
+  let(:stdin) { input_stream ? StringIO.new(input_stream) : FakeTTY.new }
 
   # The STDOUT stream.
   let(:stdout) { StringIO.new }

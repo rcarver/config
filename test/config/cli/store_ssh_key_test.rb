@@ -10,7 +10,7 @@ describe Config::CLI::StoreSSHKey do
 
   describe "#parse" do
 
-    let(:tty) { "data" }
+    let(:input_stream) { "data" }
 
     it "gets the name from the args" do
       cli.parse! %w(foo)

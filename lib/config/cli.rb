@@ -90,9 +90,9 @@ module Config
 
       def read_stdin
         if stdin.tty?
-          stdin.read
-        else
           abort "Expected data on STDIN. #{usage}"
+        else
+          stdin.read
         end
       end
 
