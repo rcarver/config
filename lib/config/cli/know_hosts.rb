@@ -5,7 +5,7 @@ module Config
       attr_accessor :hosts
 
       def usage
-        "#{name} [HOST]"
+        "#{name} <host>"
       end
 
       def parse(options, argv, env)

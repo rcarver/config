@@ -5,7 +5,7 @@ describe Config::CLI::KnowHosts do
   subject { Config::CLI::KnowHosts }
 
   specify "#usage" do
-    cli.usage.must_equal "test-command [HOST]"
+    cli.usage.must_equal "test-command <host>"
   end
 
   describe "#parse" do
