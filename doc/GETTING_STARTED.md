@@ -168,7 +168,9 @@ The result is a (large) JSON blob containing
 data down, pass a path to the structure you'd like to see.
 
     bin/config-show-node production-webserver-1 kernel
+    bin/config-show-node production-webserver-1 kernel.version
     bin/config-show-node production-webserver-1 ec2
+    bin/config-show-node production-webserver-1 ec2.public_ipv4
 
 What's happening here? Config pulls down the latest data repo (stored in
 `.data/project-data`) and then reads the contents of
