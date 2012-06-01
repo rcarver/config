@@ -28,7 +28,7 @@ is where you write code that will execute on remote servers.
     bundle init
 
     # Depend on config and install dependencies.
-    echo 'config' >> Gemfile
+    echo 'gem "config"' >> Gemfile
     bundle install
 
     # Initialize your config project.
