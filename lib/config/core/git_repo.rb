@@ -52,11 +52,20 @@ module Config
         @path.to_s
       end
 
-      # Determine if the repository has any commits.
+      # Determine if there are any commits in the remote repository.
       #
       # Returns a Boolean.
-      def has_commits?
-        @git.status?(0, "git show")
+      def has_remote_commits?
+        @git.run "git fetch origin"
+        @git.status?(0, "git rev-list --quiet origin/master")
+      end
+
+      # Determine if there are any commits in the current, local
+      # repository.
+      #
+      # Returns a Boolean.
+      def has_local_commits?
+        @git.status?(0, "git rev-list --quiet master")
       end
 
       # Describe the current head commit.
@@ -64,7 +73,7 @@ module Config
       # Returns String, String. The first string is a 7 character SHA of
       # the commit. The second string is the one line commit message.
       def describe_head
-        return "0000000", "" unless has_commits?
+        return "0000000", "" unless has_local_commits?
 
         out, status = @git.run("git log --oneline | head -n1")
         line = out.chomp
@@ -86,7 +95,9 @@ module Config
       #
       # Returns nothing.
       def pull_rebase
-        @git.run "git pull --rebase" if has_commits?
+        if has_remote_commits?
+          @git.run "git pull --rebase"
+        end
       end
 
       # Add files to the index.
@@ -103,11 +114,14 @@ module Config
         @git.run "git rm #{path}"
       end
 
-      # Reset the index. Does a hard reset to ensure a clean slate.
+      # Reset the index. Does a hard reset to ensure a clean state on
+      # the local copy.
       #
       # Returns nothing.
       def reset_hard
-        @git.run "git reset --hard" if has_commits?
+        if has_local_commits?
+          @git.run "git reset --hard"
+        end
       end
 
       # Commit a change.

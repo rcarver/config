@@ -18,8 +18,8 @@ describe "filesystem", Config::Core::GitRepo do
       end
     end
 
-    specify "it has commits" do
-      subject.must_be :has_commits?
+    specify "it has local commits" do
+      subject.must_be :has_local_commits?
     end
 
     describe "#describe_head" do
@@ -133,8 +133,8 @@ describe "filesystem", Config::Core::GitRepo do
       end
     end
 
-    specify "it has no commits" do
-      subject.wont_be :has_commits?
+    specify "it has no local commits" do
+      subject.wont_be :has_local_commits?
     end
 
     describe "#describe_head" do
@@ -174,35 +174,55 @@ describe "filesystem", Config::Core::GitRepo do
       cmd "git clone #{source_dir} #{project2_dir}"
 
       # update project1
-      # pull with no commits is ok.
+      # Tests that we can pull from an empty remote into an empty local.
+      project1.wont_be :has_remote_commits?
+      project1.wont_be :has_local_commits?
       project1.pull_rebase
 
       # commit and push from project1
+      # Tests that we can make a simple commit.
       within(project1_dir) { cmd "echo hello > one" }
       project1.add "."
-      project1.commit "commit-from-1"
+      project1.commit "commit-from-1:1"
+      project1.push
+
+      # pull from project2
+      # Tests that we can pull from a non-empty remote into an empty local.
+      project2.must_be :has_remote_commits?
+      project2.wont_be :has_local_commits?
+      project2.pull_rebase
+      (project2_dir + "one").must_be :exist?
+
+      # commit and push from project1 again
+      # This commit is used in the next step.
+      within(project1_dir) { cmd "echo hello > oneone" }
+      project1.add "."
+      project1.commit "commit-from-1:2"
       project1.push
 
       # commit and push from project2 with state resolution
+      # Tests that we can resolve conflicts between the remote and the local.
       within(project2_dir) { cmd "echo goodbye > two" }
       project2.add "."
-      project2.commit "commit-from-2"
+      project2.commit "commit-from-2:1"
       proc { project2.push }.must_raise Config::Core::GitRepo::PushError
       project2.pull_rebase
       (project2_dir + "one").must_be :exist?
       project2.push
 
       # pull changes into project1
+      # Tests that we can sync changes.
       project1.pull_rebase
       (project2_dir + "two").must_be :exist?
 
-      # Show that there are only two commits (no merge).
+      # Show that there are three commits (no merge).
       within(project1_dir) do
         lines = cmd "git log --oneline"
         messages = lines.split("\n").map { |line| line.split(/\s/).last }
         messages.must_equal [
-          "commit-from-2",
-          "commit-from-1"
+          "commit-from-2:1",
+          "commit-from-1:2",
+          "commit-from-1:1"
         ]
       end
     end
