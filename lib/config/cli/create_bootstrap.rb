@@ -90,7 +90,7 @@ module Config
             end
             p.ssh_known_hosts = begin
               hosts = {}
-              hub.ssh_hosts.each do |host|
+              hub.ssh_hostnames.each do |host|
                 # TODO: handle the host is missing locally.
                 hosts[host] = data_dir.ssh_host_signature(host).read
               end
