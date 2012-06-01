@@ -28,8 +28,6 @@ describe "filesystem", Config::Meta::Blueprint do
 
     (tmpdir + "blueprints" + "webserver.rb").must_be :exist?
     (tmpdir + "blueprints" + "webserver.rb").read.must_equal <<-STR
-it "TODO: Describe what webserver does"
-
 dir  "/tmp"
 file "/tmp/xyz"
     STR
