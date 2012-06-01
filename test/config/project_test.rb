@@ -24,14 +24,14 @@ describe Config::Project do
       end
     end
 
-    describe "#ssh_hosts" do
+    describe "#ssh_hostnames" do
 
       it "delegates to the hub" do
         hub = MiniTest::Mock.new
         loader.expect(:get_hub, hub)
-        hub.expect(:ssh_hosts, ["a", "b"])
+        hub.expect(:ssh_hostnames, ["a", "b"])
         subject.loader = loader
-        subject.ssh_hosts.must_equal ["a", "b"]
+        subject.ssh_hostnames.must_equal ["a", "b"]
       end
     end
   end

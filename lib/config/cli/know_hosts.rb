@@ -9,7 +9,7 @@ module Config
       end
 
       def parse(options, argv, env)
-        @hosts = argv.any? ? argv : project.ssh_hosts
+        @hosts = argv.any? ? argv : project.ssh_hostnames
       end
 
       def execute

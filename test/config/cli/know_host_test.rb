@@ -14,7 +14,7 @@ describe Config::CLI::KnowHosts do
       cli.hosts.must_equal ["a", "b", "c"]
     end
     it "defaults to hosts from the project" do
-      project.expect(:ssh_hosts, ["a", "b"])
+      project.expect(:ssh_hostnames, ["a", "b"])
       cli.parse!
       cli.hosts.must_equal ["a", "b"]
     end

@@ -75,11 +75,11 @@ git pull --rebase
       @hub ||= @loader.get_hub
     end
 
-    # Get all of the SSH hosts that are used during execution.
+    # Get all of the SSH host names that are used during execution.
     #
     # Returns an Array of String.
-    def ssh_hosts
-      hub.ssh_hosts
+    def ssh_hostnames
+      hub.ssh_hostnames
     end
 
     # Update the stored node data by inspecting the current execution

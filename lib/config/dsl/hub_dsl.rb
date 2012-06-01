@@ -50,7 +50,6 @@ module Config
       def project_repo(url=nil, &block)
         config = git_config(url, &block)
         @data[:project_config] = config
-        @data[:ssh_configs] << config.ssh_config
       end
 
       # Public: Configure the data repo.
@@ -63,7 +62,6 @@ module Config
       def data_repo(url=nil, &block)
         config = git_config(url, &block)
         @data[:data_config] = config
-        @data[:ssh_configs] << config.ssh_config
       end
 
       # Public: Add additional ssh configuration.
