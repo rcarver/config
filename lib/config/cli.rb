@@ -189,7 +189,7 @@ module Config
       # Returns nothing.
       def capture3(command)
 
-        if noop? && Open3 === open3
+        if noop? && Open3 == open3
           # Print the command and don't yield.
           stdout.puts "+ #{command}"
           return
