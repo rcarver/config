@@ -18,6 +18,10 @@ describe "filesystem", Config::Core::GitRepo do
       end
     end
 
+    specify "it has commits" do
+      subject.must_be :has_commits?
+    end
+
     describe "#describe_head" do
       it "returns the SHA and commit message" do
         sha, message = subject.describe_head
@@ -116,6 +120,38 @@ describe "filesystem", Config::Core::GitRepo do
     end
   end
 
+  describe "working with an empty repo" do
+
+    let(:project_dir) { tmpdir + "project" }
+
+    subject { Config::Core::GitRepo.new(tmpdir + "project") }
+
+    before do
+      project_dir.mkdir
+      within(project_dir) do
+        cmd "git init ."
+      end
+    end
+
+    specify "it has no commits" do
+      subject.wont_be :has_commits?
+    end
+
+    describe "#describe_head" do
+      it "returns sensible nothing" do
+        sha, message = subject.describe_head
+        sha.must_equal "0000000"
+        message.must_equal ""
+      end
+    end
+
+    describe "#reset_hard" do
+      it "does nothing" do
+        subject.reset_hard
+      end
+    end
+  end
+
   describe "working with remotes" do
 
     let(:source_dir) { tmpdir + "source.git" }
@@ -138,8 +174,8 @@ describe "filesystem", Config::Core::GitRepo do
       cmd "git clone #{source_dir} #{project2_dir}"
 
       # update project1
-      # NOTE: problems pulling a repo with no commit.
-      #project1.pull_rebase
+      # pull with no commits is ok.
+      project1.pull_rebase
 
       # commit and push from project1
       within(project1_dir) { cmd "echo hello > one" }

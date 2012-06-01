@@ -52,11 +52,20 @@ module Config
         @path.to_s
       end
 
+      # Determine if the repository has any commits.
+      #
+      # Returns a Boolean.
+      def has_commits?
+        @git.status?(0, "git show")
+      end
+
       # Describe the current head commit.
       #
       # Returns String, String. The first string is a 7 character SHA of
       # the commit. The second string is the one line commit message.
       def describe_head
+        return "0000000", "" unless has_commits?
+
         out, status = @git.run("git log --oneline | head -n1")
         line = out.chomp
         sha = line[/^([0-9a-z]+)/, 1]
@@ -77,7 +86,7 @@ module Config
       #
       # Returns nothing.
       def pull_rebase
-        @git.run "git pull --rebase"
+        @git.run "git pull --rebase" if has_commits?
       end
 
       # Add files to the index.
@@ -98,7 +107,7 @@ module Config
       #
       # Returns nothing.
       def reset_hard
-        @git.run "git reset --hard"
+        @git.run "git reset --hard" if has_commits?
       end
 
       # Commit a change.
