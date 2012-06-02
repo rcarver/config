@@ -1,2 +1,4 @@
 dir  "/tmp"
-file "/tmp/xyz"
+file "/tmp/config-file" do |f|
+  f.content = "hello world"
+end

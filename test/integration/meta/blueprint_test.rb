@@ -29,7 +29,9 @@ describe "filesystem", Config::Meta::Blueprint do
     (tmpdir + "blueprints" + "webserver.rb").must_be :exist?
     (tmpdir + "blueprints" + "webserver.rb").read.must_equal <<-STR
 dir  "/tmp"
-file "/tmp/xyz"
+file "/tmp/config-file" do |f|
+  f.content = "hello world"
+end
     STR
   end
 end
