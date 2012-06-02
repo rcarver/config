@@ -45,10 +45,9 @@ echo '[installing bundler <%= bundler_version %>]'
 /opt/ruby-config-<%= ruby_version %>/bin/gem install bundler --version <%= bundler_version %> --no-ri --no-rdoc
 
 
-echo '[linking ruby-config]'
+echo '[linking bundle-config]'
 echo '#!/bin/sh
-set -e
 PATH=/opt/ruby-config-<%= ruby_version %>/bin:$PATH exec /opt/ruby-config-<%= ruby_version %>/bin/bundle "$@"
-' > /usr/local/bin/bundle-config
-chmod +x /usr/local/bin/bundle-config
+' > /usr/local/bin/config-bundle
+chmod +x /usr/local/bin/config-bundle
 

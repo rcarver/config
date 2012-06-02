@@ -11,6 +11,7 @@ fi
 
 echo '[installing project scripts]'
 
+
 echo '#!/bin/bash
 # Update the project and execute on this node.
 set -e
@@ -20,10 +21,11 @@ if [ $UID -ne 0 ]; then
 fi
 cd /etc/config/project
 <%= update_project_script %>
-bundle-config install
-bundle-config exec config-update-database
-bundle-config exec config-exec-node `hostname`
+config-bundle install
+config-bundle exec config-update-database
+config-bundle exec config-exec-node `hostname`
 ' > /usr/local/sbin/config-run-now
+
 
 echo '#!/bin/bash
 # Run config with protection.
@@ -33,13 +35,14 @@ if [ -f /etc/config/disabled ]; then
   exit 1
 fi
 flock --nonblock --exclusive /var/lock/config --command config-run-now
-' > /usr/local/sbin/config-run-with-lock
+' > /usr/local/sbin/config-run-protected
+
 
 echo '#!/bin/bash
 # Run config with sudo.
-set -e
-sudo config-run-with-lock
+sudo config-run-protected
 ' > /usr/local/sbin/config-run
+
 
 echo '#!/bin/bash
 # Disable config.
@@ -48,6 +51,7 @@ if [ ! -f /etc/config/disabled ]; then
 fi
 ' > /usr/local/sbin/config-disable
 
+
 echo '#!/bin/bash
 # Enable config.
 if [ -f /etc/config/disabled ]; then
@@ -55,11 +59,13 @@ if [ -f /etc/config/disabled ]; then
 fi
 ' > /usr/local/sbin/config-enable
 
+
 chmod 755 /usr/local/sbin/config-run-now
-chmod 755 /usr/local/sbin/config-run-with-lock
+chmod 755 /usr/local/sbin/config-run-protected
 chmod 755 /usr/local/sbin/config-run
 chmod 755 /usr/local/sbin/config-disable
 chmod 755 /usr/local/sbin/config-enable
+
 
 # TODO: We might want to add a --bootstrap flag to config-run
 # to indicate that this node should NOT exist. Otherwise you
