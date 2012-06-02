@@ -15,13 +15,11 @@ cd /usr/src
 
 
 if [ ! -f /opt/ruby-config-<%= ruby_version %>/bin/ruby ]; then
-  echo '[downloading ruby <%= ruby_version %>]'
-  curl -sO http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-<%= ruby_version %>.tar.gz
-  tar -zxf /usr/src/ruby-<%= ruby_version %>.tar.gz
-
   echo '[installing ruby <%= ruby_version %>]'
+  curl -O http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-<%= ruby_version %>.tar.gz
+  tar -zxf /usr/src/ruby-<%= ruby_version %>.tar.gz
   cd /usr/src/ruby-<%= ruby_version %>
-  ./configure --prefix="/opt/ruby-config-<%= ruby_version %>"
+  ./configure --prefix="/opt/ruby-config-<%= ruby_version %>" --disable-install-doc
   make
   make install
 else
@@ -29,13 +27,20 @@ else
 fi
 
 
+echo '[linking ruby-config]'
+echo '#!/bin/sh
+PATH=/opt/ruby-config-<%= ruby_version %>/bin:$PATH exec /opt/ruby-config-<%= ruby_version %>/bin/ruby "$@"
+' > /usr/local/bin/config-ruby
+chmod +x /usr/local/bin/config-ruby
+
+
 if [ ! -f /opt/ruby-config-<%= ruby_version %>/bin/gem ]; then
-  echo '[install rubygems <%= rubygems_version %>]'
+  echo '[installing rubygems <%= rubygems_version %>]'
   # NOTE: SSL error on this url?
-  curl -sO http://production.cf.rubygems.org/rubygems/rubygems-<%= rubygems_version %>.tgz
+  curl -O http://production.cf.rubygems.org/rubygems/rubygems-<%= rubygems_version %>.tgz
   tar -zxf rubygems-<%= rubygems_version %>.tgz
   cd rubygems-<%= rubygems_version %>
-  /opt/ruby-config-<%= ruby_version %>/bin/ruby setup.rb --no-format-executable --no-rdoc --no-ri
+  config-ruby setup.rb --no-format-executable --no-rdoc --no-ri
 else
   echo '[rubygems <%= rubygems_version %> is installed]'
 fi
