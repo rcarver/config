@@ -2,10 +2,6 @@ module Config
   module CLI
     class UpdateDatabase < Config::CLI::Base
 
-      attr_accessor :blueprint_name
-
-      attr_accessor :cluster_name
-
       def usage
         "#{name}"
       end

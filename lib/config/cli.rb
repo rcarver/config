@@ -56,22 +56,35 @@ module Config
       attr :stderr
       attr :options
 
+      attr_writer :options
+
+      # Instantiate another CLI command. The sub-command will be initialized
+      # with the same input/output streams as the current command.
+      #
+      # name - String the name of the command.
+      #
+      # Returns a Config::CLI::Base.
+      # Raises ArgumentError if the name is unknown.
+      def cli(name)
+        subcommand_builder.call(name)
+      end
+
       def run(argv, env)
         parse!(argv, env)
-        Config.log_to(config_log_stream)
+        Config.log_to(config_log_stream || StringIO.new)
         execute
       end
 
       def parse!(argv=[], env={})
-        options = parse_options!(argv)
-        parse(options, argv, env)
+        opts = parse_options!(argv)
+        parse(opts, argv, env)
       end
 
       def add_options(opts)
         # noop
       end
 
-      def parse(options, argv, env)
+      def parse(opts, argv, env)
         # noop
       end
 
@@ -83,7 +96,8 @@ module Config
         name
       end
 
-      # Specify where config should log.
+      # Specify where config should log. Override this method to change it.
+      # Return nil to disable Config's logging.
       def config_log_stream
         stdout
       end
@@ -97,7 +111,7 @@ module Config
       end
 
       def parse_options!(argv)
-        options = OptionParser.new { |opts|
+        opts = OptionParser.new { |opts|
           opts.banner = "usage: #{usage}"
           add_options(opts)
           opts.on_tail("-n", "--noop") do
@@ -110,20 +124,30 @@ module Config
             abort opts.to_s
           end
         }
-        options.parse!
-        options
+        opts.parse!
+        opts
       end
 
       # Set noop mode on the program. In noop mode, no changes should occur on
       # the filesystem.
       def noop!
-        @options.noop = true
+        options.noop = true
       end
 
       # Check for noop mode on the program.
       def noop?
-        @options.noop
+        options.noop
       end
+
+      # Returns a Proc. That proc takes a name and returns a ClI::Base.
+      def subcommand_builder
+        @subcommand_builder || lambda { |name|
+          cli = Config::CLI.new("config-#{name}", stdin, stdout, stderr)
+          cli.options = options
+          cli
+        }
+      end
+      attr_writer :subcommand_builder
 
       # Returns a Config::Project.
       def project

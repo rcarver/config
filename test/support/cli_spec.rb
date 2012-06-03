@@ -103,6 +103,22 @@ class CliSpec < MiniTest::Spec
     stderr.string.chomp.must_equal cli.usage
   end
 
+  # Expect for another ClI command to be called.
+  #
+  # name - String name of the command.
+  #
+  # Returns a MiniTest::Mock.
+  def expect_subcommand(name)
+    command = MiniTest::Mock.new
+    command.expect(:execute, nil)
+    @subcommands << command
+    subcommand_builder.expect(:call, command, [name])
+    command
+  end
+
+  # Fake subcommand creator.
+  let(:subcommand_builder) { MiniTest::Mock.new }
+
   # Fake the Config world.
   let(:project)  { MiniTest::Mock.new }
   let(:data_dir) { MiniTest::Mock.new }
@@ -120,6 +136,7 @@ class CliSpec < MiniTest::Spec
     cli.noop!
 
     # Inject fake objects.
+    cli.subcommand_builder = subcommand_builder
     cli.project = project
     cli.data_dir = data_dir
     cli.kernel = kernel
@@ -127,13 +144,18 @@ class CliSpec < MiniTest::Spec
 
     # Accumulate fake files that we use.
     @files = []
+
+    # Accumulate fake subcommands.
+    @subcommands = []
   end
 
   after do
+    subcommand_builder.verify
     project.verify
     kernel.verify
     system.verify
     @files.each { |f| f.verify }
+    @subcommands.each { |c| c.verify }
   end
 end
 

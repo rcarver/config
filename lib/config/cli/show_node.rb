@@ -6,6 +6,10 @@ module Config
 
       attr_accessor :path
 
+      def config_log_stream
+        nil
+      end
+
       def usage
         "#{name} <fqn> [<json path>]"
       end
@@ -16,7 +20,10 @@ module Config
       end
 
       def execute
-        project.update_database
+
+        update_database = cli("update-database")
+        update_database.execute
+
         node = project.get_node(fqn)
 
         if path

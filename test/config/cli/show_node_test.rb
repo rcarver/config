@@ -23,6 +23,8 @@ describe Config::CLI::ShowNode do
     let(:node) { Config::Node.new("a", "b", "c") }
 
     before do
+      expect_subcommand("update-database")
+
       node.facts = Config::Core::Facts.new(
         "ec2" => {
           "public_ipv4" => "127.0.0.1",
@@ -30,7 +32,6 @@ describe Config::CLI::ShowNode do
         }
       )
       cli.fqn = "a-b-c"
-      project.expect(:update_database, nil)
       project.expect(:get_node, node, ["a-b-c"])
     end
 
