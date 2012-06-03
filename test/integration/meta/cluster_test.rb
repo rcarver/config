@@ -27,11 +27,6 @@ describe "filesystem", Config::Meta::Cluster do
     execute_pattern
 
     (tmpdir + "clusters" + "production.rb").must_be :exist?
-    (tmpdir + "clusters" + "production.rb").read.must_equal <<-STR
-configure :something,
-  key1: 123,
-  key2: "value"
-    STR
   end
 end
 
