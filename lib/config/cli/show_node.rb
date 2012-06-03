@@ -7,7 +7,7 @@ module Config
       attr_accessor :path
 
       def config_log_stream
-        nil
+        stderr
       end
 
       def usage

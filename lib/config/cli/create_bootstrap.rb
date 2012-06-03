@@ -9,7 +9,7 @@ module Config
       attr_accessor :identity
 
       def config_log_stream
-        StringIO.new
+        stderr
       end
 
       def usage
