@@ -185,11 +185,11 @@ configuring our webserver to serve content.
 
 Learn about core concepts.
 
-* [BLUEPRINT](BLUEPRINT.md) Learn how blueprints can describe the entire
+* [BLUEPRINTS](BLUEPRINTS.md) Learn how blueprints can describe the entire
   state of a server.
-* [CLUSTER](CLUSTER.md) Learn about how clusters group nodes and
+* [CLUSTERS](CLUSTERS.md) Learn about how clusters group nodes and
   configure blueprints.
-* [NODE](NODE.md) Learn about managing and configuring nodes.
+* [NODES](NODES.md) Learn about managing and configuring nodes.
 * [WORKFLOW](WORKFLOW.md) Learn how to write, test and execute changes
   to your configuration.
 
