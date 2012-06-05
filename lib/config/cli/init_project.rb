@@ -2,6 +2,10 @@ module Config
   module CLI
     class InitProject < Config::CLI::Base
 
+      desc <<-STR
+Generate the template for a new project.
+      STR
+
       def usage
         "#{name}"
       end

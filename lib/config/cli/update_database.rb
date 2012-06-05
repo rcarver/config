@@ -2,6 +2,10 @@ module Config
   module CLI
     class UpdateDatabase < Config::CLI::Base
 
+      desc <<-STR
+Update the database to the latest version.
+      STR
+
       def usage
         "#{name}"
       end

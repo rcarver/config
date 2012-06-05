@@ -2,6 +2,11 @@ module Config
   module CLI
     class ShowNode < Config::CLI::Base
 
+      desc <<-STR
+Show information about a node. The database will be cloned or synced as
+necessary to ensure the information shown is up to date.
+      STR
+
       attr_accessor :fqn
 
       attr_accessor :path

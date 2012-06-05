@@ -2,6 +2,10 @@ module Config
   module CLI
     class CreateCluster < Config::CLI::Base
 
+      desc <<-STR
+Generate the template for a new cluster.
+      STR
+
       attr_accessor :cluster_names
 
       def usage

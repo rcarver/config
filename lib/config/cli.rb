@@ -42,6 +42,11 @@ module Config
 
     class Base
 
+      def self.desc(desc=nil)
+        @desc = desc if desc
+        @desc
+      end
+
       def initialize(name, stdin, stdout, stderr)
         @name = name
         @stdin = stdin
@@ -112,7 +117,10 @@ module Config
 
       def parse_options!(argv)
         opts = OptionParser.new { |opts|
-          opts.banner = "usage: #{usage}"
+          opts.banner = "Usage: #{usage}"
+          if self.class.desc
+            opts.banner << "\n\n#{self.class.desc}\n"
+          end
           add_options(opts)
           opts.on_tail("-n", "--noop") do
             noop!
