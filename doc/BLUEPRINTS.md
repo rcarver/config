@@ -1,14 +1,14 @@
 # Blueprints
 
-In Config, a blueprint is the single, complete definition for the
-configuration of a node. A node must have *one and only one* blueprint
+A blueprint is the single, complete definition of the configuration of a
+[node](NODES.md). A node must have **one and only one** blueprint
 associated with it.
 
 A blueprint uses one or more [patterns](PATTERNS.md) to describe that
 configuration. The blueprint is responsible for configuring each top
-level pattern, either via static value or from the variables available
-to the node on which the blueprint executes. Let's look at a simple
-example.
+level pattern, either via static values or from the
+[variables](#variables) available when the blueprint executes. Let's
+look at a simple example.
 
     # blueprints/sample.rb
     file "/tmp/sample" do |f|
@@ -19,7 +19,7 @@ This is as simple as it gets. The blueprint uses the `file` pattern to
 create a single file on disk. That file's content is static - it's the
 same for every node.
 
-## Customization
+## Variables
 
 A blueprint always executes in the context of a [cluster](CLUSTERS.md)
 and a [node](NODES.md). We can pull data from those sources in order to
