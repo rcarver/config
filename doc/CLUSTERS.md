@@ -1,10 +1,11 @@
 # Clusters
 
-A cluster groups a set of [nodes](NODES.md). The cluster generally provides
-configuration data used by node [blueprints](BLUEPRINTS.md). That
-configuration data allows nodes in one cluster to behave differently
-than nodes in another cluster. The simplest use of clusters is to define
-"production" vs "staging" environments for your application.
+A cluster groups a set of [nodes](NODES.md). A node must belong to **one
+and only one** cluster. The cluster generally provides configuration data
+used by node [blueprints](BLUEPRINTS.md). That configuration data allows
+nodes in one cluster to behave differently than nodes in another
+cluster. The simplest use of clusters is to define "production" vs
+"staging" environments for your application.
 
 Let's look at an example. 
 
@@ -41,7 +42,12 @@ JSON-like syntax.
 
     configure :name_of_group,
       key1: "one",
-      key2: "two"
+      key2: 123
       
 By convention, the name of the group, and each key/value pair is defined
 on its own line. 
+
+## Blueprint syntax
+
+When accessed within a blueprint, a cluster can do a few more things.
+[Find out more](BLUEPRINTS.md#the-current-cluster).
