@@ -122,13 +122,14 @@ module Config
             opts.banner << "\n\n#{self.class.desc}\n"
           end
           add_options(opts)
-          opts.on_tail("-n", "--noop") do
+          opts.on_tail("-n", "--noop", "Don't actually execute anything") do
             noop!
           end
-          opts.on_tail("-v", "--version") do
-            abort Config::VERSION
+          opts.on_tail("-v", "--version", "Show the version of Config") do
+            puts Config::VERSION
+            exit(0)
           end
-          opts.on_tail("-h", "--help") do
+          opts.on_tail("-h", "--help", "Show this help") do
             abort opts.to_s
           end
         }
