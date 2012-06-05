@@ -72,7 +72,7 @@ focus on the basics and create servers one at a time.
 
 In order for Config to access your git repos from remote servers, we
 need to give it an ssh key. To do that, pipe your *private* key to
-`config-store-ssh-key`.
+`config-store-ssh-key`. This key *must* have no passphrase.
 
     cat ~/.ssh/id_rsa | bin/config-store-ssh-key
 
