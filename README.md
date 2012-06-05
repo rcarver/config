@@ -75,8 +75,6 @@ To create a new server, begin by creating a Blueprint
 
     $ config-create-blueprint webserver
     $ vim blueprints/webserver.rb
-    it "Configures a server to run example.com"
-
     add Nginx::Service
     add Nginx::Site do |site|
       site.host = "example.com"
@@ -88,8 +86,6 @@ This Blueprint uses two Patterns. Those Patterns might look something like this
     $ config-create-pattern nginx/service
     $ vim patterns/nginx/service.rb
     class Nginx::Service < Config::Pattern
-
-      it "Installs nginx and creates a service to run it"
 
       desc "The name of the service to run"
       key :service_name, "nginx"
@@ -107,8 +103,6 @@ This Blueprint uses two Patterns. Those Patterns might look something like this
     $ config-create-pattern nginx/site
     $ vim patterns/nginx/site.rb
     class Nginx::Site < Config::Pattern
-
-      it "Installs a website to be hosted via nginx"
 
       desc "The hostname that the site should respond to"
       key :host
