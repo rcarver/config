@@ -152,12 +152,12 @@ assuming you have created a new machine and can ssh to it using
 This command generates a bootstrap script, then executes it on the
 remote server as root. Once it finishes we have:
 
-1. A fully functional Config node. The node can be updated at any time
-   by ssh'ing to it and executing `config-run`.
-2. The first node in our system. It's called `production-webserver-1`
-   and has a FQDN of `production-webserver-1.internal.example.com`.
-3. An entry in the data repo. Whenever a node is updated via
-   `config-run`, it stores its state in the data repo.
+  1. A fully functional Config node. The node can be updated at any time
+     by ssh'ing to it and executing `config-run`.
+  2. The first node in our system. It's called `production-webserver-1`
+     and has a FQDN of `production-webserver-1.internal.example.com`.
+  3. An entry in the data repo. Whenever a node is updated via
+     `config-run`, it stores its state in the data repo.
 
 Back at the hub, try running
 
@@ -185,23 +185,23 @@ configuring our webserver to serve content.
 
 Learn about core concepts.
 
-* [BLUEPRINTS](BLUEPRINTS.md) Learn how blueprints can describe the entire
-  state of a server.
-* [CLUSTERS](CLUSTERS.md) Learn about how clusters group nodes and
-  configure blueprints.
-* [NODES](NODES.md) Learn about managing and configuring nodes.
-* [WORKFLOW](WORKFLOW.md) Learn how to write, test and execute changes
-  to your configuration.
+  * [BLUEPRINTS](BLUEPRINTS.md) Learn how blueprints can describe the
+    entire state of a server.
+  * [CLUSTERS](CLUSTERS.md) Learn about how clusters group nodes and
+    configure blueprints.
+  * [NODES](NODES.md) Learn about managing and configuring nodes.
+  * [WORKFLOW](WORKFLOW.md) Learn how to write, test and execute changes
+    to your configuration.
 
 Get details for configuring Config.
 
-* [HUB](HUB.md) Learn about managing a hub and configuring a few
-  centralized aspects of Config.
-* [BOOTSTRAP](BOOTSTRAP.md) Details of the bootstrap process.
-* [GIT](GIT.md) Details about how git is used and configured. For
-  example, how did Config know where the data repo lives?
-* [GITHUB](GITHUB.md) Tips and techniques for storing Config repos at
-  GitHub.
-* [SSH](SSH.md) Additional information on ssh issues.
-* [SECRETS](SECRETS.md) Tips on generating and using secrets
+  * [HUB](HUB.md) Learn about managing a hub and configuring a few
+    centralized aspects of Config.
+  * [BOOTSTRAP](BOOTSTRAP.md) Details of the bootstrap process.
+  * [GIT](GIT.md) Details about how git is used and configured. For
+    example, how did Config know where the data repo lives?
+  * [GITHUB](GITHUB.md) Tips and techniques for storing Config repos at
+    GitHub.
+  * [SSH](SSH.md) Additional information on ssh issues.
+  * [SECRETS](SECRETS.md) Tips on generating and using secrets
 
