@@ -176,7 +176,7 @@ What's happening here? Config pulls down the latest data repo (stored in
 `.data/project-data`) and then reads the contents of
 `project-data/nodes/production-webserver-1.json`.
 
-## Next up
+## DONE
 
 That's it. Everything is set up and ready to be customized. We can start
 configuring a webserver to serve content.
