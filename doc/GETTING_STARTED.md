@@ -190,6 +190,7 @@ Learn about core concepts.
 * [CLUSTERS](CLUSTERS.md) Learn about how clusters group nodes and
   configure blueprints.
 * [NODES](NODES.md) Learn about managing and configuring nodes.
+* [BOOTSTRAP](BOOTSTRAP.md) Learn more about the bootstrap process.
 * [WORKFLOW](WORKFLOW.md) Learn how to write, test and execute changes
   to your configuration.
 
