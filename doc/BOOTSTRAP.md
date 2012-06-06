@@ -42,3 +42,12 @@ It's worth noting that the bootstrap process is idempotent. That is, you
 may run the same bootstrap script on a server multiple times without
 issue. If the script fails (either by misconfiguration or random network
 error), simply run it again.
+
+Likewise, to change any of the low level configuration such as ssh keys
+or secrets, run the bootstrap script again.
+
+On the other hand, it is *not* recommended to re-bootstrap a node with
+another FQN. Doing so would effectively change the role of the server
+and may have unintended effects (NOTE: this is currently conjecture and
+should be tested).
+
