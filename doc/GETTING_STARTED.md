@@ -176,27 +176,29 @@ What's happening here? Config pulls down the latest data repo (stored in
 `.data/project-data`) and then reads the contents of
 `project-data/nodes/production-webserver-1.json`.
 
-## For real this time
+## Next up
 
 That's it. Everything is set up and ready to be customized. We can start
-configuring our webserver to serve content.
+configuring a webserver to serve content.
 
-### Next up
+  * [PATTERNS](PATTERNS.md) are all you need to know.
 
-Learn about core concepts.
+### Go further
+
+Learn more about core concepts.
 
   * [BLUEPRINTS](BLUEPRINTS.md) Learn how blueprints can describe the
     entire state of a server.
   * [CLUSTERS](CLUSTERS.md) Learn about how clusters group nodes and
     configure blueprints.
   * [NODES](NODES.md) Learn about managing and configuring nodes.
+  * [HUB](HUB.md) Learn about managing a hub and configuring a few
+    centralized aspects of Config.
   * [WORKFLOW](WORKFLOW.md) Learn how to write, test and execute changes
     to your configuration.
 
 Get details for configuring Config.
 
-  * [HUB](HUB.md) Learn about managing a hub and configuring a few
-    centralized aspects of Config.
   * [BOOTSTRAP](BOOTSTRAP.md) Details of the bootstrap process.
   * [GIT](GIT.md) Details about how git is used and configured. For
     example, how did Config know where the data repo lives?
