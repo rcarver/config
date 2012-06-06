@@ -32,7 +32,7 @@ configuration in special cases. You should use this carefully - if a
 node has excessive custom configuration consider whether it is better
 represented with a new [blueprint](BLUEPRINTS.md).
 
-## Node facts
+## Facts
 
 TODO: describe node facts.
 
