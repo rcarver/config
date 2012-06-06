@@ -190,7 +190,6 @@ Learn about core concepts.
 * [CLUSTERS](CLUSTERS.md) Learn about how clusters group nodes and
   configure blueprints.
 * [NODES](NODES.md) Learn about managing and configuring nodes.
-* [BOOTSTRAP](BOOTSTRAP.md) Learn more about the bootstrap process.
 * [WORKFLOW](WORKFLOW.md) Learn how to write, test and execute changes
   to your configuration.
 
@@ -198,6 +197,7 @@ Get details for configuring Config.
 
 * [HUB](HUB.md) Learn about managing a hub and configuring a few
   centralized aspects of Config.
+* [BOOTSTRAP](BOOTSTRAP.md) Details of the bootstrap process.
 * [GIT](GIT.md) Details about how git is used and configured. For
   example, how did Config know where the data repo lives?
 * [GITHUB](GITHUB.md) Tips and techniques for storing Config repos at
