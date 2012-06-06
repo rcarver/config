@@ -33,6 +33,11 @@ staging cluster.
 
 ## Syntax
 
+Cluster files are stored in `clusters/<name>.rb`. The program
+[`config-create-cluster
+<name>`](../man/config-create-cluster.1.md) will generate a template
+for you.
+
 Cluster syntax is simple. There is one keyword, `configure`. The
 argument to `configure` is called the "group" and is specified using a
 Ruby Symbol. A Symbol is a variable name prefixed by a colon. Following
