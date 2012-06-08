@@ -20,7 +20,7 @@ module Config
   CONFIG = ::RbConfig::CONFIG
 
   def self.ruby
-    RbConfig.ruby
+    ::RbConfig.ruby
   end
 end
 
