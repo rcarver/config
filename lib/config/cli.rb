@@ -133,7 +133,7 @@ module Config
             abort opts.to_s
           end
         }
-        opts.parse!
+        opts.parse!(argv)
         opts
       end
 

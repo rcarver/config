@@ -14,6 +14,7 @@ describe Config::CLI::CreateBootstrap do
       cli.cluster_name.must_equal "production"
       cli.blueprint_name.must_equal "webserver"
       cli.identity.must_equal "1"
+      cli.log.must_equal false
     end
     it "fails if no identity is given" do
       expect_fail_with_usage { cli.parse! %w(production webserver) }
@@ -23,6 +24,10 @@ describe Config::CLI::CreateBootstrap do
     end
     it "fails if nothing is given" do
       expect_fail_with_usage { cli.parse! }
+    end
+    specify "--log" do
+      cli.parse! %w(production webserver 1 --log)
+      cli.log.must_equal true
     end
   end
 

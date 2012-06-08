@@ -12,6 +12,7 @@ run on a remote server in order to initialize it as a node.
       attr_accessor :cluster_name
       attr_accessor :blueprint_name
       attr_accessor :identity
+      attr_accessor :log
 
       def config_log_stream
         stderr
@@ -19,6 +20,13 @@ run on a remote server in order to initialize it as a node.
 
       def usage
         "#{name} <cluster> <blueprint> <identity>"
+      end
+
+      def add_options(opts)
+        @log = false
+        opts.on("--log", "Log bootsrap results instead of writing to STDOUT/STDERR") do
+          @log = true
+        end
       end
 
       def parse(options, argv, env)
@@ -110,6 +118,9 @@ run on a remote server in order to initialize it as a node.
             p.update_project_script = project.update_project_script
           end
         end
+
+        # Log the bootstrap process.
+        stdout.puts "exec &> /var/log/config-bootstrap.log" if @log
 
         # Abort on any error.
         stdout.puts "set -e"
