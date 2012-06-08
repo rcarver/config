@@ -24,7 +24,7 @@ describe Config::Blueprint do
         blueprint.accumulate
       rescue => e
         e.class.must_equal NoMethodError
-        e.message.must_equal %(undefined method `xfile' for <Blueprint>:RbConfig::DSL::BlueprintDSL)
+        e.message.must_equal %(undefined method `xfile' for <Blueprint>:Config::DSL::BlueprintDSL)
         e.backtrace.first.must_equal "#{file}:#{line}:in `block in from_string'"
       end
     end
@@ -57,7 +57,7 @@ describe "filesystem", Config::Blueprint do
         blueprint.accumulate
       rescue => e
         e.class.must_equal NoMethodError
-        e.message.must_equal %(undefined method `xfile' for <Blueprint>:RbConfig::DSL::BlueprintDSL)
+        e.message.must_equal %(undefined method `xfile' for <Blueprint>:Config::DSL::BlueprintDSL)
         e.backtrace.first.must_equal "#{file}:2:in `block in from_string'"
       end
     end
