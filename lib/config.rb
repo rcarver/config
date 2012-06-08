@@ -43,6 +43,7 @@ require 'config/dsl/hub_dsl'
 
 module Config
 
+
   module Bootstrap
     autoload :Access, "config/bootstrap/access"
     autoload :Identity, "config/bootstrap/identity"
