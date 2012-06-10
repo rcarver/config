@@ -16,7 +16,7 @@ cd /usr/src
 
 if [ ! -f /opt/ruby-config-<%= ruby_version %>/bin/ruby ]; then
   echo '[installing ruby <%= ruby_version %>]'
-  curl -O http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-<%= ruby_version %>.tar.gz
+  curl -sO http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-<%= ruby_version %>.tar.gz
   tar -zxf /usr/src/ruby-<%= ruby_version %>.tar.gz
   cd /usr/src/ruby-<%= ruby_version %>
   ./configure --prefix="/opt/ruby-config-<%= ruby_version %>" --disable-install-doc
@@ -37,7 +37,7 @@ chmod +x /usr/local/bin/config-ruby
 if [ ! -f /opt/ruby-config-<%= ruby_version %>/bin/gem ]; then
   echo '[installing rubygems <%= rubygems_version %>]'
   # NOTE: SSL error on this url?
-  curl -O http://production.cf.rubygems.org/rubygems/rubygems-<%= rubygems_version %>.tgz
+  curl -sO http://production.cf.rubygems.org/rubygems/rubygems-<%= rubygems_version %>.tgz
   tar -zxf rubygems-<%= rubygems_version %>.tgz
   cd rubygems-<%= rubygems_version %>
   config-ruby setup.rb --no-format-executable --no-rdoc --no-ri
