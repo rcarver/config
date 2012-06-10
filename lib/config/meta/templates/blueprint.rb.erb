@@ -1,4 +1,4 @@
 dir  "/tmp"
 file "/tmp/config-info" do |f|
-  f.content = "#{node.hostname} says #{sample.hello}"
+  f.content = "#{node.hostname} says #{configure.sample.hello}"
 end
