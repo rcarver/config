@@ -94,3 +94,27 @@ interpreted,
    to execute in *destroy* mode.
 1. **Execute** Execute all patterns.
 
+## Reference
+
+DSL for `blueprints/<blueprint>.rb`.
+
+The execution environment.
+
+  * `configure` - The current configuration. 
+  * `node` - Node facts.
+
+Execute patterns.
+
+  * `add`
+  * `Config::Patterns` helpers.
+
+Examples.
+
+    add Config::Patterns::File do |f|
+      f.path = "/tmp/hello"
+      f.content = <<-STR
+        Hello from #{node.public_ip}
+        #{configure.sample.message}
+      STR
+    end
+
