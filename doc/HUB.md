@@ -138,3 +138,41 @@ The resulting `.ssh/config` looks something like this.
       Hostname github.com
       IdentityFile /etc/config/ssh-key-data
 
+## Reference
+
+DSL for `hub.rb`.
+
+  * `domain` Set the FQDN pattern for nodes.
+  * `project_repo` Set the git url for the project.
+  * `data_repo` Set the git url for the project data.
+  * `ssh_config` Add an additional ssh configuration.
+
+Examples.
+
+    # Nodes will be named <fqn>.internal.example.com
+    domain "internal.example.com"
+
+    # Short form, uses the "default" ssh key.
+    project_repo "git@github.com:rcarver/config-example.git"
+
+    # Short form, uses the "default" ssh key.
+    data_repo "git@github.com:rcarver/config-example.git"
+
+    # Long form, specifying the complete ssh configuration.
+    project_repo do |r|
+      r.url ="github-project:rcarver/config-example.git"
+      r.hostname = "github.com"
+      r.user = "tig"
+      r.port = 999
+      r.ssh_key = "project"
+    end
+
+    # Another SSH configuration. Useful if your project has dependencies
+    # that are stored in git and authorized by another key.
+    ssh_config do |c|
+      c.url ="github:rcarver/dependency.git"
+      c.hostname = "github.com"
+      c.port = 999
+      c.ssh_key = "another"
+    end
+
