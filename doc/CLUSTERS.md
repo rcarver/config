@@ -56,3 +56,16 @@ on its own line.
 
 When accessed within a blueprint, a cluster can do a few more things.
 [Find out more](BLUEPRINTS.md#the-current-cluster).
+
+## Reference
+
+DSL for `clusters/<cluster>.rb`.
+
+  * `configure` Define configuration variables.
+
+Examples.
+
+    configure :webserver,
+      hostname: "example.com",
+      greeting: "Hello World"
+
