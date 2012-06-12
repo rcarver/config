@@ -32,6 +32,10 @@ Config aims to be simple. There are a few key concepts to understand.
 The [Getting Started guide](config/tree/master/doc/GETTING_STARTED.md)
 will have you up and running in no time.
 
+## Learning more
+
+Documentation is in the [doc directory](config/tree/master/doc).
+
 ## Authors
 
 * Ryan Carver (ryan@ryancarver.com / @rcarver)
