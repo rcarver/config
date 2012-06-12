@@ -179,7 +179,7 @@ approach results in clear data flow and better reuse.
       end
     end
 
-The cal API has one method, plus helpers.
+The call API has one method, plus helpers.
 
   * `add` Pass the class of a pattern and receive a block with an
     instance of the class.
@@ -263,8 +263,7 @@ Methods available during pattern execution.
 
 Examples.
 
-    # A high level pattern - it only configures and calls other
-    # patterns.
+    # A high level pattern - it only configures and calls other patterns.
     class Nginx::Website < Config::Pattern
 
       desc "The hostname that that this site serves."
@@ -291,7 +290,7 @@ Examples.
       # 1. It is untested.
       # 2. `system` calls are better implemented with the `script` pattern.
 
-      desc "The port to allow"
+      desc "The port"
       key :port
 
       desc "What to do to that port"
@@ -302,7 +301,7 @@ Examples.
       end
 
       def validate
-        unless setting == :allow || setting == :deny
+        unless setting == :allow or setting == :deny
           validation_errors << "seting must be :allow or :deny"
         end
       end
