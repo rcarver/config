@@ -4,7 +4,7 @@ A modern, distributed server configuration tool.
 
 ## Goals
 
-* Simple and minimal interface and implementation. No magic.
+* Simple and minimal interface and implementation.
 * A clear and obvious way to do things.
 * An API and supporting tools that naturally reduces errors.
 * Useful information when things do go wrong.
