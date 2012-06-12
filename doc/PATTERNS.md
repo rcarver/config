@@ -1,26 +1,27 @@
 # Patterns
 
-Patterns are the fundamental unit within Config. They are the composable
-and reusable building blocks of your system configuration. A pattern may
-be of any scope and size; you may describe anything from a single file
-on disk to your application server and beyond.
+Patterns are the building blocks of your system. A pattern may be of any
+scope and size; it may describe anything from a single file on disk to
+an entire application server. Patterns are designed to be reusable and
+composable. A good pattern should be small in scope and easily
+customizable.
 
 ## Using a pattern
 
 The simplest way to use a pattern is within a
 [blueprint](BLUEPRINTS.md). A blueprint is just a pattern that executes
-within a special scope. Let's use the builtin `File` pattern to create a
-file on disk. 
-    
+with a special scope. Let's use the builtin `File` pattern to create a
+file on disk.
+
     add Config::Patterns::File do |f|
       f.path = "/tmp/hello"
       f.content = "hello world"
     end
 
 Here we call the `add` method with the class of the pattern. Providing a
-block lets us configure the patterns [attributes](#attributes). That's
-it. By executing this pattern, we'll write a file to `/tmp/hello` with
-the content `hello world`.
+block lets us configure the pattern's [attributes](#attributes). That's
+it. When this pattern is executed, it will write a file to `/tmp/hello`
+with the content `hello world`.
 
 ### Helpers
 
@@ -39,7 +40,7 @@ your own patterns.
 
 ## Important qualities
 
-Patterns have many important qualities. Understanding the design
+Patterns have several important qualities. Understanding the design
 philosophy will help you write your own.
 
 ## Idempotency
@@ -53,9 +54,9 @@ modified `mtime`).
 Since patterns may use other patterns, the full set of patterns in use
 for a complex configuration can be rather large. In order to reduce
 confusion, Config requires that each instance of a pattern be either
-equal or unique. Some examples should explain this best.
+equal or unique. Some examples will explain this best.
 
-The following two patterns are **unique** because they manage different
+The following two patterns are *unique* because they manage different
 files.
 
     file "/tmp/file1" do |f|
@@ -65,10 +66,10 @@ files.
       f.content = "goodbye"
     end
 
-The following two patterns are **equal** and are thus allowed because
-they manage the same file in the exact same way. Since patterns are
-idempotent, there is no harm here. Config optimizes this case by marking
-the second pattern as *skipped* and does not execute it.
+The following two patterns are *equal* because they manage the same file
+in the exact same way. Since patterns are idempotent, there is no harm
+here. Config optimizes this case by marking the second pattern as
+*skipped* and does not execute it.
 
     file "/tmp/file1" do |f|
       f.content = "hello"
@@ -77,7 +78,7 @@ the second pattern as *skipped* and does not execute it.
       f.content = "hello"
     end
 
-The following two patterns are **in conflict** because they manage the
+The following two patterns are *in conflict* because they manage the
 same file, but specify different content. If this situation is detected,
 Config throws an error before any execution occurs.
 
@@ -95,9 +96,8 @@ own patterns.
 
 A pattern must be reversible. That is, it must know how to clean up
 after itself. For example, the `File` pattern knows how to create a file
-on disk, but it also knows how to delete it. Your patterns, not matter
-how complex, should be just as smart. See [writing your
-own](#writing-your-own) for more information.
+on disk, but it also knows how to delete it. Your patterns, no matter
+how complex, should be just as smart.
 
 ## Writing your own
 
@@ -137,25 +137,24 @@ The example above defines two attributes. Attributes are variables that
 must be defined in order to use the pattern. If any attribute is
 undefined, Config will raise an error.
 
-    desc "Name of the pattern"
+    desc "The name"
     key  :name
 
-    desc "A sample value"
+    desc "The value"
     attr :value
 
 The attributes API has three methods.
 
-  * `desc` Each attribute **must** have a description. Config will throw
+  * `desc` Each attribute *must* have a description. Config will throw
     an error if any attribute is not documented.
   * `attr` Define an attribute. A Ruby Symbol is expected. Defining an
     attribute creates both a reader and a writer method (here, `#value`
     and `#value=`).
   * `key` Define a *key* attribute. A key attribute is like an attribute
     but makes up the *primary key* of the pattern. This key is used to
-    define equality.
+    define equality. A pattern may have zero or more keys.
 
-In addition, both `key` and `attr` may take a second argument, the
-default value. 
+Both `key` and `attr` may take a second argument, the default value.
 
     desc "Name of the pattern"
     key :name, "joe"
@@ -169,10 +168,10 @@ value for the attribute, you must declare it as the default.
 
 ### Calling other patterns
 
-Most patterns you write will call other patterns. Do so within the
-`call` method. You may (and are encouraged) to pass values from this
-patterns' attributes down to children patterns. Following this approach
-results in clear data flow and encapsulation.
+Most patterns you write will call other patterns, and you do that
+within the `call` method. You may (and are encouraged) to pass values
+from this patterns' attributes down to children patterns. Following this
+approach results in clear data flow and better reuse.
 
     def call
       add MyTopic::AnotherPattern do |p|
@@ -180,12 +179,11 @@ results in clear data flow and encapsulation.
       end
     end
 
-The calling API has one method, plus helpers.
+The cal API has one method, plus helpers.
 
   * `add` Pass the class of a pattern and receive a block with an
     instance of the class.
-  * `Config::Patterns` any helpers are available as well (such as
-    `file`).
+  * `Config::Patterns` any helpers are available.
 
 ### Manipulation
 
@@ -193,7 +191,7 @@ In order to manipulate the system, config requires that you implement
 two methods.
 
   * `create` Alter the node. This method is called whenever the pattern
-    is executed. 
+    is executed.
   * `destroy` Reverse the alteration. This method is called when the
     pattern has been removed since the last execution. In this way,
     Config automatically cleans up after you. Simply remove a pattern
@@ -211,20 +209,26 @@ The identification API has two methods.
   * `describe` Change the basic description.
   * `to_s` Change the full description.
 
+The default implementation of `#to_s` includes the class name and the
+key attributes.
 
-    # The default implementation of #to_s includes the class name
-    # and the key attributes.
-    # => "[File path:\"/var/log/nginx.log\"]"
+    pattern.to_s
+    # => [File path:"/var/log/nginx.log"]
 
-    # Override `describe` to change what's within the square brackets.
+Override `describe` to change what's within the square brackets.
+
     def describe
       "A file at #{path}"
     end
-    # => "[A file at /var/log/nginx.log]"
 
-    # Override `to_s` to change the full description
+    pattern.to_s
+    # => [A file at /var/log/nginx.log]
+
+Override `to_s` to change the full description.
+
     def to_s
       "<#{path}>
     end
-    # => "</var/log/nginx.log>"
+
+    # => </var/log/nginx.log>
 
