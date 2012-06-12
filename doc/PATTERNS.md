@@ -232,3 +232,95 @@ Override `to_s` to change the full description.
 
     # => </var/log/nginx.log>
 
+## Reference
+
+DSL for `patterns/<topic>/<pattern>.rb`.
+
+Attributes.
+
+* `desc` Describe an attribute.
+* `key` Define a key attribute.
+* `attr` Define an attribute.
+
+Methods you may override in your pattern subclass.
+
+* `validate` Perform deeper validation of attributes before execution.
+* `call` Add other Patterns. Don't perform any operations that alter the
+  node, do that in `create`.
+* `prepare` Prepare and log data before execution.
+* `create` Perform operations that alter the Node.
+* `destroy` Perform operations that undo the alteration of the Node.
+* `describe` Change the string representation of your Pattern.
+* `to_s` Change the full string representation of your Pattern.
+
+Methods available during pattern execution.
+
+* `validation_errors` An appendable (`<<`) object that accumulates
+  issues during `validate`.
+* `add(klass, &block)` Add a sub-pattern. Provide a block to set
+  attributes on the instantiated pattern.
+* `Config::Patterns` helpers.
+
+Examples.
+
+    # A high level pattern - it only configures and calls other
+    # patterns.
+    class Nginx::Website < Config::Pattern
+
+      desc "The hostname that that this site serves."
+      key :hostname
+
+      desc "What the website will say"
+      attr :greeting
+
+      def validate
+        validation_errors << "not friendly enough" unless greeting =~ /hello/
+      end
+
+      def call
+        file "/var/www/#{hostname}/index.html" do |f|
+          f.content = "<h1>#{greeting}</h1>"
+        end
+      end
+    end
+
+    # A low level pattern that manipulates the system directly.
+    class Firewall::Rule < Config::Pattern
+
+      # EXAMPLE ONLY! Do not use.
+      # 1. It is untested.
+      # 2. `system` calls are better implemented with the `script` pattern.
+
+      desc "The port to allow"
+      key :port
+
+      desc "What to do to that port"
+      attr :setting
+
+      def describe
+        "firewall: #{setting} #{port}"
+      end
+
+      def validate
+        unless setting == :allow || setting == :deny
+          validation_errors << "seting must be :allow or :deny"
+        end
+      end
+
+      def prepare
+        case setting
+        when :allow
+          log << "Opening port #{port}"
+        when :deny
+          log << "Closing port #{port}"
+        end
+      end
+
+      def create
+        system "ufw #{setting} #{port}"
+      end
+
+      def destroy
+        system "ufw delete #{setting} #{port}"
+      end
+    end
