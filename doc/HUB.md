@@ -156,7 +156,7 @@ Examples.
     project_repo "git@github.com:rcarver/config-example.git"
 
     # Short form, uses the "default" ssh key.
-    data_repo "git@github.com:rcarver/config-example.git"
+    data_repo "git@github.com:rcarver/config-example-data.git"
 
     # Long form, specifying the complete ssh configuration.
     project_repo do |r|
