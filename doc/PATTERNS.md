@@ -43,13 +43,13 @@ your own patterns.
 Patterns have several important qualities. Understanding the design
 philosophy will help you write your own.
 
-## Idempotency
+### Idempotency
 
 A pattern must be idempotent. If a pattern is executed with the same
 inputs on the same filesystem it should cause no change (not even a
 modified `mtime`).
 
-## Uniqueness, Equality and Conflict
+### Uniqueness, Equality and Conflict
 
 Since patterns may use other patterns, the full set of patterns in use
 for a complex configuration can be rather large. In order to reduce
@@ -92,7 +92,7 @@ Config throws an error before any execution occurs.
 See [attributes](#attributes) to learn how to implement equality in your
 own patterns.
 
-## Reversible
+### Reversible
 
 A pattern must be reversible. That is, it must know how to clean up
 after itself. For example, the `File` pattern knows how to create a file
