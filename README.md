@@ -2,6 +2,10 @@
 
 A modern, distributed server configuration tool.
 
+**Product Status** Config is very alpha. Feedback of all types is
+welcome, especially issues and pull requests. Vagrant is the ideal way
+to experiement with Config; see below.
+
 ## Goals
 
   * Simple and minimal interface and implementation.
