@@ -24,7 +24,7 @@ run on a remote server in order to initialize it as a node.
 
       def add_options(opts)
         @log = false
-        opts.on("--log", "Log bootsrap results instead of writing to STDOUT/STDERR") do
+        opts.on("--log", "Log bootstrap results instead of writing to STDOUT/STDERR") do
           @log = true
         end
       end
