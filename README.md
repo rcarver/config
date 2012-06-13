@@ -36,6 +36,15 @@ will have you up and running in no time.
 
 Documentation is in the [doc directory](config/tree/master/doc).
 
+## Integration
+
+Config is the perfect complement to [Vagrant](http://vagrantup.com/).
+These tools together are the best way to manage your development
+environment. [Learn more](config/tree/master/doc/VAGRANT.md).
+
+Config is well suited for managing instances at Amazon EC2. Tools are
+limited right now, but are coming soon.
+
 ## Authors
 
 * Ryan Carver (ryan@ryancarver.com / @rcarver)

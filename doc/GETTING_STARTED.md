@@ -196,6 +196,8 @@ Learn more about core concepts.
     centralized aspects of Config.
   * [WORKFLOW](WORKFLOW.md) Learn how to write, test and execute changes
     to your configuration.
+  * [VAGRANT](VAGRANT.md) Use [Vagrant](http://vagrantup.com/) to play
+    with Config or build your development environment.
 
 Get details for configuring Config.
 
