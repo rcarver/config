@@ -19,7 +19,7 @@ node. To change that, specify what you'd like.
     require 'config/vagrant/provisioner'
     Vagrant::Config.run do |config|
       config.vm.provision Config::Vagrant::Provisioner do |config|
-        config.cluster   = "develement"
+        config.cluster   = "development"
         config.blueprint = "webserver"
         config.identity  = "rcarver-2
       end
