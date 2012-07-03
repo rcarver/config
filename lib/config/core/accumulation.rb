@@ -17,26 +17,23 @@ module Config
         @current = nil
       end
 
-      # Public: Instantiate and add a Pattern class.
+      # Instantiate and add a Pattern class.
       #
-      # klass - A subclass of Config::Pattern.
+      # parent - A Config::Pattern to define the parent/child
+      #          relationship.
+      # klass  - A sub-Class of Config::Pattern.
       #
       # Yields the instantiated Pattern if a block is given.
       #
       # Returns the instantiated Pattern.
-      def add(klass)
+      def add_pattern(parent, klass)
         pattern = klass.new
         yield pattern if block_given?
         pattern.accumulation = self
-        pattern.parent = @current
+        pattern.parent = parent
         self << pattern
         pattern
       end
-
-      # Internal: Set the current parent pattern. This
-      # pattern will be passed to newly added patterns
-      # to define their hierarchy.
-      attr_writer :current
 
       # Public: Get a new instance containing only the
       # patterns that do NOT exist in the given Accumulation.

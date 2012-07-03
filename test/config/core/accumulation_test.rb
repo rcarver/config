@@ -12,7 +12,6 @@ describe Config::Core::Accumulation do
     let(:parent) { MiniTest::Mock.new }
 
     before do
-      subject.current = parent
       pattern_class.expect(:new, pattern)
       pattern.expect(:accumulation=, nil, [subject])
       pattern.expect(:parent=, nil, [parent])
@@ -24,18 +23,18 @@ describe Config::Core::Accumulation do
     end
 
     it "instantiates the pattern" do
-      subject.add(pattern_class)
+      subject.add_pattern(parent, pattern_class)
     end
 
     it "instantiates the pattern with a block" do
       pattern.expect(:touch, nil)
-      subject.add pattern_class do |p|
+      subject.add_pattern parent, pattern_class do |p|
         p.touch
       end
     end
 
     it "stores the instantiated pattern" do
-      subject.add(pattern_class)
+      subject.add_pattern(parent, pattern_class)
       subject.to_a.must_equal [pattern]
     end
   end
