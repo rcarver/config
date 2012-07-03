@@ -53,10 +53,6 @@ module Config
 
   autoload :CLI, "config/cli"
 
-  module Data
-    autoload :FakeDatabase, "config/data/fake_database"
-  end
-
   module Meta
     autoload :Blueprint, "config/meta/blueprint"
     autoload :CloneDatabase, "config/meta/clone_database"
