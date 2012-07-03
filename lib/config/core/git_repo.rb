@@ -6,11 +6,9 @@ module Config
     # maintained.
     class GitRepo
 
-      StateError  = Class.new(RuntimeError)
-      CommitError = Class.new(StateError)
-      PushError   = Class.new(StateError)
+      PushError = Class.new(RuntimeError)
 
-      class Cmd
+      class CLI
 
         Failure = Class.new(RuntimeError)
 
@@ -42,7 +40,7 @@ module Config
 
       def initialize(path)
         @path = path
-        @git = Cmd.new(@path)
+        @cli = CLI.new(@path)
       end
 
       # Path to the checkout.
@@ -56,8 +54,8 @@ module Config
       #
       # Returns a Boolean.
       def has_remote_commits?
-        @git.run "git fetch origin"
-        @git.status?(0, "git rev-list --quiet origin/master")
+        @cli.run "git fetch origin"
+        @cli.status?(0, "git rev-list --quiet origin/master")
       end
 
       # Determine if there are any commits in the current, local
@@ -65,17 +63,17 @@ module Config
       #
       # Returns a Boolean.
       def has_local_commits?
-        @git.status?(0, "git rev-list --quiet master")
+        @cli.status?(0, "git rev-list --quiet master")
       end
 
       # Describe the current head commit.
       #
-      # Returns String, String. The first string is a 7 character SHA of
-      # the commit. The second string is the one line commit message.
+      # Returns [String, String]. The first string is a 7 character SHA
+      # of the commit. The second string is the one line commit message.
       def describe_head
         return "0000000", "" unless has_local_commits?
 
-        out, status = @git.run("git log --oneline | head -n1")
+        out, status = @cli.run("git log --oneline | head -n1")
         line = out.chomp
         sha = line[/^([0-9a-z]+)/, 1]
         message = line[/^.*?\s(.*)$/, 1]
@@ -87,7 +85,7 @@ module Config
       #
       # Returns a Boolean.
       def clean_status?
-        @git.status?(0, "test -z \"$(git status --porcelain)\"")
+        @cli.status?(0, "test -z \"$(git status --porcelain)\"")
       end
 
       # Pull from origin. Performs a pull with rebase to minimize merge
@@ -96,7 +94,7 @@ module Config
       # Returns nothing.
       def pull_rebase
         if has_remote_commits?
-          @git.run "git pull --rebase"
+          @cli.run "git pull --rebase"
         end
       end
 
@@ -104,14 +102,14 @@ module Config
       #
       # Returns nothing.
       def add(path)
-        @git.run "git add #{path}"
+        @cli.run "git add #{path}"
       end
 
       # Remove files from the index.
       #
       # Returns nothing.
       def rm(path)
-        @git.run "git rm #{path}"
+        @cli.run "git rm #{path}"
       end
 
       # Reset the index. Does a hard reset to ensure a clean state on
@@ -120,20 +118,17 @@ module Config
       # Returns nothing.
       def reset_hard
         if has_local_commits?
-          @git.run "git reset --hard"
+          @cli.run "git reset --hard"
         end
       end
 
       # Commit a change.
       #
       # Returns nothing.
-      # Raises CommitError if there is a problem, most likely that there
-      # is nothing to commit.
       def commit(msg)
-        begin
-          @git.run "git commit -m '#{msg}'"
-        rescue Cmd::Failure => e
-          raise CommitError, e.message
+        dirty = @cli.status?(0, "git status --porcelain | grep '^[MARD]'")
+        if dirty
+          @cli.run "git commit -m '#{msg}'"
         end
       end
 
@@ -144,8 +139,8 @@ module Config
       # are changes to pull.
       def push
         begin
-          @git.run "git push origin HEAD"
-        rescue Cmd::Failure => e
+          @cli.run "git push origin HEAD"
+        rescue CLI::Failure => e
           raise PushError, e.message
         end
       end

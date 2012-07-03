@@ -77,8 +77,8 @@ describe "filesystem", Config::Core::GitRepo do
         within(project_dir) { `echo world >> README.md` }
       end
 
-      it "fails if there is nothing to commit" do
-        proc { subject.commit "okok" }.must_raise Config::Core::GitRepo::CommitError
+      it "does nothing if there is nothing to commit" do
+        subject.commit "okok"
       end
 
       it "commits changes" do
