@@ -1,5 +1,13 @@
 module Config
   module Core
+    # This module implements the attributes concerns for
+    # Config::Pattern.
+    #
+    # * Class methods for defining and documenting attributes.
+    # * Instance methods for reading the keys and values of attributes.
+    # * Validation of attribute definitions and attribute values.
+    # * Comparators to compare one pattern to another in order to
+    #   determine equality or conflict.
     module Attributes
 
       def self.included(base)
@@ -10,37 +18,8 @@ module Config
 
       module ClassMethods
 
-        class Attr < Struct.new(:name, :default_value, :description)
-
-          # Internal: Check the validity of this attribute.
-          #
-          # value - Anything.
-          #
-          # Returns an Array of String.
-          def error_messages(value)
-            errors = []
-            if description.nil?
-              errors << "missing description for #{name.inspect}"
-            end
-            if value.nil? && default_value == :undefined
-              errors << "missing value for #{name.inspect} (#{description})"
-            end
-            if value.nil? && default_value != nil && default_value != :undefined
-              errors << "missing value for #{name.inspect} - default: #{default_value.inspect} (#{description})"
-            end
-            if value.is_a?(String) && value.strip == ""
-              errors << "#{value.inspect} is an invalid value for #{name.inspect} (#{description})"
-            end
-            errors
-          end
-
-          def initial_value
-            default_value == :undefined ? nil : default_value
-          end
-        end
-
-        # Public: Describe a key or attr. The description is applied
-        # to the next key or attr to be defined.
+        # Public: Describe a key or attr. The description is applied to
+        # the next key or attr to be defined.
         #
         # Returns nothing.
         def desc(msg)
@@ -71,6 +50,35 @@ module Config
           other_attrs[name] = Attr.new(name, default_value, @_current_desc)
           @_current_desc = nil
           _define_attr(name)
+        end
+
+        class Attr < Struct.new(:name, :default_value, :description)
+
+          # Internal: Check the validity of this attribute.
+          #
+          # value - Anything.
+          #
+          # Returns an Array of String.
+          def error_messages(value)
+            errors = []
+            if description.nil?
+              errors << "missing description for #{name.inspect}"
+            end
+            if value.nil? && default_value == :undefined
+              errors << "missing value for #{name.inspect} (#{description})"
+            end
+            if value.nil? && default_value != nil && default_value != :undefined
+              errors << "missing value for #{name.inspect} - default: #{default_value.inspect} (#{description})"
+            end
+            if value.is_a?(String) && value.strip == ""
+              errors << "#{value.inspect} is an invalid value for #{name.inspect} (#{description})"
+            end
+            errors
+          end
+
+          def initial_value
+            default_value == :undefined ? nil : default_value
+          end
         end
 
         # Internal: A Hash of key attributes.

@@ -43,7 +43,7 @@ module Config
       end
 
       # Public: The list of changes that have occurred. When your
-      # Pattern causes a change, track it by appending that a message.
+      # Pattern causes a change, track it by appending a message.
       #
       # Examples
       #

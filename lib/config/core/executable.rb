@@ -1,5 +1,10 @@
 module Config
   module Core
+    # This module implements the runtime concerns for Config::Pattern.
+    #
+    # * How the pattern should be executed (the run mode).
+    # * Whether it should be skipped (if any parent is skipped).
+    # * Whether it should not cause any changes (noop mode).
     module Executable
 
       # Public: Execute this pattern. The result of this method depends
@@ -79,7 +84,6 @@ module Config
       def skip_parent?
         parents.any? { |p| p.run_mode == :skip }
       end
-
     end
   end
 end
