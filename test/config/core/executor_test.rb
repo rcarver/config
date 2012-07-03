@@ -150,7 +150,6 @@ describe Config::Core::Executor do
         # The previous accumulation included [c], so we will now destroy it.
         previous_accumulation = MiniTest::Mock.new
         previous_accumulation.expect(:-, [c], [accumulation])
-        subject.previous_accumulation = previous_accumulation
 
         a.expect(:execute, nil)
         b.expect(:execute, nil)
@@ -158,7 +157,7 @@ describe Config::Core::Executor do
         c.expect(:run_mode=, nil, [:destroy])
         c.expect(:execute, nil)
 
-        subject.execute
+        subject.execute(previous_accumulation)
       end
     end
   end

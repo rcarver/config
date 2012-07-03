@@ -99,13 +99,9 @@ module Config
       @executed = true
       validate
 
-      if @previous_accumulation
-        @executor.previous_accumulation = @previous_accumulation
-      end
-
       log << "Execute #{self}"
       log.indent do
-        @executor.execute
+        @executor.execute(@previous_accumulation)
       end
 
       return nil

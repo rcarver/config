@@ -68,11 +68,9 @@ module Config
         end
       end
 
-      attr_writer :previous_accumulation
-
-      def execute
-        if @previous_accumulation
-          missing_patterns = @previous_accumulation - @accumulation
+      def execute(previous_accumulation = nil)
+        if previous_accumulation
+          missing_patterns = previous_accumulation - @accumulation
           missing_patterns.each do |p|
             p.run_mode = :destroy
             p.execute
