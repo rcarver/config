@@ -16,13 +16,6 @@ module Config
       @loader.require_all
     end
 
-    def update
-      return :dirty unless @git_repo.clean_status?
-
-      @git_repo.pull_rebase
-      :updated
-    end
-
     # This is a bash implementation of #update It's written in bash so that it
     # can be used during the bootstrap process. It's stored here so that it can
     # be used both in the config-update-project command and the node-based
