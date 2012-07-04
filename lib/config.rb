@@ -43,7 +43,6 @@ require 'config/dsl/hub_dsl'
 
 module Config
 
-
   module Bootstrap
     autoload :Access, "config/bootstrap/access"
     autoload :Identity, "config/bootstrap/identity"
@@ -94,15 +93,6 @@ module Config
   # Returns nothing.
   def self.log_color(bool)
     log.color = bool
-  end
-
-  # Public: Create an execute a Blueprint with a block.
-  #
-  # name - String name of the blueprint.
-  # Returns nothing.
-  def self.blueprint(name, &block)
-    blueprint = Config::Blueprint.new(name, &block)
-    blueprint.execute
   end
 
   # Public: Instantiate a project, using the best guess as to its
