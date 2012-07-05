@@ -5,15 +5,22 @@ module Config
     UnknownCluster = Class.new(StandardError)
     UnknownBlueprint = Class.new(StandardError)
 
-    def initialize(project_path, data_path)
-      @loader = Config::Core::ProjectLoader.new(project_path)
-      @data_path = Pathname.new(data_path).cleanpath
-      @data_dir = Config::Data::Dir.new(@data_path)
-      @git_repo = Config::Core::GitRepo.new(@path)
+    def initialize(loader, data, nodes)
+      @loader = loader
+      @data = data
+      @nodes = nodes
     end
 
     def require_all
       @loader.require_all
+    end
+
+    def hub
+      @loader.get_hub
+    end
+
+    def ssh_hostnames
+      hub.ssh_hostnames
     end
 
     # This is a bash implementation of #update It's written in bash so that it
@@ -34,69 +41,6 @@ fi
 # Pull in the latest changes cleanly.
 git pull --rebase
       STR
-    end
-
-    # Get the data directory. The data directory stores information
-    # about the state of your system.
-    #
-    # Returns a Config::Data::Dir.
-    def data_dir
-      @data_path.mkpath # TODO: don't mkpath
-      @data_dir
-    end
-
-    # Get the database. The database stores information about your
-    # nodes.
-    #
-    # Returns a Config::Data::Database.
-    def database
-      @database or data_dir.database
-    end
-
-    # Update the database.
-    #
-    # Returns nothing.
-    def update_database
-      database.update
-    end
-
-    # Get the project Hub. The Hub describes centralized aspects of your
-    # system.
-    #
-    # Returns a Config::Hub.
-    def hub
-      @hub ||= @loader.get_hub
-    end
-
-    # Get all of the SSH host names that are used during execution.
-    #
-    # Returns an Array of String.
-    def ssh_hostnames
-      hub.ssh_hostnames
-    end
-
-    # Update the stored node data by inspecting the current execution
-    # environment.
-    #
-    # fqn - String Node FQN.
-    #
-    # Returns a Config::Node.
-    def update_node(fqn)
-      node = database.find_node(fqn) || Config::Node.from_fqn(fqn)
-      node.facts = fact_inventor.call
-      database.update_node(node)
-      node
-    end
-
-    # Remove the node from the database.
-    #
-    # fqn - String Node FQN.
-    #
-    # Returns nothing.
-    def remove_node(fqn)
-      node = database.find_node(fqn)
-      database.remove_node(node) if node
-      nil
     end
 
     # Execute the node's blueprint.
@@ -154,28 +98,17 @@ git pull --rebase
     end
 
     def get_cluster(name)
+      @loader.require_all
       @loader.get_cluster(name) or raise UnknownCluster, "Cluster #{name.inspect} was not found"
     end
 
     def get_blueprint(name)
+      @loader.require_all
       @loader.get_blueprint(name) or raise UnknownBlueprint, "Blueprint #{name.inspect} was not found"
     end
 
     def get_node(name)
-      database.find_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
-    end
-
-    #
-    # Internal / Dependency Injection
-    #
-
-    attr_writer :loader
-    attr_writer :git_repo
-    attr_writer :database
-    attr_writer :fact_inventor
-
-    def fact_inventor
-      @fact_inventor || proc { Config::Core::Facts.invent }
+      @nodes.find_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
     end
 
   end
