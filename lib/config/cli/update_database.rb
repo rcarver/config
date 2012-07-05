@@ -11,11 +11,11 @@ Update the database to the latest version.
       end
 
       def execute
-        data_dir = project.data_dir
+        project_data = project.project_data
         hub = project.hub
         blueprint do
           add Config::Meta::CloneDatabase do |p|
-            p.path = data_dir.repo_path
+            p.path = project_data.repo_path
             p.url = hub.data_config.url
           end
         end

@@ -30,7 +30,7 @@ describe Config::CLI::StoreSSHKey do
     it "stores the key" do
       cli.ssh_key_name = "mine"
       cli.data = "xyz"
-      data_dir.expect(:ssh_key, expect_write_file("xyz"), ["mine"])
+      project_data.expect(:ssh_key, expect_write_file("xyz"), ["mine"])
       cli.execute
     end
   end

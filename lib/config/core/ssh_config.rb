@@ -37,16 +37,16 @@ module Config
 
       # Generate a 'Host' stanza for an .ssh/config file.
       #
-      # data_dir - Config::Data::Dir to retrieve named SSH key.
+      # project_data - Config::ProjectData to retrieve named SSH key.
       #
       # Returns a String.
-      def to_host_config(data_dir)
+      def to_host_config(project_data)
         <<-STR
 Host #{host}
   Port #{port}
   Hostname #{hostname}
   User #{user}
-  IdentityFile #{data_dir.ssh_key(ssh_key).path}
+  IdentityFile #{project_data.ssh_key(ssh_key).path}
   #{extras.join("\n")}
         STR
       end

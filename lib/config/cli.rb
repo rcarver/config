@@ -164,11 +164,11 @@ module Config
       end
       attr_writer :project
 
-      # Returns a Config::Data::Dir.
-      def data_dir
-        @data_dir ||= project.data_dir
+      # Returns a Config::ProjectData.
+      def project_data
+        @project_data ||= Config.project_data
       end
-      attr_writer :data_dir
+      attr_writer :project_data
 
       # Returns a Kernel.
       def kernel

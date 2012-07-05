@@ -121,7 +121,7 @@ class CliSpec < MiniTest::Spec
 
   # Fake the Config world.
   let(:project)  { MiniTest::Mock.new }
-  let(:data_dir) { MiniTest::Mock.new }
+  let(:project_data) { MiniTest::Mock.new }
 
   # Fake the execution environment.
   let(:kernel)   { SimpleMock.new(FakeKernel.new(stdout, stderr)) }
@@ -138,7 +138,7 @@ class CliSpec < MiniTest::Spec
     # Inject fake objects.
     cli.subcommand_builder = subcommand_builder
     cli.project = project
-    cli.data_dir = data_dir
+    cli.project_data = project_data
     cli.kernel = kernel
     cli.open3 = open3
 

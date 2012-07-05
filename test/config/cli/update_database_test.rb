@@ -12,15 +12,15 @@ describe Config::CLI::UpdateDatabase do
     it "executes a blueprint" do
       project.expect(:update_database, nil)
 
-      data_dir = MiniTest::Mock.new
-      data_dir.expect(:repo_path, "repo-path")
+      project_data = MiniTest::Mock.new
+      project_data.expect(:repo_path, "repo-path")
 
       hub = MiniTest::Mock.new
       data_config = MiniTest::Mock.new
       hub.expect(:data_config, data_config)
       data_config.expect(:url, "hub-url")
 
-      project.expect(:data_dir, data_dir)
+      project.expect(:project_data, project_data)
       project.expect(:hub, hub)
 
       cli.execute

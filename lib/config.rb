@@ -21,7 +21,6 @@ require 'config/core/validation_error'
 require 'config/core/facts'
 require 'config/core/ssh_config'
 
-require 'config/data/dir'
 require 'config/data/file'
 require 'config/data/git_database'
 

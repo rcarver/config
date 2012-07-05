@@ -21,7 +21,7 @@ new nodes.
       end
 
       def execute
-        data_dir.secret(secret_name).write(data)
+        project_data.secret(secret_name).write(data)
       end
 
     end
