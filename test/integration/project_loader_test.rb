@@ -1,8 +1,8 @@
 require 'helper'
 
-describe "filesystem", Config::Core::ProjectLoader do
+describe "filesystem", Config::ProjectLoader do
 
-  subject { Config::Core::ProjectLoader.new(tmpdir) }
+  subject { Config::ProjectLoader.new(tmpdir) }
 
   describe "#get_hub" do
 
