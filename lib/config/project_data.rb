@@ -4,8 +4,10 @@ module Config
   class ProjectData
 
     def initialize(path)
-      @dir = Pathname.new(path)
+      @path = Pathname.new(path)
     end
+
+    attr_reader :path
 
     # Manage a secret.
     #
@@ -13,7 +15,7 @@ module Config
     #
     # Returns a Config::Data::File.
     def secret(name)
-      Config::Data::File.new(@dir + "secret-#{name}")
+      Config::Data::File.new(@path + "secret-#{name}")
     end
 
     # Manage an SSH private key.
@@ -22,7 +24,7 @@ module Config
     #
     # Returns a Config::Data::File.
     def ssh_key(name)
-      Config::Data::File.new(@dir + "ssh-key-#{name}")
+      Config::Data::File.new(@path + "ssh-key-#{name}")
     end
 
     # Manage the signature for an SSH known host.
@@ -31,7 +33,7 @@ module Config
     #
     # Returns a Config::Data::File.
     def ssh_host_signature(host)
-      Config::Data::File.new(@dir + "ssh-host-#{host}")
+      Config::Data::File.new(@path + "ssh-host-#{host}")
     end
 
     # Get the stored accumulation.
@@ -55,7 +57,7 @@ module Config
     #
     # Returns a String.
     def repo_path
-      (@dir + "project-data").to_s
+      (@path + "project-data").to_s
     end
 
     def database
@@ -83,7 +85,7 @@ module Config
   protected
 
     def accumulation_file
-      Config::Data::File.new(@dir + "accumulation.marshall")
+      Config::Data::File.new(@path + "accumulation.marshall")
     end
 
     def repo

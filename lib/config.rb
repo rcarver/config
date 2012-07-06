@@ -94,17 +94,56 @@ module Config
     log.color = bool
   end
 
-  # Public: Instantiate a project, using the best guess as to its
-  # location on disk.
+  # Public: Instantiate the current project.
   #
   # Returns a Config::Project.
   def self.project
-    root = Pathname.new("/etc/config")
-    if root.exist?
-      Config::Project.new(root + "project", root)
+    Config::Project.new(project_loader, project_data, nodes)
+  end
+
+  # Internal: The directory where system-installed projects live.
+  #
+  # Returns a Pathname.
+  def self.system_dir
+    @system_dir ||= Pathname.new("/etc/config")
+  end
+
+  # Internal: Change the directory where system-installed projects live.
+  #
+  # dir - String or Pathname.
+  #
+  # Returns nothing.
+  def self.system_dir=(dir)
+    @system_dir = Pathname.new(dir)
+  end
+
+  # Internal: Get the project loader.
+  #
+  # Returns a Config::ProjectLoader.
+  def self.project_loader
+    if system_dir.exist?
+      Config::ProjectLoader.new(system_dir + "project")
     else
-      Config::Project.new(Pathname.pwd, Pathname.pwd + ".data")
+      Config::ProjectLoader.new(Pathname.pwd)
     end
+  end
+
+  # Internal: Get the project data.
+  #
+  # Returns a Config::ProjectData.
+  def self.project_data
+    if system_dir.exist?
+      Config::ProjectData.new(system_dir + "project-data")
+    else
+      Config::ProjectData.new(Pathname.pwd + ".data")
+    end
+  end
+
+  # Internal: Get the project nodes.
+  #
+  # Returns a Config::Nodes.
+  def self.nodes
+    Config::Nodes.new(project_data.database)
   end
 
 end

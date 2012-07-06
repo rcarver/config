@@ -8,6 +8,8 @@ module Config
       @blueprints = PathHash.new(@path)
     end
 
+    attr_reader :path
+
     class PathHash < Hash
 
       def initialize(path)
