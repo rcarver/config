@@ -11,18 +11,6 @@ module Config
       @nodes = nodes
     end
 
-    def require_all
-      @loader.require_all
-    end
-
-    def hub
-      @loader.get_hub
-    end
-
-    def ssh_hostnames
-      hub.ssh_hostnames
-    end
-
     # This is a bash implementation of #update It's written in bash so that it
     # can be used during the bootstrap process. It's stored here so that it can
     # be used both in the config-update-project command and the node-based

@@ -14,27 +14,6 @@ describe Config::Project do
     nodes.verify
   end
 
-  describe "loader operations" do
-
-    describe "#require_all" do
-
-      it "delegates to the loader" do
-        project_loader.expect(:require_all, nil)
-        subject.require_all
-      end
-    end
-
-    describe "#ssh_hostnames" do
-
-      it "delegates to the hub" do
-        hub = MiniTest::Mock.new
-        hub.expect(:ssh_hostnames, ["a", "b"])
-        project_loader.expect(:get_hub, hub)
-        subject.ssh_hostnames.must_equal ["a", "b"]
-      end
-    end
-  end
-
   describe "executing blueprints" do
 
     let(:blueprint) { MiniTest::Mock.new }
