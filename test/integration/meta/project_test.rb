@@ -38,11 +38,6 @@ bin
     (tmpdir + "facts").must_be :exist?
     (tmpdir + "clusters").must_be :exist?
 
-    (tmpdir + "hub.rb").must_be :exist?
-    (tmpdir + "hub.rb").read.must_equal <<-STR
-domain "internal.example.com"
-    STR
-
     (tmpdir + "README.md").must_be :exist?
     (tmpdir + "README.md").read.must_equal <<-STR
 # MyProject

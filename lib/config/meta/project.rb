@@ -10,9 +10,6 @@ class Config::Meta::Project < Config::Pattern
     %w(.data blueprints patterns facts clusters).each do |d|
       dir "#{root}/#{d}"
     end
-    file "#{root}/hub.rb" do |f|
-      f.template = "hub.rb.erb"
-    end
     file "#{root}/README.md" do |f|
       f.only_create!
       f.template = "project_readme.md.erb"

@@ -38,26 +38,6 @@ module Config
       @blueprints[name]
     end
 
-    def get_hub
-      file = @path + "hub.rb"
-
-      hub = file.exist? ? Config::Hub.from_file(@path + "hub.rb") : Hub.new
-
-      hub.project_config ||= Config::Core::GitConfig.new
-      hub.data_config    ||= Config::Core::GitConfig.new
-
-      if !hub.project_config.url
-        repo = `cd #{@path} && git config --get remote.origin.url`
-        hub.project_config.url = repo.empty? ? nil : repo.chomp
-      end
-
-      if hub.project_config.url && !hub.data_config.url
-        hub.data_config.url = hub.project_config.url.sub(/\.git/, '-data.git')
-      end
-
-      hub
-    end
-
     def require_all
       require_patterns
       require_clusters

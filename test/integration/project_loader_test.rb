@@ -4,34 +4,6 @@ describe "filesystem", Config::ProjectLoader do
 
   subject { Config::ProjectLoader.new(tmpdir) }
 
-  describe "#get_hub" do
-
-    let(:hub) { subject.get_hub }
-
-    it "has no git urls by default" do
-      hub.project_config.url.must_equal nil
-      hub.data_config.url.must_equal nil
-    end
-
-    it "sets git urls from the current repo" do
-      (tmpdir + ".git").mkdir
-      (tmpdir + ".git/config").open("w") do |f|
-        f.puts '[remote "origin"]'
-        f.puts '        url = git@github.com:foo/bar.git'
-      end
-      hub.project_config.url.must_equal 'git@github.com:foo/bar.git'
-      hub.data_config.url.must_equal    'git@github.com:foo/bar-data.git'
-    end
-
-    it "uses a hub file" do
-      (tmpdir + "hub.rb").open("w") do |f|
-        f.puts "project_repo 'git@github.com:foo/bar.git'"
-      end
-      hub.project_config.url.must_equal 'git@github.com:foo/bar.git'
-      hub.data_config.url.must_equal    'git@github.com:foo/bar-data.git'
-    end
-  end
-
   describe "#require_patterns" do
 
     it "loads all patterns" do
