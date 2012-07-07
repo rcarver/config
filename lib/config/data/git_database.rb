@@ -4,9 +4,11 @@ module Config
       include Config::Core::Loggable
 
       def initialize(path, repo)
-        @path = Pathname.new(path)
+        @path = path
         @repo = repo
       end
+
+      attr_reader :path
 
       def version
         sha, message = @repo.describe_head

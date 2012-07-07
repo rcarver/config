@@ -43,12 +43,7 @@ module Config
         @cli = CLI.new(@path)
       end
 
-      # Path to the checkout.
-      #
-      # Returns a String.
-      def path
-        @path.to_s
-      end
+      attr_reader :path
 
       # Determine if there are any commits in the remote repository.
       #
