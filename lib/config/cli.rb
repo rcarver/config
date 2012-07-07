@@ -170,6 +170,18 @@ module Config
       end
       attr_writer :project_data
 
+      # Returns a Config::Data::GitDatabase.
+      def database
+        @database ||= Config.project_data.database
+      end
+      attr_writer :database
+
+      # Returns a Config::Core::Remotes
+      def remotes
+        @remotes ||= Config.project_data.remotes
+      end
+      attr_writer :remotes
+
       # Returns a Kernel.
       def kernel
         @kernel ||= Kernel

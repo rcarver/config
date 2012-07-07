@@ -10,25 +10,22 @@ describe Config::CLI::UpdateDatabase do
 
   describe "#execute" do
     it "executes a blueprint" do
-      project.expect(:update_database, nil)
+      database.expect(:path, "repo-path")
+      database.expect(:update, nil)
 
-      project_data = MiniTest::Mock.new
-      project_data.expect(:repo_path, "repo-path")
+      database_git_config = MiniTest::Mock.new
+      database_git_config.expect(:url, "repo-url")
 
-      hub = MiniTest::Mock.new
-      data_config = MiniTest::Mock.new
-      hub.expect(:data_config, data_config)
-      data_config.expect(:url, "hub-url")
-
-      project.expect(:project_data, project_data)
-      project.expect(:hub, hub)
+      remotes.expect(:database_git_config, database_git_config)
 
       cli.execute
 
       clones = cli.find_blueprints(Config::Meta::CloneDatabase)
       clones.size.must_equal 1
       clones[0].path.must_equal "repo-path"
-      clones[0].url.must_equal "hub-url"
+      clones[0].url.must_equal "repo-url"
+
+      database.verify
     end
   end
 end

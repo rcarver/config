@@ -53,43 +53,25 @@ module Config
       accumulation_file.write(accumulation.serialize)
     end
 
-    # Get the path at which the git database lives.
+    # Get the project database.
     #
-    # Returns a String.
-    def repo_path
-      (@path + "project-data").to_s
-    end
-
+    # Returns a Config::Data::GitDatabase.
     def database
+      repo = Config::Core::GitRepo.new(@path + "project-data")
       Config::Data::GitDatabase.new(repo.path, repo)
     end
 
-    # Update the database.
+    # Get the configured remotes.
     #
-    # Returns nothing.
-    #def update_database
-      #database.update
-    #end
-
+    # Returns a Config::Data::Remotes.
     def remotes(name)
       Config::Data::Remotes.new(@path + "remotes-#{name}.yml")
     end
-
-    # Get all of the SSH host names that are used during execution.
-    #
-    # Returns an Array of String.
-    #def ssh_hostnames
-      #remotes.ssh_hostnames
-    #end
 
   protected
 
     def accumulation_file
       Config::Data::File.new(@path + "accumulation.marshall")
-    end
-
-    def repo
-      Config::Core::GitRepo.new(repo_path)
     end
 
   end
