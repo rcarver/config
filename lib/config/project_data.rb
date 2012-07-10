@@ -13,31 +13,31 @@ module Config
     #
     # name - Symbol name of the secret.
     #
-    # Returns a Config::Data::File.
+    # Returns a Config::Core::File.
     def secret(name)
-      Config::Data::File.new(@path + "secret-#{name}")
+      Config::Core::File.new(@path + "secret-#{name}")
     end
 
     # Manage an SSH private key.
     #
     # name - Symbol name of the key.
     #
-    # Returns a Config::Data::File.
+    # Returns a Config::Core::File.
     def ssh_key(name)
-      Config::Data::File.new(@path + "ssh-key-#{name}")
+      Config::Core::File.new(@path + "ssh-key-#{name}")
     end
 
     # Manage the signature for an SSH known host.
     #
     # host - String name of the host.
     #
-    # Returns a Config::Data::File.
+    # Returns a Config::Core::File.
     def ssh_host_signature(host)
-      Config::Data::File.new(@path + "ssh-host-#{host}")
+      Config::Core::File.new(@path + "ssh-host-#{host}")
     end
 
     def domain(name)
-      Config::Data::File.new(@path + "domain-#{name}")
+      Config::Core::File.new(@path + "domain-#{name}")
     end
 
     # Get the stored accumulation.
@@ -84,11 +84,11 @@ module Config
   protected
 
     def accumulation_file
-      Config::Data::File.new(@path + "accumulation.marshall")
+      Config::Core::File.new(@path + "accumulation.marshall")
     end
 
     def remotes_file
-      Config::Data::File.new(@path + "remotes.yml")
+      Config::Core::File.new(@path + "remotes.yml")
     end
 
     def database_git_repo

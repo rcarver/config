@@ -1,8 +1,8 @@
 require 'helper'
 
-describe "filesystem", Config::Data::File do
+describe "filesystem", Config::Core::File do
 
-  subject { Config::Data::File.new(tmpdir + "mine") }
+  subject { Config::Core::File.new(tmpdir + "mine") }
 
   specify "#path" do
     subject.path.must_equal (tmpdir + "mine").to_s

@@ -1,5 +1,5 @@
 module Config
-  module Data
+  module Core
     class File
 
       def initialize(path)
