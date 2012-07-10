@@ -11,8 +11,8 @@ Update the database to the latest version.
       end
 
       def execute
-        database = self.database
-        remotes = self.remotes
+        database = self.project_data.database
+        remotes = self.project_data.remotes
         blueprint do
           add Config::Meta::CloneDatabase do |p|
             p.path = database.path

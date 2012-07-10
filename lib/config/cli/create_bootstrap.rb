@@ -49,6 +49,14 @@ run on a remote server in order to initialize it as a node.
           abort "unknown blueprint #{blueprint_name.inspect}"
         end
 
+        unless project_data.remotes
+          abort "remotes have not been configured. See config-edit-remotes"
+        end
+
+        unless project_data.remotes.project_git_config
+          abort "your remotes do not include a project_git_config"
+        end
+
         identity_file = Tempfile.new("identity")
         system_file = Tempfile.new("system")
         access_file = Tempfile.new("access")
@@ -61,7 +69,6 @@ run on a remote server in order to initialize it as a node.
         blueprint_name = @blueprint_name
         identity = @identity
         project = self.project
-        hub = self.project.hub
         project_data = self.project_data
 
         blueprint do
@@ -79,7 +86,7 @@ run on a remote server in order to initialize it as a node.
             p.blueprint = blueprint_name
             p.identity = identity
             # TODO: allow the dns_domain_name to be configured per cluster.
-            p.dns_domain_name = hub.domain
+            p.dns_domain_name = project_data.domain(:default).read
             # TODO: allow secret to be configured per cluster.
             p.secret = project_data.secret(:default).read
           end
@@ -87,12 +94,12 @@ run on a remote server in order to initialize it as a node.
           # Provide access to the git repos.
           add Config::Bootstrap::Access do |p|
             p.path = access_file
-            p.ssh_configs = hub.ssh_configs.map do |c|
+            p.ssh_configs = project_data.remotes.ssh_configs.map do |c|
               c.to_host_config(remote_project_data)
             end
             p.ssh_keys = begin
               keys = {}
-              hub.ssh_configs.each do |c|
+              project_data.remotes.ssh_configs.each do |c|
                 file = remote_project_data.ssh_key(c.ssh_key).path
                 # TODO: handle the ssh key is missing locally.
                 key = project_data.ssh_key(c.ssh_key).read
@@ -102,7 +109,7 @@ run on a remote server in order to initialize it as a node.
             end
             p.ssh_known_hosts = begin
               hosts = {}
-              hub.ssh_hostnames.each do |host|
+              project_data.remotes.ssh_hostnames.each do |host|
                 # TODO: handle the host is missing locally.
                 hosts[host] = project_data.ssh_host_signature(host).read
               end
@@ -113,7 +120,7 @@ run on a remote server in order to initialize it as a node.
           # Initialize and run the project.
           add Config::Bootstrap::Project do |p|
             p.path = project_file
-            p.git_uri = hub.project_config.url
+            p.git_uri = project_data.remotes.project_git_config.url
             p.update_project_script = project.update_project_script
           end
         end

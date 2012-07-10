@@ -10,13 +10,17 @@ describe Config::CLI::UpdateDatabase do
 
   describe "#execute" do
     it "executes a blueprint" do
+
       database.expect(:path, "repo-path")
       database.expect(:update, nil)
+      project_data.expect(:database, database)
 
       database_git_config = MiniTest::Mock.new
       database_git_config.expect(:url, "repo-url")
 
+      remotes = MiniTest::Mock.new
       remotes.expect(:database_git_config, database_git_config)
+      project_data.expect(:remotes, remotes)
 
       cli.execute
 

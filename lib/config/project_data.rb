@@ -36,6 +36,10 @@ module Config
       Config::Data::File.new(@path + "ssh-host-#{host}")
     end
 
+    def domain(name)
+      Config::Data::File.new(@path + "domain-#{name}")
+    end
+
     # Get the stored accumulation.
     #
     # Returns a Config::Core::Accumulation or nil.
