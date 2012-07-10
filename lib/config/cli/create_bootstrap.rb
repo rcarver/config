@@ -36,7 +36,6 @@ run on a remote server in order to initialize it as a node.
       end
 
       def execute
-        project.require_all
 
         begin
           project.get_cluster(cluster_name)

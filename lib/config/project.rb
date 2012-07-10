@@ -86,12 +86,10 @@ git pull --rebase
     end
 
     def get_cluster(name)
-      @loader.require_all
       @loader.get_cluster(name) or raise UnknownCluster, "Cluster #{name.inspect} was not found"
     end
 
     def get_blueprint(name)
-      @loader.require_all
       @loader.get_blueprint(name) or raise UnknownBlueprint, "Blueprint #{name.inspect} was not found"
     end
 
