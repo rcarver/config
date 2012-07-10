@@ -89,8 +89,13 @@ module Config
     def require_blueprints
       return if @required_blueprints; @required_blueprints = true
 
-      Dir[(@path + "blueprints/*.rb")].each do |f|
-        blueprint = Blueprint.from_file(f)
+      Dir[(@path + "blueprints/*.rb")].each do |path|
+        file = Config::Core::File.new(path)
+        blueprint = Blueprint.from_string(
+          file.basename,
+          file.read,
+          file.path
+        )
         @blueprints[blueprint.name] = blueprint
       end
     end
