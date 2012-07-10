@@ -5,7 +5,7 @@ module Config
     class ClusterDSL
 
       def initialize
-        @configuration = Config::Core::Configuration.new
+        @configuration = Config::Configuration.new
       end
 
       # Public: Define configuration variables.

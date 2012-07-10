@@ -278,7 +278,7 @@ Execute Blueprint current webserver
         STR
       }
 
-      let(:configuration) { Config::Core::Configuration.new }
+      let(:configuration) { Config::Configuration.new }
 
       before do
         configuration.set_group(:webserver, my_name: "bob")

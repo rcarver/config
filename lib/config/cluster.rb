@@ -12,7 +12,7 @@ module Config
     def initialize(name)
       @name = name
       @nodes = []
-      @configuration = Config::Core::Configuration.new
+      @configuration = Config::Configuration.new
     end
 
     attr :name
