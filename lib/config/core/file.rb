@@ -20,6 +20,13 @@ module Config
         @path.basename.to_s
       end
 
+      # Get the basename of the file (the name excluding the extension).
+      #
+      # Returns a String.
+      def basename
+        @path.basename(@path.extname).to_s
+      end
+
       # Read the file contents from disk.
       #
       # Returns a String or nil.

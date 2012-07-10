@@ -75,8 +75,13 @@ module Config
     def require_clusters
       return if @required_clusters; @required_clusters = true
 
-      Dir[(@path + "clusters/*.rb")].each do |f|
-        cluster = Cluster.from_file(f)
+      Dir[(@path + "clusters/*.rb")].each do |path|
+        file = Config::Core::File.new(path)
+        cluster = Cluster.from_string(
+          file.basename,
+          file.read,
+          file.path
+        )
         @clusters[cluster.name] = cluster
       end
     end
