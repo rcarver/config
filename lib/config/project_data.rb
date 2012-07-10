@@ -53,19 +53,28 @@ module Config
       accumulation_file.write(accumulation.serialize)
     end
 
+    # Get the configured remotes.
+    #
+    # Returns a Config::Core::Remotes or nil.
+    def remotes
+      data = remotes_file.read
+      Config::Core::Remotes.load_yaml(data) if data
+    end
+
+    # Store the remotes configuration.
+    #
+    # remotes - Config::Core::Remotes to store.
+    #
+    # Returns nothing.
+    def remotes=(remotes)
+      remotes_file.write(remotes.dump_yaml)
+    end
+
     # Get the project database.
     #
     # Returns a Config::Data::GitDatabase.
     def database
-      repo = Config::Core::GitRepo.new(@path + "project-data")
-      Config::Data::GitDatabase.new(repo.path, repo)
-    end
-
-    # Get the configured remotes.
-    #
-    # Returns a Config::Data::Remotes.
-    def remotes(name)
-      Config::Data::Remotes.new(@path + "remotes-#{name}.yml")
+      Config::Data::GitDatabase.new(database_git_repo.path, database_git_repo)
     end
 
   protected
@@ -74,5 +83,12 @@ module Config
       Config::Data::File.new(@path + "accumulation.marshall")
     end
 
+    def remotes_file
+      Config::Data::File.new(@path + "remotes.yml")
+    end
+
+    def database_git_repo
+      Config::Core::GitRepo.new(@path + "project-data")
+    end
   end
 end

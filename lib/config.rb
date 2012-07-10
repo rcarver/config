@@ -19,6 +19,7 @@ require 'config/core/git_repo'
 require 'config/core/marshalable'
 require 'config/core/validation_error'
 require 'config/core/remotes'
+require 'config/core/remotes_serializer'
 require 'config/core/ssh_config'
 
 require 'config/data/file'
