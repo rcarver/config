@@ -23,8 +23,6 @@ require 'config/core/remotes'
 require 'config/core/remotes_serializer'
 require 'config/core/ssh_config'
 
-require 'config/data/git_database'
-
 require 'config/patterns'
 require 'config/log'
 
@@ -32,6 +30,7 @@ require 'config/pattern'
 require 'config/blueprint'
 require 'config/cluster'
 require 'config/configuration'
+require 'config/database'
 require 'config/node'
 require 'config/nodes'
 require 'config/project'

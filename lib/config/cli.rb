@@ -170,7 +170,7 @@ module Config
       end
       attr_writer :project_data
 
-      # Returns a Config::Data::GitDatabase.
+      # Returns a Config::Database.
       def database
         @database ||= Config.project_data.database
       end

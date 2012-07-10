@@ -76,9 +76,9 @@ module Config
 
     # Get the project database.
     #
-    # Returns a Config::Data::GitDatabase.
+    # Returns a Config::Database.
     def database
-      Config::Data::GitDatabase.new(database_git_repo.path, database_git_repo)
+      Config::Database.new(database_git_repo.path, database_git_repo)
     end
 
   protected
