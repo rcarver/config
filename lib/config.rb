@@ -36,6 +36,7 @@ require 'config/nodes'
 require 'config/project'
 require 'config/project_data'
 require 'config/project_loader'
+require 'config/self'
 
 require 'config/dsl/blueprint_dsl'
 require 'config/dsl/cluster_dsl'

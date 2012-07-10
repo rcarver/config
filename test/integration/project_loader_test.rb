@@ -36,6 +36,30 @@ describe "filesystem", Config::ProjectLoader do
     end
   end
 
+  describe "#require_self" do
+
+    it "loads nothing when no file exists" do
+      subject.require_self
+    end
+
+    it "loads the config" do
+      (tmpdir + "config.rb").open("w") do |f|
+        f.puts "configure :test, :key => 123"
+      end
+
+      subject.require_self
+      subject.get_self.configuration.test.key.must_equal 123
+    end
+
+    it "fails to load a config with a syntax error" do
+      (tmpdir + "config.rb").open("w") do |f|
+        f.puts "x, y"
+      end
+
+      proc { subject.require_self }.must_raise(SyntaxError)
+    end
+  end
+
   describe "#require_clusters" do
 
     it "loads all clusters" do
@@ -87,6 +111,20 @@ describe "filesystem", Config::ProjectLoader do
 
       skip "this doesn't work because blueprint evaluation doesn't occur until accumulation"
       proc { subject.require_blueprints }.must_raise(SyntaxError)
+    end
+  end
+
+  describe "#get_self" do
+
+    it "returns nil when no file exists" do
+      subject.get_self.must_equal nil
+    end
+
+    it "returns the configured self from disk" do
+      (tmpdir + "config.rb").open("w") do |f|
+        f.puts "configure :test, :ok => 123"
+      end
+      subject.get_self.configuration.test.ok.must_equal 123
     end
   end
 

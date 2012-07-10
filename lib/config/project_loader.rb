@@ -4,6 +4,7 @@ module Config
     def initialize(path)
       @path = Pathname.new(path).cleanpath
 
+      @self = nil
       @clusters = PathHash.new(@path)
       @blueprints = PathHash.new(@path)
     end
@@ -30,6 +31,11 @@ module Config
       end
     end
 
+    def get_self
+      require_self
+      @self
+    end
+
     def get_cluster(name)
       require_clusters
       @clusters[name]
@@ -42,6 +48,7 @@ module Config
 
     def require_all
       require_patterns
+      require_self
       require_clusters
       require_blueprints
     end
@@ -69,6 +76,15 @@ module Config
             raise "Could not auto-define a constant in #{f}. The message was #{e.message.inspect}"
           end
         end
+      end
+    end
+
+    def require_self
+      return if @required_self; @required_self = true
+
+      file = Config::Core::File.new(@path + "config.rb")
+      if file.exist?
+        @self = Config::Self.from_string(file.read, file.path)
       end
     end
 
