@@ -7,8 +7,7 @@ module Config
     # Error thrown if a group is defined more than once.
     DuplicateGroup = Class.new(StandardError)
 
-    # Error thrown when attempting to access a group that has not been
-    # defined.
+    # Error thrown when attempting to access a group that has not been defined.
     UnknownGroup = Class.new(StandardError)
 
     # Error thrown when attempting to read a key that has not been defined.
