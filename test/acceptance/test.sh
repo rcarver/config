@@ -43,10 +43,7 @@ bundle init
 # Install dependencies
 echo "gem 'config', :path => '$config_dir'" >> Gemfile
 echo "gem 'vagrant'" >> Gemfile
-bundle install --binstubs
-
-# Initialize config.
-bin/config-init-project
+bundle install --binstubs --local
 
 # Check in and push to git origin.
 git add .
