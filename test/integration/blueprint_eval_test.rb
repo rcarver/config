@@ -16,7 +16,7 @@ describe Config::Blueprint do
     it "provides useful information for a syntax error" do
       file = __FILE__
       line = __LINE__ + 2
-      blueprint = Config::Blueprint.from_string("sample", <<-STR, file, line)
+      blueprint = Config::Blueprint.from_string("sample", <<-STR, __FILE__, __LINE__)
         file "/tmp/file"
         xfile "/tmp/other"
       STR

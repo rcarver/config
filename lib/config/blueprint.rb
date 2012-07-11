@@ -4,11 +4,7 @@ module Config
 
     def self.from_string(name, string, _file, _line = 1)
       new(name) do
-        if _file && _line
-          eval string, binding, _file, _line
-        else
-          eval string, binding
-        end
+        eval string, binding, _file, _line
       end
     end
 
