@@ -23,6 +23,25 @@ describe Config::Configuration do
     subject.set_group(:test, key: 123)
     proc { subject.set_group(:test, key: 123) }.must_raise Config::Configuration::DuplicateGroup
   end
+
+  it "can be merged" do
+    a = Config::Configuration.new
+    a.set_group(:group1, key1: 123, key2: 456, key3: 111)
+    a.set_group(:group2, key1: 123)
+
+    b = Config::Configuration.new
+    b.set_group(:group1, key1: 999, key2: 456, key4: 222)
+    b.set_group(:group3, key1: 123)
+
+    c = a + b
+
+    c.group1.key1.must_equal 999
+    c.group1.key2.must_equal 456
+    c.group1.key3.must_equal 111
+    c.group1.key4.must_equal 222
+    c.group2.key1.must_equal 123
+    c.group3.key1.must_equal 123
+  end
 end
 
 describe Config::Configuration::Group do

@@ -39,12 +39,32 @@ module Config
       self[message]
     end
 
+    def +(other)
+      configuration = Config::Configuration.new
+      groups = Hash.new { |h,k| h[k] = {} }
+      [self, other].each do |config|
+        config._groups.each { |name, group| groups[name].update(group._hash) }
+      end
+      groups.each do |name, data|
+        configuration.set_group(name, data)
+      end
+      configuration
+    end
+
+    def _groups
+      @groups
+    end
+
     class Group
       include Config::Core::Loggable
 
       def initialize(name, hash={})
         @name = name
         @hash = hash
+      end
+
+      def _hash
+        @hash
       end
 
       def to_s
