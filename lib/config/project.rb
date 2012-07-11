@@ -11,6 +11,14 @@ module Config
       @nodes = nodes
     end
 
+    def cluster?(name)
+      !! @loader.get_cluster(name)
+    end
+
+    def blueprint?(name)
+      !! @loader.get_blueprint(name)
+    end
+
     # This is a bash implementation of #update It's written in bash so that it
     # can be used during the bootstrap process. It's stored here so that it can
     # be used both in the config-update-project command and the node-based

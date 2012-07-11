@@ -37,24 +37,12 @@ run on a remote server in order to initialize it as a node.
 
       def execute
 
-        begin
-          project.get_cluster(cluster_name)
-        rescue Config::Project::UnknownCluster
+        unless project.cluster?(cluster_name)
           abort "unknown cluster #{cluster_name.inspect}"
         end
 
-        begin
-          project.get_blueprint(blueprint_name)
-        rescue Config::Project::UnknownBlueprint
+        unless project.blueprint?(blueprint_name)
           abort "unknown blueprint #{blueprint_name.inspect}"
-        end
-
-        unless project_data.remotes
-          abort "remotes have not been configured. See config-edit-remotes"
-        end
-
-        unless project_data.remotes.project_git_config
-          abort "your remotes do not include a project_git_config"
         end
 
         identity_file = Tempfile.new("identity")
@@ -62,7 +50,7 @@ run on a remote server in order to initialize it as a node.
         access_file = Tempfile.new("access")
         project_file = Tempfile.new("project")
 
-        remote_project_data = Config::ProjectData.new("/etc/config")
+        remote_project_data = Config::ProjectData.new(Config.system_dir)
 
         # Local variables for `blueprint` block scope.
         cluster_name = @cluster_name
