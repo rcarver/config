@@ -7,7 +7,13 @@ module Config
       @repo = repo
     end
 
+    # Internal.
     attr_reader :path
+
+    # Internal.
+    def chdir(&block)
+      Dir.chdir(@path, &block) if @path.exist?
+    end
 
     def version
       sha, message = @repo.describe_head

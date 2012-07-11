@@ -164,6 +164,12 @@ module Config
       end
       attr_writer :project
 
+      # Returns a Config::ProjectLoader.
+      def project_loader
+        @project_loader ||= Config.project_loader
+      end
+      attr_writer :project_loader
+
       # Returns a Config::ProjectData.
       def project_data
         @project_data ||= Config.project_data
@@ -176,7 +182,7 @@ module Config
       end
       attr_writer :database
 
-      # Returns a Config::Core::Remotes
+      # Returns a Config::Core::Remotes.
       def remotes
         @remotes ||= Config.project_data.remotes
       end

@@ -9,7 +9,13 @@ module Config
       @blueprints = PathHash.new(@path)
     end
 
+    # Internal.
     attr_reader :path
+
+    # Internal.
+    def chdir(&block)
+      Dir.chdir(@path, &block) if @path.exist?
+    end
 
     class PathHash < Hash
 

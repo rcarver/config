@@ -5,20 +5,20 @@ module Config
       # When no Remotes have been configured, we can gather some useful
       # defaults from existing git repository configurations.
       #
-      # project      - Config::Project.
-      # project_data - Config::ProjectData.
+      # project_loader - Config::ProjectLoader.
+      # database       - Config::Database.
       #
       # Returns a Config::Core::Remotes.
-      def self.default(project, project_data)
+      def self.default(project_loader, database)
         project_git_config = Config::Core::GitConfig.new
         database_git_config = Config::Core::GitConfig.new
 
-        project.chdir do
+        project_loader.chdir do
           repo = `git config --get remote.origin.url`
           project_git_config.url = repo.chomp unless repo.empty?
         end
 
-        project_data.chdir do
+        database.chdir do
           repo = `git config --get remote.origin.url`
           database_git_config.url = repo.chomp unless repo.empty?
         end
