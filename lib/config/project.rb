@@ -45,7 +45,7 @@ git pull --rebase
 
       # Configure.
       blueprint.facts = node.facts
-      blueprint.configuration = cluster.configuration
+      blueprint.configuration = merged_configuration(cluster, node)
       blueprint.previous_accumulation = previous_accumulation if previous_accumulation
 
       # Execute.
@@ -71,9 +71,9 @@ git pull --rebase
       # Configure.
       if cluster_name
         cluster = get_cluster(cluster_name)
-        blueprint.configuration = cluster.configuration
+        blueprint.configuration = merged_configuration(cluster)
       else
-        blueprint.configuration = Config::Spy::Configuration.new
+        blueprint.configuration = Config::Spy::Configuration.new(merged_configuration)
       end
       blueprint.facts = Config::Spy::Facts.new
 
@@ -83,6 +83,10 @@ git pull --rebase
       blueprint.execute
 
       accumulation
+    end
+
+    def get_self
+      @loader.get_self || Config::Self.new
     end
 
     def get_cluster(name)
@@ -95,6 +99,16 @@ git pull --rebase
 
     def get_node(name)
       @nodes.find_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
+    end
+
+  protected
+
+    def merged_configuration(cluster = nil, node = nil)
+      configs = []
+      configs << get_self.configuration
+      configs << cluster.configuration if cluster
+      #configs << node.configuration if node
+      configs.inject(Config::Configuration.new) { |a, config| a + config }
     end
 
   end

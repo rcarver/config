@@ -7,8 +7,8 @@ module Config
       self.new(dsl._get_configuration)
     end
 
-    def initialize(configuration)
-      @configuration = configuration
+    def initialize(configuration = nil)
+      @configuration = configuration || Config::Configuration.new
     end
 
     attr_reader :configuration

@@ -18,17 +18,19 @@ describe Config::Project do
 
     let(:blueprint) { MiniTest::Mock.new }
     let(:cluster) { MiniTest::Mock.new }
+    let(:config_self) { MiniTest::Mock.new }
 
-    let(:configuration) { MiniTest::Mock.new }
     let(:facts) { MiniTest::Mock.new }
 
     let(:pattern) { MiniTest::Mock.new }
     let(:accumulation) { [pattern] }
 
+    let(:configuration) { Config::Configuration.new }
+
     after do
       blueprint.verify
       cluster.verify
-      configuration.verify
+      config_self.verify
       facts.verify
       pattern.verify
     end
@@ -38,8 +40,12 @@ describe Config::Project do
       project_loader.expect(:require_all, nil)
       project_loader.expect(:get_blueprint, blueprint, ["webserver"])
 
+      # Self configuration
+      project_loader.expect(:get_self, config_self)
+      config_self.expect(:configuration, configuration)
+
       # Configure the blueprint.
-      blueprint.expect(:configuration=, nil, [configuration])
+      blueprint.expect(:configuration=, nil, [assigned_configuration_class])
       blueprint.expect(:facts=, nil, [facts])
 
       # Execute the blueprint.
@@ -57,6 +63,8 @@ describe Config::Project do
 
       describe "with a cluster" do
 
+        let(:assigned_configuration_class) { Config::Configuration }
+
         before do
           project_loader.expect(:get_cluster, cluster, ["production"])
           cluster.expect(:configuration, configuration)
@@ -70,7 +78,7 @@ describe Config::Project do
 
       describe "without a cluster" do
 
-        let(:configuration) { Config::Spy::Configuration.new }
+        let(:assigned_configuration_class) { Config::Spy::Configuration }
 
         it "executes the blueprint in noop mode, with a spy cluster" do
           result = subject.try_blueprint("webserver")
@@ -83,12 +91,15 @@ describe Config::Project do
 
       let(:node) { Config::Node.new("production", "webserver", "1") }
 
+      let(:assigned_configuration_class) { Config::Configuration }
+
       before do
         node.facts = facts
         nodes.expect(:find_node, node, [node.fqn])
 
         project_loader.expect(:get_cluster, cluster, ["production"])
         cluster.expect(:configuration, configuration)
+
         blueprint.expect(:accumulate, accumulation)
       end
 
