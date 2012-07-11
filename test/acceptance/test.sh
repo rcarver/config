@@ -51,6 +51,9 @@ git commit -m 'initial comit'
 git remote add origin $project_repo_dir
 git push -u origin master
 
+# Initialize config.
+bin/config-init-project
+
 # Create a blueprint.
 bin/config-create-blueprint webserver
 git add blueprints/webserver.rb
