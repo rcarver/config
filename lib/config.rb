@@ -135,7 +135,7 @@ module Config
   # Returns a Config::ProjectData.
   def self.project_data
     if system_dir.exist?
-      Config::ProjectData.new(system_dir + "project-data")
+      Config::ProjectData.new(system_dir)
     else
       Config::ProjectData.new(Pathname.pwd + ".data")
     end
