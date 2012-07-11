@@ -85,6 +85,8 @@ git pull --rebase
       accumulation
     end
 
+  protected
+
     def get_self
       @loader.get_self || Config::Self.new
     end
@@ -100,8 +102,6 @@ git pull --rebase
     def get_node(name)
       @nodes.find_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
     end
-
-  protected
 
     def merged_configuration(cluster = nil, node = nil)
       configs = []
