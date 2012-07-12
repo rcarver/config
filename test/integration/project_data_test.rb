@@ -43,26 +43,4 @@ describe "filesystem", Config::ProjectData do
       (tmpdir + "accumulation.marshall").must_be :exist?
     end
   end
-
-  describe "#remotes" do
-
-    it "returns nil if no file exists" do
-      subject.remotes.must_equal nil
-    end
-
-    it "reads from a file" do
-      (tmpdir + "remotes.yml").open("w") do |f|
-        f.puts ""
-      end
-      subject.remotes.wont_equal nil
-    end
-  end
-
-  describe "#remotes=" do
-
-    it "writes a file" do
-      subject.remotes = Config::Core::Remotes.new
-      (tmpdir + "remotes.yml").must_be :exist?
-    end
-  end
 end

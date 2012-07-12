@@ -93,6 +93,16 @@ git pull --rebase
       accumulation
     end
 
+    # Get the configured remotes.
+    #
+    # cluster_name - String cluster to include in configuration.
+    #
+    # Returns a Config::Core::Remotes.
+    def remotes_for(cluster_name)
+      cluster = get_cluster(cluster_name)
+      Config::Core::Remotes.from_configuration merged_configuration(cluster)
+    end
+
   protected
 
     def get_self

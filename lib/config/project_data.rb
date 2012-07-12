@@ -63,23 +63,6 @@ module Config
       accumulation_file.write(accumulation.serialize)
     end
 
-    # Get the configured remotes.
-    #
-    # Returns a Config::Core::Remotes or nil.
-    def remotes
-      data = remotes_file.read
-      Config::Core::Remotes.load_yaml(data) if data
-    end
-
-    # Store the remotes configuration.
-    #
-    # remotes - Config::Core::Remotes to store.
-    #
-    # Returns nothing.
-    def remotes=(remotes)
-      remotes_file.write(remotes.dump_yaml)
-    end
-
     # Get the project database.
     #
     # Returns a Config::Database.

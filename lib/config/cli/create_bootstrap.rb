@@ -50,7 +50,11 @@ run on a remote server in order to initialize it as a node.
         access_file = Tempfile.new("access")
         project_file = Tempfile.new("project")
 
+        # Configure data storage on the node.
         remote_project_data = Config::ProjectData.new(Config.system_dir)
+
+        # Configure remotes for the node.
+        remotes = project.remotes_for(cluster_name)
 
         # Local variables for `blueprint` block scope.
         cluster_name = @cluster_name
@@ -82,12 +86,12 @@ run on a remote server in order to initialize it as a node.
           # Provide access to the git repos.
           add Config::Bootstrap::Access do |p|
             p.path = access_file
-            p.ssh_configs = project_data.remotes.ssh_configs.map do |c|
+            p.ssh_configs = remotes.ssh_configs.map do |c|
               c.to_host_config(remote_project_data)
             end
             p.ssh_keys = begin
               keys = {}
-              project_data.remotes.ssh_configs.each do |c|
+              remotes.ssh_configs.each do |c|
                 file = remote_project_data.ssh_key(c.ssh_key).path
                 # TODO: handle the ssh key is missing locally.
                 key = project_data.ssh_key(c.ssh_key).read
@@ -97,7 +101,7 @@ run on a remote server in order to initialize it as a node.
             end
             p.ssh_known_hosts = begin
               hosts = {}
-              project_data.remotes.ssh_hostnames.each do |host|
+              remotes.ssh_hostnames.each do |host|
                 # TODO: handle the host is missing locally.
                 hosts[host] = project_data.ssh_host_signature(host).read
               end
@@ -108,7 +112,7 @@ run on a remote server in order to initialize it as a node.
           # Initialize and run the project.
           add Config::Bootstrap::Project do |p|
             p.path = project_file
-            p.git_uri = project_data.remotes.project_git_config.url
+            p.git_uri = remotes.project_git_config.url
             p.update_project_script = project.update_project_script
           end
         end
