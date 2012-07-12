@@ -2,17 +2,6 @@ require 'helper'
 
 describe "filesystem", Config::Core::Remotes do
 
-  it "serializes to and from yaml" do
-    input = {}
-    output = {
-      "project_git_config" => {},
-      "database_git_config" => {},
-      "ssh_configs" => []
-    }
-    remotes = Config::Core::Remotes.load_yaml(YAML.dump(input))
-    remotes.dump_yaml.must_equal YAML.dump(output)
-  end
-
   describe ".default" do
 
     # It would be cool if Pathname implemented #chdir.

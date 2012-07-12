@@ -33,13 +33,45 @@ module Config
         end
       end
 
-      # Initialize a new Remotes from YAML.
-      #
-      # yaml - String of yaml data.
-      #
-      # Returns a Config::Core::Remotes.
-      def self.load_yaml(yaml)
-        Config::Core::RemotesSerializer.load YAML.load(yaml)
+      def self.from_configuration(configuration)
+        new.tap do |remotes|
+          if configuration.project_git_config?
+            remotes.project_git_config = load_git_config_from_configuration_group(
+              Config::Core::GitConfig.new, configuration.project_git_config
+            )
+          end
+          if configuration.database_git_config?
+            remotes.database_git_config = load_git_config_from_configuration_group(
+              Config::Core::GitConfig.new, configuration.database_git_config
+            )
+          end
+          if configuration.ssh_configs?
+            configuration.ssh_configs.each_key do |key|
+              remotes.standalone_ssh_configs << load_ssh_config_from_configuration_group(
+                Config::Core::SSHConfig.new, configuration.ssh_configs[key]
+              )
+            end
+          end
+        end
+      end
+
+      def self.load_git_config_from_configuration_group(git_config, group)
+        git_config.url = group.url if group.url?
+        ssh_config.host = group.host if group.host?
+        ssh_config.user = group.user if group.user?
+        ssh_config.port = group.port if group.port?
+        ssh_config.hostname = group.hostname if group.hostname?
+        ssh_config.ssh_key = group.ssh_key if group.ssh_key?
+        git_config
+      end
+
+      def self.load_ssh_config_from_configuration_group(ssh_config, data)
+        ssh_config.host = data[:host]
+        ssh_config.user = data[:user]
+        ssh_config.port = data[:port]
+        ssh_config.hostname = data[:hostname]
+        ssh_config.ssh_key = data[:ssh_key]
+        ssh_config
       end
 
       #
