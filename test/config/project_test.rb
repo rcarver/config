@@ -117,4 +117,40 @@ describe Config::Project do
       end
     end
   end
+
+  describe "retrieving configuration" do
+
+    let(:cluster) { MiniTest::Mock.new }
+    let(:config_self) { MiniTest::Mock.new }
+
+    let(:configuration) { Config::Configuration.new }
+
+    before do
+      cluster.expect(:configuration, configuration)
+      config_self.expect(:configuration, configuration)
+
+      project_loader.expect(:get_self, config_self)
+      project_loader.expect(:get_cluster, cluster, ["production"])
+    end
+
+    after do
+      cluster.verify
+      config_self.verify
+    end
+
+    describe "#remotes_for" do
+
+      it "builds remotes from the config" do
+        subject.remotes_for("production").must_be_instance_of Config::Core::Remotes
+      end
+    end
+
+    describe "#domain_for" do
+
+      it "returns the configured domain" do
+        configuration.set_group(:project_hostname, domain: "example.com")
+        subject.domain_for("production").must_equal "example.com"
+      end
+    end
+  end
 end

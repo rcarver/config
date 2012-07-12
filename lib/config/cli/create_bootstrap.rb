@@ -77,8 +77,7 @@ run on a remote server in order to initialize it as a node.
             p.cluster = cluster_name
             p.blueprint = blueprint_name
             p.identity = identity
-            # TODO: allow the dns_domain_name to be configured per cluster.
-            p.dns_domain_name = project_data.domain(:default).read
+            p.dns_domain_name = project.domain_for(cluster_name)
             # TODO: allow secret to be configured per cluster.
             p.secret = project_data.secret(:default).read
           end

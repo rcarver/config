@@ -103,6 +103,16 @@ git pull --rebase
       Config::Core::Remotes.from_configuration merged_configuration(cluster)
     end
 
+    # Get the configured domain.
+    #
+    # cluster_name - String cluster to include in the configuration.
+    #
+    # Returns a String.
+    def domain_for(cluster_name)
+      cluster = get_cluster(cluster_name)
+      merged_configuration(cluster).project_hostname.domain
+    end
+
   protected
 
     def get_self
