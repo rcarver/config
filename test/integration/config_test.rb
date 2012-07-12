@@ -44,7 +44,7 @@ describe "filesystem", Config do
     it "loads from the global dir if it exists" do
       setup_system_dir
       loader = Config.project_data
-      loader.path.must_equal system_dir + "project-data"
+      loader.path.must_equal system_dir
     end
     it "loads from the local dir" do
       loader = Config.project_data
