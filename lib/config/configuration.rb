@@ -32,10 +32,18 @@ module Config
       @groups[group_name] or raise UnknownGroup, "#{group_name} group is not defined"
     end
 
+    def defined?(group_name)
+      @groups.key?(group_name)
+    end
+
     # Enables dot syntax for groups.
     def method_missing(message, *args, &block)
       raise ArgumentError, "arguments are not allowed: #{message}(#{args.inspect})" if args.any?
-      self[message]
+      if message =~ /^(.*)\?$/
+        self.defined?($1.to_sym)
+      else
+        self[message]
+      end
     end
 
     def +(other)
@@ -82,6 +90,10 @@ module Config
 
       def defined?(key)
         @hash.key?(key)
+      end
+
+      def each_key(&block)
+        @hash.keys.sort_by { |k| k.to_s }.each(&block)
       end
 
       # Enables dot syntax for keys.

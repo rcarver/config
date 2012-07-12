@@ -19,6 +19,14 @@ describe Config::Configuration do
     proc { subject[:nothing] }.must_raise Config::Configuration::UnknownGroup
   end
 
+  it "allows the existence of a group to be tested" do
+    subject.set_group(:test, key: 123)
+    subject.defined?(:test).must_equal true
+    subject.defined?(:foo).must_equal false
+    subject.test?.must_equal true
+    subject.foo?.must_equal false
+  end
+
   it "does not allow a group to be redefined" do
     subject.set_group(:test, key: 123)
     proc { subject.set_group(:test, key: 123) }.must_raise Config::Configuration::DuplicateGroup
@@ -82,6 +90,14 @@ describe Config::Configuration::Group do
     subject.defined?(:foo).must_equal false
     subject.name?.must_equal true
     subject.foo?.must_equal false
+  end
+
+  it "can iterate over each key (sorted)" do
+    values = []
+    subject.each_key do |key|
+      values << [key, subject[key]]
+    end
+    values.must_equal [[:name, "ok"], [:other, nil], [:value, 123]]
   end
 
   it "logs when a variable is used" do
