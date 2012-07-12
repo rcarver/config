@@ -80,10 +80,18 @@ module Config
         end
       end
 
+      def defined?(key)
+        @hash.key?(key)
+      end
+
       # Enables dot syntax for keys.
       def method_missing(message, *args, &block)
         raise ArgumentError, "arguments are not allowed: #{message}(#{args.inspect})" if args.any?
-        self[message]
+        if message =~ /^(.*)\?$/
+          self.defined?($1.to_sym)
+        else
+          self[message]
+        end
       end
     end
   end

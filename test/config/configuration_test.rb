@@ -77,6 +77,13 @@ describe Config::Configuration::Group do
     proc { subject.name("ok") }.must_raise ArgumentError
   end
 
+  it "allows the existence of a key to be tested" do
+    subject.defined?(:name).must_equal true
+    subject.defined?(:foo).must_equal false
+    subject.name?.must_equal true
+    subject.foo?.must_equal false
+  end
+
   it "logs when a variable is used" do
     subject.name
     log_string.must_equal "Read test.name => \"ok\"\n"
