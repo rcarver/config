@@ -1,6 +1,7 @@
 require 'config'
 require 'optparse'
 require 'ostruct'
+require 'open3'
 
 module Config
   module CLI
