@@ -54,7 +54,9 @@ run on a remote server in order to initialize it as a node.
         remote_project_data = Config::ProjectData.new(Config.system_dir)
 
         # Configure remotes for the node.
-        remotes = project.remotes_for(cluster_name)
+        self_configuration = project.self_configuration(cluster_name)
+        remotes = self_configuration.remotes
+        domain = self_configuration.domain
 
         # Local variables for `blueprint` block scope.
         cluster_name = @cluster_name
@@ -77,7 +79,7 @@ run on a remote server in order to initialize it as a node.
             p.cluster = cluster_name
             p.blueprint = blueprint_name
             p.identity = identity
-            p.dns_domain_name = project.domain_for(cluster_name)
+            p.dns_domain_name = domain
             # TODO: allow secret to be configured per cluster.
             p.secret = project_data.secret(:default).read
           end

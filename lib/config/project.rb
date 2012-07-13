@@ -93,24 +93,9 @@ git pull --rebase
       accumulation
     end
 
-    # Get the configured remotes.
-    #
-    # cluster_name - String cluster to include in configuration.
-    #
-    # Returns a Config::Core::Remotes.
-    def remotes_for(cluster_name)
+    def self_configuration(cluster_name)
       cluster = get_cluster(cluster_name)
-      Config::Core::Remotes.from_configuration merged_configuration(cluster)
-    end
-
-    # Get the configured domain.
-    #
-    # cluster_name - String cluster to include in the configuration.
-    #
-    # Returns a String.
-    def domain_for(cluster_name)
-      cluster = get_cluster(cluster_name)
-      merged_configuration(cluster).project_hostname.domain
+      Config::SelfConfiguration.new(merged_configuration(cluster))
     end
 
   protected

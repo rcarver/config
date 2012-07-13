@@ -138,18 +138,10 @@ describe Config::Project do
       config_self.verify
     end
 
-    describe "#remotes_for" do
+    describe "#self_configuration" do
 
       it "builds remotes from the config" do
-        subject.remotes_for("production").must_be_instance_of Config::Core::Remotes
-      end
-    end
-
-    describe "#domain_for" do
-
-      it "returns the configured domain" do
-        configuration.set_group(:project_hostname, domain: "example.com")
-        subject.domain_for("production").must_equal "example.com"
+        subject.self_configuration("production").must_be_instance_of Config::SelfConfiguration
       end
     end
   end
