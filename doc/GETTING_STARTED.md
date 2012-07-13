@@ -146,7 +146,7 @@ The simplest way to do that is to pipe it over ssh.
 assuming you have created a new machine and can ssh to it using
 `$hostname` See [SSH](SSH.md) for tips on ssh configuration.
 
-    bin/config-create-bootstrap production webserver 1 \
+    bin/config-create-bootstrap production webserver 1 |
       ssh $hostname 'sudo bash'
 
 This command generates a bootstrap script, then executes it on the
