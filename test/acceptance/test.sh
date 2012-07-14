@@ -7,15 +7,21 @@ set -e
 rbenv_version=`rbenv version | awk '{ print $1 }'`
 
 # The code under test.
-config_dir=`pwd`
+local_config_dir=`pwd`
 
-# A place to test the code.
+# A place to test the code on the local machine.
 project_dir=/tmp/config-test-project
 database_dir=/tmp/config-test-database
 
-# A place to store the test code.
+# Everything that's accessed on both the local and remote system needs
+# to be mapped into the VM. Storing these under /tmp lets us use the
+# same path on both machines.
 project_repo_dir=/tmp/config-test-project-repo
 database_repo_dir=/tmp/config-test-database-repo
+config_dir=/tmp/config
+
+# Symlink the codebase to the shared directory.
+ln -sf $local_config_dir $config_dir
 
 # Initialize the test repos.
 for dir in $project_repo_dir $database_repo_dir; do
@@ -54,39 +60,51 @@ git push -u origin master
 # Initialize config.
 bin/config-init-project
 
-# Create a blueprint.
-bin/config-create-blueprint webserver
-git add blueprints/webserver.rb
-git commit -m 'create webserver blueprint'
+# Patch config.rb so that the database repo is correct. We create better
+# defaults when it's a remote repo so we'll deal with this annoyance for
+# now. In reality it's normal for users to edit config.rb so this isn't
+# the worst thing.
+echo '
+8c8
+<   url: "/tmp/config-test-project-repo"
+---
+>   url: "/tmp/config-test-database-repo"
+' | patch --force config.rb -
+
+# Create the default blueprint.
+bin/config-create-blueprint devbox
+git add blueprints/devbox.rb
+git commit -m 'create devbox blueprint'
 
 # Create a cluster.
-bin/config-create-cluster prod
-git add clusters/prod.rb
-git commit -m 'create prod clsuter'
+bin/config-create-cluster vagrant
+git add clusters/vagrant.rb
+git commit -m 'create vagrant clsuter'
+
+# Store a secret.
+echo 'shhhhh' | bin/config-store-secret
 
 # Test that we can create a bootstrap script before firing up Vagrant.
-bin/config-create-bootstrap prod webserver 1 > /dev/null
+bin/config-create-bootstrap vagrant devbox 1 > /dev/null
 
 # Initialize Vagrant.
-echo '
+(
+cat <<-STR
 require "config/vagrant/provisioner"
 Vagrant::Config.run do |config|
   config.vm.box = "base"
-  config.vm.provision Config::Vagrant::Provisioner do |config|
-    config.blueprint = "webserver"
-    config.cluster   = "prod"
-    config.identity  = "1"
-  end
+  config.vm.share_folder "remote-config", "$config_dir", "$config_dir"
+  config.vm.share_folder "git-project", "$project_repo_dir", "$project_repo_dir"
+  config.vm.share_folder "git-database", "$database_repo_dir", "$database_repo_dir"
+  config.vm.provision Config::Vagrant::Provisioner
 end
-' > Vagrantfile
+STR
+) > Vagrantfile
 
 git add Vagrantfile
 git commit -m 'add Vagrantfile'
 
 # Boot the vagrant vm and config will provision it.
 bin/vagrant up
-trap "bin/vagrant destroy" EXIT
-
-
-
+#trap "bin/vagrant destroy --force" EXIT
 
