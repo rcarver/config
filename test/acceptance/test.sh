@@ -60,6 +60,9 @@ git push -u origin master
 # Initialize config.
 bin/config-init-project
 
+git add .
+git commit -m 'initialize config'
+
 # Patch config.rb so that the database repo is correct. We create better
 # defaults when it's a remote repo so we'll deal with this annoyance for
 # now. In reality it's normal for users to edit config.rb so this isn't
@@ -71,15 +74,18 @@ echo '
 >   url: "/tmp/config-test-database-repo"
 ' | patch --force config.rb -
 
+git add config.rb
+git commit -m 'set database repo'
+
 # Create the default blueprint.
 bin/config-create-blueprint devbox
-git add blueprints/devbox.rb
+git add blueprints
 git commit -m 'create devbox blueprint'
 
 # Create a cluster.
 bin/config-create-cluster vagrant
-git add clusters/vagrant.rb
-git commit -m 'create vagrant clsuter'
+git add clusters
+git commit -m 'create vagrant cluster'
 
 # Store a secret.
 echo 'shhhhh' | bin/config-store-secret
@@ -93,9 +99,9 @@ cat <<-STR
 require "config/vagrant/provisioner"
 Vagrant::Config.run do |config|
   config.vm.box = "base"
-  config.vm.share_folder "remote-config", "$config_dir", "$config_dir"
-  config.vm.share_folder "git-project", "$project_repo_dir", "$project_repo_dir"
-  config.vm.share_folder "git-database", "$database_repo_dir", "$database_repo_dir"
+  config.vm.share_folder "config-code", "$config_dir", "$config_dir"
+  config.vm.share_folder "project-repo", "$project_repo_dir", "$project_repo_dir"
+  config.vm.share_folder "database-repo", "$database_repo_dir", "$database_repo_dir"
   config.vm.provision Config::Vagrant::Provisioner
 end
 STR
@@ -103,6 +109,9 @@ STR
 
 git add Vagrantfile
 git commit -m 'add Vagrantfile'
+
+# Push to the remote so we can execute the project.
+git push
 
 # Boot the vagrant vm and config will provision it.
 bin/vagrant up
