@@ -21,11 +21,13 @@ describe Config::CLI::ExecNode do
   describe "#execute" do
     it "updates and executes the node" do
       cli.fqn = "a-b-c"
-      project.expect(:require_all, nil)
+
       project.expect(:update_node, nil, ["a-b-c"])
+
       project_data.expect(:accumulation, :acc1)
       project.expect(:execute_node, :acc2, ["a-b-c", :acc1])
       project_data.expect(:accumulation=, nil, [:acc2])
+
       cli.execute
     end
   end

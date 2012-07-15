@@ -5,18 +5,73 @@ module Config
     UnknownCluster = Class.new(StandardError)
     UnknownBlueprint = Class.new(StandardError)
 
-    def initialize(loader, data, nodes)
+    def initialize(loader, database, nodes)
       @loader = loader
-      @data = data
+      @database = database
       @nodes = nodes
     end
 
+    # Update to the latest version of the database.
+    #
+    # Returns nothing.
+    def update_database
+      @database.update
+    end
+
+    # Update the information about a node and store it in the database.
+    #
+    # Returns nothing.
+    def update_node(fqn)
+      # TODO: facts could be configurable to use ohai or something else.
+      @nodes.update_node(fqn, -> { Config::Core::Facts.invent })
+    end
+
+    # Determine if a cluster exists.
+    #
+    # name - String name of the cluster.
+    #
+    # Returns a Boolean.
     def cluster?(name)
       !! @loader.get_cluster(name)
     end
 
+    # Determine if a blueprint exists.
+    #
+    # name - String name of the blueprint.
+    #
+    # Returns a Boolean.
     def blueprint?(name)
       !! @loader.get_blueprint(name)
+    end
+
+    # Get the top level settings as defined by `config.rb`
+    #
+    # Returns a Config::ProjectSettings.
+    def base_settings
+      Config::ProjectSettings.new(merged_configuration)
+    end
+
+    # Get the settings for a cluster, as defined by `config.rb` and the
+    # cluster configuration.
+    #
+    # cluster_name - String name of the cluster.
+    #
+    # Returns a Config::ProjectSettings.
+    def cluster_settings(cluster_name)
+      cluster = get_cluster(cluster_name)
+      Config::ProjectSettings.new(merged_configuration(cluster))
+    end
+
+    # Get the settings for a node, as defined by `config.rb`, the
+    # cluster configuration and the node configuration.
+    #
+    # fqn - String the node fqn.
+    #
+    # Returns a Config::ProjectSettings.
+    def node_settings(fqn)
+      node = get_node(fqn)
+      cluster = get_cluster(node.cluster_name)
+      Config::ProjectSettings.new(merged_configuration(cluster, node))
     end
 
     # This is a bash implementation of #update It's written in bash so that it
@@ -91,21 +146,6 @@ git pull --rebase
       blueprint.execute
 
       accumulation
-    end
-
-    def base_settings
-      Config::ProjectSettings.new(merged_configuration)
-    end
-
-    def cluster_settings(cluster_name)
-      cluster = get_cluster(cluster_name)
-      Config::ProjectSettings.new(merged_configuration(cluster))
-    end
-
-    def node_settings(fqn)
-      node = get_node(fqn)
-      cluster = get_cluster(node.cluster_name)
-      Config::ProjectSettings.new(merged_configuration(cluster, node))
     end
 
   protected

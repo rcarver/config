@@ -123,8 +123,6 @@ class CliSpec < MiniTest::Spec
   let(:project)        { MiniTest::Mock.new }
   let(:project_loader) { MiniTest::Mock.new }
   let(:project_data)   { MiniTest::Mock.new }
-  let(:database)       { MiniTest::Mock.new }
-  let(:remotes)        { MiniTest::Mock.new }
 
   # Fake the execution environment.
   let(:kernel)   { SimpleMock.new(FakeKernel.new(stdout, stderr)) }
@@ -143,8 +141,6 @@ class CliSpec < MiniTest::Spec
     cli.project = project
     cli.project_loader = project_loader
     cli.project_data = project_data
-    cli.database = database
-    cli.remotes = remotes
     cli.kernel = kernel
     cli.open3 = open3
 
@@ -160,8 +156,6 @@ class CliSpec < MiniTest::Spec
     project.verify
     project_loader.verify
     project_data.verify
-    database.verify
-    remotes.verify
     kernel.verify
     system.verify
     @files.each { |f| f.verify }

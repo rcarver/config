@@ -17,19 +17,22 @@ Update the database to the latest version.
       end
 
       def execute
-        configuration = case 
+        settings = case 
         when @fqn then project.node_settings(@fqn)
         else project.base_settings
         end
-        remotes = configuration.remotes
-        database = project_data.database
+
+        remotes = settings.remotes
+        project_data = self.project_data
+
         blueprint do
           add Config::Meta::CloneDatabase do |p|
-            p.path = database.path
+            p.path = project_data.database_git_repo.path
             p.url = remotes.database_git_config.url
           end
         end
-        database.update
+
+        project.update_database
       end
 
     end

@@ -100,7 +100,7 @@ module Config
   #
   # Returns a Config::Project.
   def self.project
-    Config::Project.new(project_loader, project_data, nodes)
+    Config::Project.new(project_loader, database, nodes)
   end
 
   # Internal: The directory where system-installed projects live.
@@ -141,11 +141,19 @@ module Config
     end
   end
 
+  # Internal: Get the project database.
+  #
+  # Returns a Config::Database.
+  def self.database
+    repo = project_data.database_git_repo
+    Config::Database.new(repo.path, repo)
+  end
+
   # Internal: Get the project nodes.
   #
   # Returns a Config::Nodes.
   def self.nodes
-    Config::Nodes.new(project_data.database)
+    Config::Nodes.new(database)
   end
 
 end

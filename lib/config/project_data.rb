@@ -42,8 +42,11 @@ module Config
       Config::Core::File.new(@path + "ssh-host-#{host}")
     end
 
-    def domain(name)
-      Config::Core::File.new(@path + "domain-#{name}")
+    # The git repository that stores the database.
+    #
+    # Returns a Config::Core::GitRepo.
+    def database_git_repo
+      Config::Core::GitRepo.new(@path + "database")
     end
 
     # Get the stored accumulation.
@@ -63,25 +66,11 @@ module Config
       accumulation_file.write(accumulation.serialize)
     end
 
-    # Get the project database.
-    #
-    # Returns a Config::Database.
-    def database
-      Config::Database.new(database_git_repo.path, database_git_repo)
-    end
-
   protected
 
     def accumulation_file
       Config::Core::File.new(@path + "accumulation.marshall")
     end
 
-    def remotes_file
-      Config::Core::File.new(@path + "remotes.yml")
-    end
-
-    def database_git_repo
-      Config::Core::GitRepo.new(@path + "project-data")
-    end
   end
 end

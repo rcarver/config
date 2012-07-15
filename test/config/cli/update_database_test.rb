@@ -25,16 +25,17 @@ describe Config::CLI::UpdateDatabase do
     let(:settings) { MiniTest::Mock.new }
 
     before do
-      database.expect(:path, "repo-path")
-      database.expect(:update, nil)
-      project_data.expect(:database, database)
+      database_git_repo = MiniTest::Mock.new
+      database_git_repo.expect(:path, "repo-path")
+      project_data.expect(:database_git_repo, database_git_repo)
 
       database_git_config = MiniTest::Mock.new
       database_git_config.expect(:url, "repo-url")
-
       remotes.expect(:database_git_config, database_git_config)
 
       settings.expect(:remotes, remotes)
+
+      project.expect(:update_database, nil)
     end
 
     describe "with an fqn" do

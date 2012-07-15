@@ -166,6 +166,7 @@ module Config
       attr_writer :project
 
       # Returns a Config::ProjectLoader.
+      # DEPRECATED
       def project_loader
         @project_loader ||= Config.project_loader
       end
@@ -176,18 +177,6 @@ module Config
         @project_data ||= Config.project_data
       end
       attr_writer :project_data
-
-      # Returns a Config::Database.
-      def database
-        @database ||= Config.project_data.database
-      end
-      attr_writer :database
-
-      # Returns a Config::Core::Remotes.
-      def remotes
-        @remotes ||= Config.project_data.remotes
-      end
-      attr_writer :remotes
 
       # Returns a Kernel.
       def kernel
