@@ -1,7 +1,43 @@
 #!/bin/bash
 
+# http://fvue.nl/wiki/Bash:_Error_handling
+set -o errtrace
+set -o nounset
 set -x
-set -e
+
+# Trap certain errors on exit.
+trap onexit 1 2 3 15 ERR
+
+# Clean up files by default.
+CLEANUP=1
+
+# Call this to clean up a file at exit.
+function cleanup() {
+  local file=${1}
+  trap "cleanup_at_exit $1" EXIT
+}
+
+# At exit, this will remove files marked for cleanup if we still want to
+# do that.
+function cleanup_at_exit() {
+  local file=${1}
+  if [ $CLEANUP ]; then
+    echo Cleaning up $file
+    #rm -rf $file
+  else
+    echo Keeping $file
+  fi
+}
+
+# Catch exit and decide whether or not to cleanup files.
+function onexit() {
+    local exit_status=${1:-$?}
+    if [ $exit_status -ne 0 ]; then
+      CLEANUP=''
+    fi
+    echo Exiting $0 with $exit_status
+    exit $exit_status
+}
 
 # The current version of ruby.
 rbenv_version=`rbenv version | awk '{ print $1 }'`
@@ -22,17 +58,20 @@ config_dir=/tmp/config
 
 # Symlink the codebase to the shared directory.
 ln -sf $local_config_dir $config_dir
+cleanup $config_dir
 
 # Initialize the test repos.
 for dir in $project_repo_dir $database_repo_dir; do
   [ -d $dir ] && rm -rf $dir
   mkdir $dir
+  cleanup $dir
   cd $dir && git init --bare
 done
 
 # Initialize the test project directory.
 [ -d $project_dir ] && rm -rf $project_dir
 mkdir $project_dir
+cleanup $project_dir
 cd $project_dir
 
 # Ensure we are using the right version of ruby.
@@ -114,6 +153,9 @@ git commit -m 'add Vagrantfile'
 git push
 
 # Boot the vagrant vm and config will provision it.
-bin/vagrant up
+#bin/vagrant up
 #trap "bin/vagrant destroy --force" EXIT
+
+# Ensure that we exit cleanly.
+onexit
 
