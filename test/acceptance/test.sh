@@ -1,43 +1,51 @@
 #!/bin/bash
 
+# Helpful urls for bash programming:
 # http://fvue.nl/wiki/Bash:_Error_handling
+
+set -o errexit
 set -o errtrace
 set -o nounset
-set -x
 
-# Trap certain errors on exit.
-trap onexit 1 2 3 15 ERR
+# Boot vagrant by default.
+BOOT_VAGRANT=1
 
 # Clean up files by default.
 CLEANUP=1
+CLEANUP_TASKS=( )
+
+# Trap certain errors on exit.
+trap errexit 1 2 3 15 ERR
 
 # Call this to clean up a file at exit.
 function cleanup() {
-  local file=${1}
-  trap "cleanup_at_exit $1" EXIT
+  CLEANUP_TASKS+=( "$1" )
 }
 
-# At exit, this will remove files marked for cleanup if we still want to
-# do that.
-function cleanup_at_exit() {
-  local file=${1}
-  if [ $CLEANUP ]; then
-    echo Cleaning up $file
-    #rm -rf $file
-  else
-    echo Keeping $file
-  fi
+# Catch errors and exit with non-zero status.
+function errexit() {
+  onexit 1
 }
 
-# Catch exit and decide whether or not to cleanup files.
+# Handle exit and decide whether or not to cleanup files.
 function onexit() {
-    local exit_status=${1:-$?}
-    if [ $exit_status -ne 0 ]; then
-      CLEANUP=''
-    fi
-    echo Exiting $0 with $exit_status
-    exit $exit_status
+  set +o xtrace # disable tracing of exit tasks.
+  local exit_status=${1:-$?}
+  echo Exiting with status $exit_status
+  if [ $exit_status -ne 0 ]; then
+    CLEANUP=''
+  fi
+  if [ $CLEANUP ]; then
+    for task in "${CLEANUP_TASKS[@]}"; do
+      echo Cleaning up: $task
+      eval $task
+    done
+  fi
+  exit $exit_status
 }
+
+# Begin tracing everything.
+set -o xtrace
 
 # The current version of ruby.
 rbenv_version=`rbenv version | awk '{ print $1 }'`
@@ -58,20 +66,20 @@ config_dir=/tmp/config
 
 # Symlink the codebase to the shared directory.
 ln -sf $local_config_dir $config_dir
-cleanup $config_dir
+cleanup "rm -rf $config_dir"
 
 # Initialize the test repos.
 for dir in $project_repo_dir $database_repo_dir; do
   [ -d $dir ] && rm -rf $dir
   mkdir $dir
-  cleanup $dir
+  cleanup "rm -rf $dir"
   cd $dir && git init --bare
 done
 
 # Initialize the test project directory.
 [ -d $project_dir ] && rm -rf $project_dir
 mkdir $project_dir
-cleanup $project_dir
+cleanup "rm -rf $project_dir"
 cd $project_dir
 
 # Ensure we are using the right version of ruby.
@@ -116,12 +124,12 @@ echo '
 git add config.rb
 git commit -m 'set database repo'
 
-# Create the default blueprint.
+# Create the default vagrant blueprint.
 bin/config-create-blueprint devbox
 git add blueprints
 git commit -m 'create devbox blueprint'
 
-# Create a cluster.
+# Create the default vagrant cluster.
 bin/config-create-cluster vagrant
 git add clusters
 git commit -m 'create vagrant cluster'
@@ -153,9 +161,11 @@ git commit -m 'add Vagrantfile'
 git push
 
 # Boot the vagrant vm and config will provision it.
-#bin/vagrant up
-#trap "bin/vagrant destroy --force" EXIT
+if [ $BOOT_VAGRANT ]; then
+  bin/vagrant up
+  cleanup "bin/vagrant destroy --force"
+fi
 
 # Ensure that we exit cleanly.
-onexit
+onexit 0
 
