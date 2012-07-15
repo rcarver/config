@@ -6,13 +6,23 @@ module Config
 Update the database to the latest version.
       STR
 
+      attr_accessor :fqn
+
       def usage
-        "#{name}"
+        "#{name} [<fqn>]"
+      end
+
+      def parse(options, argv, env)
+        @fqn = argv.shift
       end
 
       def execute
-        database = self.project_data.database
-        remotes = self.project_data.remotes
+        configuration = case 
+        when @fqn then project.node_settings(@fqn)
+        else project.base_settings
+        end
+        remotes = configuration.remotes
+        database = project_data.database
         blueprint do
           add Config::Meta::CloneDatabase do |p|
             p.path = database.path

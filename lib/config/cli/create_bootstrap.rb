@@ -54,9 +54,9 @@ run on a remote server in order to initialize it as a node.
         remote_project_data = Config::ProjectData.new(Config.system_dir)
 
         # Configure remotes for the node.
-        self_configuration = project.self_configuration(cluster_name)
-        remotes = self_configuration.remotes
-        domain = self_configuration.domain
+        settings = project.cluster_settings(cluster_name)
+        remotes = settings.remotes
+        domain = settings.domain
 
         # Local variables for `blueprint` block scope.
         cluster_name = @cluster_name

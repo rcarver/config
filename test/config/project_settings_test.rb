@@ -1,10 +1,10 @@
 require 'helper'
 
-describe Config::SelfConfiguration do
+describe Config::ProjectSettings do
 
   let(:configuration) { Config::Configuration.new }
 
-  subject { Config::SelfConfiguration.new(configuration) }
+  subject { Config::ProjectSettings.new(configuration) }
 
   describe "#domain" do
 

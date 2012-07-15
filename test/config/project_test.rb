@@ -118,30 +118,59 @@ describe Config::Project do
     end
   end
 
-  describe "retrieving configuration" do
+  describe "project settings" do
 
-    let(:cluster) { MiniTest::Mock.new }
     let(:config_self) { MiniTest::Mock.new }
-
     let(:configuration) { Config::Configuration.new }
 
     before do
-      cluster.expect(:configuration, configuration)
       config_self.expect(:configuration, configuration)
-
       project_loader.expect(:get_self, config_self)
-      project_loader.expect(:get_cluster, cluster, ["production"])
     end
 
     after do
-      cluster.verify
       config_self.verify
     end
 
-    describe "#self_configuration" do
+    describe "#base_settings" do
 
-      it "builds remotes from the config" do
-        subject.self_configuration("production").must_be_instance_of Config::SelfConfiguration
+      it "includes the self configuration" do
+        subject.base_settings.must_be_instance_of Config::ProjectSettings
+      end
+    end
+
+    describe "#node_settings" do
+
+      let(:node) { MiniTest::Mock.new }
+      let(:cluster) { MiniTest::Mock.new }
+
+      it "includes the self, cluster and node configurations" do
+        nodes.expect(:find_node, node, ["production-webserver-1"])
+        # TODO: load node configuration
+        #node.expect(:configuration, configuration)
+        node.expect(:cluster_name, "production")
+
+        cluster.expect(:configuration, configuration)
+        project_loader.expect(:get_cluster, cluster, ["production"])
+
+        subject.node_settings("production-webserver-1").must_be_instance_of Config::ProjectSettings
+
+        cluster.verify
+        node.verify
+      end
+    end
+
+    describe "#cluster_settings" do
+
+      let(:cluster) { MiniTest::Mock.new }
+
+      it "includes the self and cluster configurations" do
+        cluster.expect(:configuration, configuration)
+        project_loader.expect(:get_cluster, cluster, ["production"])
+
+        subject.cluster_settings("production").must_be_instance_of Config::ProjectSettings
+
+        cluster.verify
       end
     end
   end

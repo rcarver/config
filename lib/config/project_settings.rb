@@ -1,5 +1,5 @@
 module Config
-  class SelfConfiguration
+  class ProjectSettings
 
     # These are the configuration sets that are expected to be defined.
     # The definition of any set is optional, though it may result in

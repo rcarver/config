@@ -93,9 +93,19 @@ git pull --rebase
       accumulation
     end
 
-    def self_configuration(cluster_name)
+    def base_settings
+      Config::ProjectSettings.new(merged_configuration)
+    end
+
+    def cluster_settings(cluster_name)
       cluster = get_cluster(cluster_name)
-      Config::SelfConfiguration.new(merged_configuration(cluster))
+      Config::ProjectSettings.new(merged_configuration(cluster))
+    end
+
+    def node_settings(fqn)
+      node = get_node(fqn)
+      cluster = get_cluster(node.cluster_name)
+      Config::ProjectSettings.new(merged_configuration(cluster, node))
     end
 
   protected
