@@ -11,12 +11,18 @@ module Config
       desc "The reverse code"
       attr :reverse, nil
 
+      desc "The code or lambda to evaluate to determine if this script should be run"
+      attr :only_if, lambda { true }
+
+      desc "The code or lambda to evaluate to determine if this script should not be run"
+      attr :not_if, lambda { false }
+
       def describe
         "Script #{name.inspect}"
       end
 
       def create
-        run(code)
+        run(code) if should_run?
       end
 
       def destroy
@@ -28,6 +34,19 @@ module Config
       end
 
     protected
+
+      def should_run?
+        evaluate(only_if) && !evaluate(not_if)
+      end
+
+      def evaluate(parameter)
+        if parameter.is_a? Proc
+          parameter.call
+        else
+          out, err, status = Open3.capture3(parameter)
+          status.exitstatus == 0
+        end
+      end
 
       def run(code)
         out, err, status = Open3.capture3(code)
