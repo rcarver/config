@@ -60,6 +60,23 @@ describe "filesystem", Config::Patterns::Script do
     end
   end
 
+  describe "#create environment" do
+
+    before do
+      subject.code = <<-STR
+        sh -c "export"
+      STR
+    end
+
+    it "doesn't include bundler configuration" do
+      execute :create
+      log_string.wont_include "BUNDLE_BIN_PATH"
+      log_string.wont_include "BUNDLE_GEMFILE"
+      log_string.wont_include "GEM_HOME"
+      log_string.wont_include "GEM_PATH"
+    end
+  end
+
   describe "#create logging" do
 
     it "logs stdout and stderr" do
