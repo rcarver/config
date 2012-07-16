@@ -30,9 +30,10 @@ module Config
     protected
 
       def run(code)
-        bundler_environment = remove_bundler_from_environment
-        out, err, status = Open3.capture3(code)
-        add_to_environment(bundler_environment)
+        out, err, status = nil
+        Bundler.with_clean_env do
+          out, err, status = Open3.capture3(code)
+        end
 
         log.indent do
           log << "STATUS #{status.exitstatus}"
@@ -52,21 +53,6 @@ module Config
 
         unless status.exitstatus == 0
           raise Config::Error, "#{self} returned status #{status.exitstatus}"
-        end
-      end
-
-      def remove_bundler_from_environment
-        environment = {}
-        ['BUNDLE_GEMFILE', 'BUNDLE_BIN_PATH', 'GEM_HOME', 'GEM_PATH'].each do |variable|
-          environment[variable] = ENV.delete(variable)
-        end
-
-        environment
-      end
-
-      def add_to_environment(environment)
-        environment.each do |key, value|
-          ENV[key] = value
         end
       end
 
