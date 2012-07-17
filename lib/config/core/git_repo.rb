@@ -43,8 +43,6 @@ module Config
         @cli = CLI.new(@path)
       end
 
-      attr_reader :path
-
       # Determine if there are any commits in the remote repository.
       #
       # Returns a Boolean.
