@@ -114,7 +114,6 @@ run on a remote server in order to initialize it as a node.
           add Config::Bootstrap::Project do |p|
             p.path = project_file
             p.git_uri = remotes.project_git_config.url
-            p.update_project_script = project.update_project_script
           end
         end
 
