@@ -81,4 +81,43 @@ describe "filesystem", Config do
       Config.database.must_be_instance_of Config::Database
     end
   end
+
+  describe ".default_remotes" do
+
+    let(:remotes) { Config.default_remotes }
+
+    before do
+      setup_system_dir
+    end
+
+    specify "when nothing is in git" do
+      remotes.project_git_config.url.must_equal  nil
+      remotes.database_git_config.url.must_equal nil
+    end
+
+    specify "when the project is in git but the database is not" do
+      (Config.project_dir + ".git").mkpath
+      (Config.project_dir + ".git/config").open("w") do |f|
+        f.puts '[remote "origin"]'
+        f.puts '        url = git@github.com:foo/bar.git'
+      end
+      remotes.project_git_config.url.must_equal  'git@github.com:foo/bar.git'
+      remotes.database_git_config.url.must_equal 'git@github.com:foo/bar-db.git'
+    end
+
+    specify "when the project is in git and the database is in git" do
+      (Config.project_dir + ".git").mkpath
+      (Config.project_dir + ".git/config").open("w") do |f|
+        f.puts '[remote "origin"]'
+        f.puts '        url = git@github.com:foo/bar.git'
+      end
+      (Config.database_dir + ".git").mkpath
+      (Config.database_dir + ".git/config").open("w") do |f|
+        f.puts '[remote "origin"]'
+        f.puts '        url = git@github.com:foo/bar-database.git'
+      end
+      remotes.project_git_config.url.must_equal  'git@github.com:foo/bar.git'
+      remotes.database_git_config.url.must_equal 'git@github.com:foo/bar-database.git'
+    end
+  end
 end

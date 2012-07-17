@@ -180,4 +180,35 @@ module Config
     Config::Nodes.new(database)
   end
 
+  # Internal: When no Remotes have been configured, we can gather some useful
+  # defaults from existing git repository configurations.
+  #
+  # Returns a Config::Core::Remotes.
+  def self.default_remotes
+    project_git_config = Config::Core::GitConfig.new
+    database_git_config = Config::Core::GitConfig.new
+
+    if project_dir.exist?
+      Dir.chdir(project_dir) do
+        repo = `git config --get remote.origin.url`
+        project_git_config.url = repo.chomp unless repo.empty?
+      end
+    end
+
+    if database_dir.exist?
+      Dir.chdir(database_dir) do
+        repo = `git config --get remote.origin.url`
+        database_git_config.url = repo.chomp unless repo.empty?
+      end
+    end
+
+    if project_git_config.url && !database_git_config.url
+      database_git_config.url = project_git_config.url.sub(/\.git/, '-db.git')
+    end
+
+    Config::Core::Remotes.new.tap do |remotes|
+      remotes.project_git_config = project_git_config
+      remotes.database_git_config = database_git_config
+    end
+  end
 end

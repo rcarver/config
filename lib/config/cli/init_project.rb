@@ -23,9 +23,7 @@ Generate the template for a new project.
       end
 
       def remotes_factory
-        @remotes_factory or -> {
-          Config::Core::Remotes.default(Config.project_loader, Config.database)
-        }
+        @remotes_factory or -> { Config.default_remotes }
       end
 
       attr_writer :remotes_factory
