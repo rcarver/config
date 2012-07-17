@@ -1,4 +1,6 @@
 module Config
+  # This class converts Config::Configuration into the internal settings
+  # used to execute the project.
   class ProjectSettings
 
     # These are the configuration sets that are expected to be defined.
