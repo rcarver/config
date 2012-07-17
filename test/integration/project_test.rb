@@ -3,7 +3,7 @@ require 'helper'
 describe "filesystem running items", Config::Project do
 
   let(:project_loader) { Config::ProjectLoader.new(tmpdir) }
-  let(:project_data)   { Config::ProjectData.new(tmpdir + ".data") }
+  let(:project_data)   { Config::PrivateData.new(tmpdir + ".data") }
   let(:nodes)          { MiniTest::Mock.new }
 
   subject { Config::Project.new(project_loader, project_data, nodes) }

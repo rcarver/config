@@ -37,7 +37,7 @@ module Config
 
       # Generate a 'Host' stanza for an .ssh/config file.
       #
-      # project_data - Config::ProjectData to retrieve named SSH key.
+      # project_data - Config::PrivateData to retrieve named SSH key.
       #
       # Returns a String.
       def to_host_config(project_data)

@@ -1,7 +1,7 @@
 module Config
   # This class manages everything that's not checked into the project
   # repository.
-  class ProjectData
+  class PrivateData
 
     def initialize(path)
       @path = Pathname.new(path)

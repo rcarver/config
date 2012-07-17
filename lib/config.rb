@@ -32,8 +32,8 @@ require 'config/configuration'
 require 'config/database'
 require 'config/node'
 require 'config/nodes'
+require 'config/private_data'
 require 'config/project'
-require 'config/project_data'
 require 'config/project_loader'
 require 'config/project_settings'
 require 'config/self'
@@ -132,12 +132,12 @@ module Config
 
   # Internal: Get the project data.
   #
-  # Returns a Config::ProjectData.
+  # Returns a Config::PrivateData.
   def self.project_data
     if system_dir.exist?
-      Config::ProjectData.new(system_dir)
+      Config::PrivateData.new(system_dir)
     else
-      Config::ProjectData.new(Pathname.pwd + ".data")
+      Config::PrivateData.new(Pathname.pwd + ".data")
     end
   end
 

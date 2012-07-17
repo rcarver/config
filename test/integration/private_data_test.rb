@@ -1,8 +1,8 @@
 require 'helper'
 
-describe "filesystem", Config::ProjectData do
+describe "filesystem", Config::PrivateData do
 
-  subject { Config::ProjectData.new(tmpdir) }
+  subject { Config::PrivateData.new(tmpdir) }
 
   describe "#ssh_key" do
 

@@ -172,7 +172,7 @@ module Config
       end
       attr_writer :project_loader
 
-      # Returns a Config::ProjectData.
+      # Returns a Config::PrivateData.
       def project_data
         @project_data ||= Config.project_data
       end

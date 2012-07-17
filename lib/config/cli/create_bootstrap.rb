@@ -51,7 +51,7 @@ run on a remote server in order to initialize it as a node.
         project_file = Tempfile.new("project")
 
         # Configure data storage on the node.
-        remote_project_data = Config::ProjectData.new(Config.system_dir)
+        remote_project_data = Config::PrivateData.new(Config.system_dir)
 
         # Configure remotes for the node.
         settings = project.cluster_settings(cluster_name)
