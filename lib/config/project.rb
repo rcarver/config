@@ -74,26 +74,6 @@ module Config
       Config::ProjectSettings.new(merged_configuration(cluster, node))
     end
 
-    # This is a bash implementation of #update It's written in bash so that it
-    # can be used during the bootstrap process. It's stored here so that it can
-    # be used both in the config-update-project command and the node-based
-    # config-run command. It's also stored here so that the script is visible
-    # alongside logically similar code.
-    #
-    # Returns a String.
-    def update_project_script
-      <<-STR
-# Require that the working directory has no uncommited changes.
-if [ -n "$(git status --porcelain)" ]; then
-  echo "git repo is not totally clean." >&2
-  exit 1
-fi
-
-# Pull in the latest changes cleanly.
-git pull --rebase
-      STR
-    end
-
     # Execute the node's blueprint.
     #
     # fqn - String Node FQN.

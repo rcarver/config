@@ -20,9 +20,18 @@ if [ $UID -ne 0 ]; then
   exit 1
 fi
 cd /etc/config/project
-<%= update_project_script %>
+# Require that the working directory has no uncommited changes.
+if [ -n "$(git status --porcelain)" ]; then
+  echo "git repo is not totally clean." >&2
+  exit 1
+fi
+# Pull in the latest changes cleanly.
+git pull --rebase
+# Update dependencies.
 config-bundle install
+# Update the database.
 config-bundle exec config-update-database
+# Execute.
 config-bundle exec config-exec-node `hostname`
 ' > /usr/local/sbin/config-run-now
 
