@@ -119,33 +119,47 @@ module Config
     @system_dir = Pathname.new(dir)
   end
 
+  # Internal: The directory where the current project lives.
+  #
+  # Returns a Pathname.
+  def self.project_dir
+    if system_dir.exist?
+      system_dir + "project"
+    else
+      Pathname.pwd
+    end
+  end
+
+  # Internal: The directory where the current private data lives.
+  #
+  # Returns a Pathname.
+  def self.private_data_dir
+    if system_dir.exist?
+      system_dir
+    else
+      Pathname.pwd + ".data"
+    end
+  end
+
   # Internal: Get the project loader.
   #
   # Returns a Config::ProjectLoader.
   def self.project_loader
-    if system_dir.exist?
-      Config::ProjectLoader.new(system_dir + "project")
-    else
-      Config::ProjectLoader.new(Pathname.pwd)
-    end
+    Config::ProjectLoader.new(project_dir)
   end
 
   # Internal: Get the project data.
   #
   # Returns a Config::PrivateData.
-  def self.project_data
-    if system_dir.exist?
-      Config::PrivateData.new(system_dir)
-    else
-      Config::PrivateData.new(Pathname.pwd + ".data")
-    end
+  def self.private_data
+    Config::PrivateData.new(private_data_dir)
   end
 
   # Internal: Get the project database.
   #
   # Returns a Config::Database.
   def self.database
-    repo = project_data.database_git_repo
+    repo = private_data.database_git_repo
     Config::Database.new(repo.path, repo)
   end
 
