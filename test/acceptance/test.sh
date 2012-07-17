@@ -36,9 +36,14 @@ function onexit() {
     CLEANUP=''
   fi
   if [ $CLEANUP ]; then
-    for task in "${CLEANUP_TASKS[@]}"; do
+    # Execute cleanup tasks in reverse order.
+    local i=${#CLEANUP_TASKS[*]}
+    ((i-=1))
+    while [ $i -ge 0 ]; do
+      local task=${CLEANUP_TASKS[$i]}
       echo Cleaning up: $task
       eval $task
+      ((i-=1))
     done
   fi
   exit $exit_status
