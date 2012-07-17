@@ -211,10 +211,7 @@ Learn more about core concepts.
 Get details for configuring Config.
 
   * [BOOTSTRAP](BOOTSTRAP.md) Details of the bootstrap process.
-  * [GIT](GIT.md) Details about how git is used and configured. For
-    example, how did Config know where the data repo lives?
   * [GITHUB](GITHUB.md) Tips and techniques for storing Config repos at
     GitHub.
   * [SSH](SSH.md) Additional information on ssh issues.
-  * [SECRETS](SECRETS.md) Tips on generating and using secrets
 
