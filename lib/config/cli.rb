@@ -173,10 +173,10 @@ module Config
       attr_writer :project_loader
 
       # Returns a Config::PrivateData.
-      def project_data
-        @project_data ||= Config.project_data
+      def private_data
+        @private_data ||= Config.private_data
       end
-      attr_writer :project_data
+      attr_writer :private_data
 
       # Returns a Kernel.
       def kernel

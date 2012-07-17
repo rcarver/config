@@ -40,14 +40,14 @@ describe "filesystem", Config do
     end
   end
 
-  describe ".project_data" do
+  describe ".private_data" do
     it "loads from the global dir if it exists" do
       setup_system_dir
-      loader = Config.project_data
+      loader = Config.private_data
       loader.path.must_equal system_dir
     end
     it "loads from the local dir" do
-      loader = Config.project_data
+      loader = Config.private_data
       loader.path.must_equal tmpdir + ".data"
     end
   end

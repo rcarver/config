@@ -27,7 +27,7 @@ describe Config::CLI::UpdateDatabase do
     before do
       database_git_repo = MiniTest::Mock.new
       database_git_repo.expect(:path, "repo-path")
-      project_data.expect(:database_git_repo, database_git_repo)
+      private_data.expect(:database_git_repo, database_git_repo)
 
       database_git_config = MiniTest::Mock.new
       database_git_config.expect(:url, "repo-url")

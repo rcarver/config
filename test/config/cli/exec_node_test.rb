@@ -24,9 +24,9 @@ describe Config::CLI::ExecNode do
 
       project.expect(:update_node, nil, ["a-b-c"])
 
-      project_data.expect(:accumulation, :acc1)
+      private_data.expect(:accumulation, :acc1)
       project.expect(:execute_node, :acc2, ["a-b-c", :acc1])
-      project_data.expect(:accumulation=, nil, [:acc2])
+      private_data.expect(:accumulation=, nil, [:acc2])
 
       cli.execute
     end

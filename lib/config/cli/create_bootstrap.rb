@@ -51,7 +51,7 @@ run on a remote server in order to initialize it as a node.
         project_file = Tempfile.new("project")
 
         # Configure data storage on the node.
-        remote_project_data = Config::PrivateData.new(Config.system_dir)
+        remote_private_data = Config::PrivateData.new(Config.system_dir)
 
         # Configure remotes for the node.
         settings = project.cluster_settings(cluster_name)
@@ -63,7 +63,7 @@ run on a remote server in order to initialize it as a node.
         blueprint_name = @blueprint_name
         identity = @identity
         project = self.project
-        project_data = self.project_data
+        private_data = self.private_data
 
         blueprint do
 
@@ -81,21 +81,21 @@ run on a remote server in order to initialize it as a node.
             p.identity = identity
             p.dns_domain_name = domain
             # TODO: allow secret to be configured per cluster.
-            p.secret = project_data.secret(:default).read
+            p.secret = private_data.secret(:default).read
           end
 
           # Provide access to the git repos.
           add Config::Bootstrap::Access do |p|
             p.path = access_file
             p.ssh_configs = remotes.ssh_configs.map do |c|
-              c.to_host_config(remote_project_data)
+              c.to_host_config(remote_private_data)
             end
             p.ssh_keys = begin
               keys = {}
               remotes.ssh_configs.each do |c|
-                file = remote_project_data.ssh_key(c.ssh_key).path
+                file = remote_private_data.ssh_key(c.ssh_key).path
                 # TODO: handle the ssh key is missing locally.
-                key = project_data.ssh_key(c.ssh_key).read
+                key = private_data.ssh_key(c.ssh_key).read
                 keys[file] = key
               end
               keys
@@ -104,7 +104,7 @@ run on a remote server in order to initialize it as a node.
               hosts = {}
               remotes.ssh_hostnames.each do |host|
                 # TODO: handle the host is missing locally.
-                hosts[host] = project_data.ssh_host_signature(host).read
+                hosts[host] = private_data.ssh_host_signature(host).read
               end
               hosts
             end

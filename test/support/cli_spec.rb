@@ -122,7 +122,7 @@ class CliSpec < MiniTest::Spec
   # Fake the Config world.
   let(:project)        { MiniTest::Mock.new }
   let(:project_loader) { MiniTest::Mock.new }
-  let(:project_data)   { MiniTest::Mock.new }
+  let(:private_data)   { MiniTest::Mock.new }
 
   # Fake the execution environment.
   let(:kernel)   { SimpleMock.new(FakeKernel.new(stdout, stderr)) }
@@ -140,7 +140,7 @@ class CliSpec < MiniTest::Spec
     cli.subcommand_builder = subcommand_builder
     cli.project = project
     cli.project_loader = project_loader
-    cli.project_data = project_data
+    cli.private_data = private_data
     cli.kernel = kernel
     cli.open3 = open3
 
@@ -155,7 +155,7 @@ class CliSpec < MiniTest::Spec
     subcommand_builder.verify
     project.verify
     project_loader.verify
-    project_data.verify
+    private_data.verify
     kernel.verify
     system.verify
     @files.each { |f| f.verify }

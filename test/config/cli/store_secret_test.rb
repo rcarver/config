@@ -30,7 +30,7 @@ describe Config::CLI::StoreSecret do
     it "stores the secret" do
       cli.secret_name = "mine"
       cli.data = "xyz"
-      project_data.expect(:secret, expect_write_file("xyz"), ["mine"])
+      private_data.expect(:secret, expect_write_file("xyz"), ["mine"])
       cli.execute
     end
   end
