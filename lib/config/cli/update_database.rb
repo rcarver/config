@@ -23,11 +23,10 @@ Update the database to the latest version.
         end
 
         remotes = settings.remotes
-        private_data = self.private_data
 
         blueprint do
           add Config::Meta::CloneDatabase do |p|
-            p.path = private_data.database_git_repo.path
+            p.path = Config.database_dir
             p.url = remotes.database_git_config.url
           end
         end

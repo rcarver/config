@@ -22,14 +22,6 @@ describe "filesystem", Config::PrivateData do
     end
   end
 
-  describe "#database_git_repo" do
-
-    it "returns a repo" do
-      repo = subject.database_git_repo
-      repo.path.must_equal (tmpdir + "database")
-    end
-  end
-
   describe "#accumulation" do
 
     it "returns nil if no file exits" do

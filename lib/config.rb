@@ -141,6 +141,17 @@ module Config
     end
   end
 
+  # Internal: The directory where the database lives.
+  #
+  # Returns a Pathname.
+  def self.database_dir
+    if system_dir.exist?
+      system_dir + "database"
+    else
+      private_data_dir + "database"
+    end
+  end
+
   # Internal: Get the project loader.
   #
   # Returns a Config::ProjectLoader.
@@ -159,8 +170,7 @@ module Config
   #
   # Returns a Config::Database.
   def self.database
-    repo = private_data.database_git_repo
-    Config::Database.new(repo.path, repo)
+    Config::Database.new(database_dir, Config::Core::GitRepo.new(database_dir))
   end
 
   # Internal: Get the project nodes.

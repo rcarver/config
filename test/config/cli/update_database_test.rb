@@ -25,10 +25,6 @@ describe Config::CLI::UpdateDatabase do
     let(:settings) { MiniTest::Mock.new }
 
     before do
-      database_git_repo = MiniTest::Mock.new
-      database_git_repo.expect(:path, "repo-path")
-      private_data.expect(:database_git_repo, database_git_repo)
-
       database_git_config = MiniTest::Mock.new
       database_git_config.expect(:url, "repo-url")
       remotes.expect(:database_git_config, database_git_config)
@@ -49,7 +45,7 @@ describe Config::CLI::UpdateDatabase do
 
         clones = cli.find_blueprints(Config::Meta::CloneDatabase)
         clones.size.must_equal 1
-        clones[0].path.must_equal "repo-path"
+        clones[0].path.must_equal Config.database_dir
         clones[0].url.must_equal "repo-url"
       end
     end
@@ -65,7 +61,7 @@ describe Config::CLI::UpdateDatabase do
 
         clones = cli.find_blueprints(Config::Meta::CloneDatabase)
         clones.size.must_equal 1
-        clones[0].path.must_equal "repo-path"
+        clones[0].path.must_equal Config.database_dir
         clones[0].url.must_equal "repo-url"
       end
     end

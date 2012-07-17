@@ -42,13 +42,6 @@ module Config
       Config::Core::File.new(@path + "ssh-host-#{host}")
     end
 
-    # The git repository that stores the database.
-    #
-    # Returns a Config::Core::GitRepo.
-    def database_git_repo
-      Config::Core::GitRepo.new(@path + "database")
-    end
-
     # Get the stored accumulation.
     #
     # Returns a Config::Core::Accumulation or nil.
