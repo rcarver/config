@@ -18,7 +18,7 @@ describe Config::Project do
 
     let(:blueprint) { MiniTest::Mock.new }
     let(:cluster) { MiniTest::Mock.new }
-    let(:config_self) { MiniTest::Mock.new }
+    let(:global) { MiniTest::Mock.new }
 
     let(:facts) { MiniTest::Mock.new }
 
@@ -30,7 +30,7 @@ describe Config::Project do
     after do
       blueprint.verify
       cluster.verify
-      config_self.verify
+      global.verify
       facts.verify
       pattern.verify
     end
@@ -40,9 +40,9 @@ describe Config::Project do
       project_loader.expect(:require_all, nil)
       project_loader.expect(:get_blueprint, blueprint, ["webserver"])
 
-      # Self configuration
-      project_loader.expect(:get_self, config_self)
-      config_self.expect(:configuration, configuration)
+      # Global configuration
+      project_loader.expect(:get_global, global)
+      global.expect(:configuration, configuration)
 
       # Configure the blueprint.
       blueprint.expect(:configuration=, nil, [assigned_configuration_class])
@@ -120,16 +120,16 @@ describe Config::Project do
 
   describe "project settings" do
 
-    let(:config_self) { MiniTest::Mock.new }
+    let(:global) { MiniTest::Mock.new }
     let(:configuration) { Config::Configuration.new }
 
     before do
-      config_self.expect(:configuration, configuration)
-      project_loader.expect(:get_self, config_self)
+      global.expect(:configuration, configuration)
+      project_loader.expect(:get_global, global)
     end
 
     after do
-      config_self.verify
+      global.verify
     end
 
     describe "#base_settings" do

@@ -4,7 +4,7 @@ module Config
     def initialize(path)
       @path = Pathname.new(path).cleanpath
 
-      @self = nil
+      @global = nil
       @clusters = PathHash.new(@path)
       @blueprints = PathHash.new(@path)
     end
@@ -37,9 +37,9 @@ module Config
       end
     end
 
-    def get_self
-      require_self
-      @self
+    def get_global
+      require_global
+      @global
     end
 
     def get_cluster(name)
@@ -54,7 +54,7 @@ module Config
 
     def require_all
       require_patterns
-      require_self
+      require_global
       require_clusters
       require_blueprints
     end
@@ -85,12 +85,12 @@ module Config
       end
     end
 
-    def require_self
-      return if @required_self; @required_self = true
+    def require_global
+      return if @required_global; @required_global = true
 
       file = Config::Core::File.new(@path + "config.rb")
       if file.exist?
-        @self = Config::Self.from_string(file.read, file.path)
+        @global = Config::Global.from_string(file.read, file.path)
       end
     end
 

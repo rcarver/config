@@ -36,10 +36,10 @@ describe "filesystem", Config::ProjectLoader do
     end
   end
 
-  describe "#require_self" do
+  describe "#require_global" do
 
     it "loads nothing when no file exists" do
-      subject.require_self
+      subject.require_global
     end
 
     it "loads the config" do
@@ -47,8 +47,8 @@ describe "filesystem", Config::ProjectLoader do
         f.puts "configure :test, :key => 123"
       end
 
-      subject.require_self
-      subject.get_self.configuration.test.key.must_equal 123
+      subject.require_global
+      subject.get_global.configuration.test.key.must_equal 123
     end
 
     it "fails to load a config with a syntax error" do
@@ -56,7 +56,7 @@ describe "filesystem", Config::ProjectLoader do
         f.puts "x, y"
       end
 
-      proc { subject.require_self }.must_raise(SyntaxError)
+      proc { subject.require_global }.must_raise(SyntaxError)
     end
   end
 
@@ -114,17 +114,17 @@ describe "filesystem", Config::ProjectLoader do
     end
   end
 
-  describe "#get_self" do
+  describe "#get_global" do
 
     it "returns nil when no file exists" do
-      subject.get_self.must_equal nil
+      subject.get_global.must_equal nil
     end
 
-    it "returns the configured self from disk" do
+    it "returns the configured global from disk" do
       (tmpdir + "config.rb").open("w") do |f|
         f.puts "configure :test, :ok => 123"
       end
-      subject.get_self.configuration.test.ok.must_equal 123
+      subject.get_global.configuration.test.ok.must_equal 123
     end
   end
 

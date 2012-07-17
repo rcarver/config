@@ -1,5 +1,5 @@
 module Config
-  class Self
+  class Global
 
     def self.from_string(string, _file, _line = 1)
       dsl = Config::DSL::ClusterDSL.new

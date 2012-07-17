@@ -150,8 +150,8 @@ git pull --rebase
 
   protected
 
-    def get_self
-      @loader.get_self || Config::Self.new
+    def get_global
+      @loader.get_global || Config::Global.new
     end
 
     def get_cluster(name)
@@ -168,7 +168,7 @@ git pull --rebase
 
     def merged_configuration(cluster = nil, node = nil)
       configs = []
-      configs << get_self.configuration
+      configs << get_global.configuration
       configs << cluster.configuration if cluster
       #configs << node.configuration if node
       configs.inject(Config::Configuration.new) { |a, config| a + config }
