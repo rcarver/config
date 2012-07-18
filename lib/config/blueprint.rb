@@ -2,19 +2,9 @@ module Config
   class Blueprint
     include Config::Core::Loggable
 
-    def self.from_file(path)
-      name = File.basename(path, ".rb")
-      content = File.read(path)
-      from_string(name, content, path.to_s, 1)
-    end
-
-    def self.from_string(name, string, _file=nil, _line=nil)
+    def self.from_string(name, string, _file, _line = 1)
       new(name) do
-        if _file && _line
-          eval string, binding, _file, _line
-        else
-          eval string, binding
-        end
+        eval string, binding, _file, _line
       end
     end
 

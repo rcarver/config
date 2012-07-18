@@ -6,19 +6,31 @@ module Config
 Update the database to the latest version.
       STR
 
+      attr_accessor :fqn
+
       def usage
-        "#{name}"
+        "#{name} [<fqn>]"
+      end
+
+      def parse(options, argv, env)
+        @fqn = argv.shift
       end
 
       def execute
-        data_dir = project.data_dir
-        hub = project.hub
+        settings = case 
+        when @fqn then project.node_settings(@fqn)
+        else project.base_settings
+        end
+
+        remotes = settings.remotes
+
         blueprint do
           add Config::Meta::CloneDatabase do |p|
-            p.path = data_dir.repo_path
-            p.url = hub.data_config.url
+            p.path = Config.database_dir
+            p.url = remotes.database_git_config.url
           end
         end
+
         project.update_database
       end
 

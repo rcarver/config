@@ -39,7 +39,6 @@ module Config
     config "store-ssh-key", :StoreSSHKey
     config "try-blueprint", :TryBlueprint
     config "update-database", :UpdateDatabase
-    config "update-project", :UpdateProject
 
     class Base
 
@@ -165,11 +164,18 @@ module Config
       end
       attr_writer :project
 
-      # Returns a Config::Data::Dir.
-      def data_dir
-        @data_dir ||= project.data_dir
+      # Returns a Config::ProjectLoader.
+      # DEPRECATED
+      def project_loader
+        @project_loader ||= Config.project_loader
       end
-      attr_writer :data_dir
+      attr_writer :project_loader
+
+      # Returns a Config::PrivateData.
+      def private_data
+        @private_data ||= Config.private_data
+      end
+      attr_writer :private_data
 
       # Returns a Kernel.
       def kernel

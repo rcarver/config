@@ -55,18 +55,27 @@ Typically, this repository is called `myproject-data`. Go ahead and
 create this second remote repository. Once it's created, config will
 manage it for you.
 
-## Designate a "hub"
+## Configure Config
 
-The "hub" of your project is a machine that can bootstrap other
-machines. In order to bootstrap a machine, it must have access to some
-sensitive information. This information is one of the few things that
-are *not* stored in the git repositories. Instead, Config manages files
-within `.data`, which is ignored by git.
+Config itself needs a small amount of configuration. Most importantly,
+it must know how to access the git repositories. This information is set
+in the file `./config.rb`.
 
-The easiest way to get started is to use your development machine as the
-hub. We can easily make a remote machine the hub at another time. Doing
-so allows us to use things like AWS AutoScale. For the time being, we'll
-focus on the basics and create servers one at a time.
+    configure :project_git_config,
+      url: "<url of repo>"
+
+    configure :database_git_config,
+      url: "<url of repo>"
+
+## Private Data
+
+Config uses several pieces of sensitive information to contact or secure
+the rest of your system. This information is not checked into git, and
+instead is stored within the `.data` directory of your project. In
+general you don't need to know exactly how it's stored. Instead, you use
+configs tools to manage it for you.
+
+Private data is used to bootstrap new nodes.
 
 ### Store the git ssh key
 
@@ -191,8 +200,9 @@ Learn more about core concepts.
   * [CLUSTERS](CLUSTERS.md) Learn about how clusters group nodes and
     configure blueprints.
   * [NODES](NODES.md) Learn about managing and configuring nodes.
-  * [HUB](HUB.md) Learn about managing a hub and configuring a few
-    centralized aspects of Config.
+  * [SETTINGS](SETTINGS.md) Learn how to fully configure Config.
+  * [PRIVATE_DATA](PRIVATE_DATA.md) Learn more about the private data
+    used to bootstrap new nodes.
   * [WORKFLOW](WORKFLOW.md) Learn how to write, test and execute changes
     to your configuration.
   * [VAGRANT](VAGRANT.md) Use [Vagrant](http://vagrantup.com/) to play
@@ -201,10 +211,7 @@ Learn more about core concepts.
 Get details for configuring Config.
 
   * [BOOTSTRAP](BOOTSTRAP.md) Details of the bootstrap process.
-  * [GIT](GIT.md) Details about how git is used and configured. For
-    example, how did Config know where the data repo lives?
   * [GITHUB](GITHUB.md) Tips and techniques for storing Config repos at
     GitHub.
   * [SSH](SSH.md) Additional information on ssh issues.
-  * [SECRETS](SECRETS.md) Tips on generating and using secrets
 

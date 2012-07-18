@@ -1,6 +1,6 @@
 # This file restores `Config` as a functional alias of `RbConfig`. This
 # fixes two things:
-#   
+#
 #   1. By default in ruby `Config.name` = "RbConfig"
 #   2. The first time we define `Config` we get a warning on STDERR:
 #        "Use RbConfig instead of obsolete and deprecated Config."

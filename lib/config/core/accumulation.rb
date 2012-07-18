@@ -5,7 +5,7 @@ module Config
       include Enumerable
 
       def self.from_file(path)
-        from_string File.read(path)
+        from_string ::File.read(path)
       end
 
       def self.from_string(string)
@@ -53,7 +53,7 @@ module Config
       #
       # Returns nothing.
       def write_to_file(path)
-        File.open(path, "w") do |f|
+        ::File.open(path, "w") do |f|
           f.print serialize
         end
       end
