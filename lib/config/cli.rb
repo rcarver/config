@@ -6,6 +6,11 @@ require 'open3'
 module Config
   module CLI
 
+    # Environment variable that should contain paths that were added to PATH
+    # for the purpose of executing the config project. The format is exactly
+    # the same as a PATH variable - entries delimited by ':'.
+    CONFIG_PATH_ADDITIONS = 'CONFIG_PATH_ADDITIONS'
+
     def self.exec
       cli = self.new(File.basename($0), STDIN, STDOUT, STDERR)
       cli.run(ARGV, ENV)
@@ -75,9 +80,11 @@ module Config
       end
 
       def run(argv, env)
-        parse!(argv, env)
-        Config.log_to(config_log_stream || StringIO.new)
-        execute
+        with_clean_env do
+          parse!(argv, env)
+          Config.log_to(config_log_stream || StringIO.new)
+          execute
+        end
       end
 
       def parse!(argv=[], env={})
@@ -249,6 +256,21 @@ module Config
         return
       end
 
+      # Internal: Remove all traces of the config runtime environment so that
+      # other scripts can execute as if in a standalone system.
+      def with_clean_env(&block)
+        path = ::ENV['PATH'] || ""
+        config_path = ::ENV[CONFIG_PATH_ADDITIONS] || ""
+        path_entries = path.split(':')
+        config_path_entries = config_path.split(':')
+        clean_path_entries = path_entries - config_path_entries
+        begin
+          ::ENV['PATH'] = clean_path_entries.join(':')
+          ::Bundler.with_clean_env(&block)
+        ensure
+          ::ENV['PATH'] = path
+        end
+      end
     end
   end
 end

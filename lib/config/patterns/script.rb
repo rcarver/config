@@ -30,10 +30,7 @@ module Config
     protected
 
       def run(code)
-        out, err, status = nil
-        Bundler.with_clean_env do
-          out, err, status = Open3.capture3(code)
-        end
+        out, err, status = Open3.capture3(code)
 
         log.indent do
           log << "STATUS #{status.exitstatus}"
