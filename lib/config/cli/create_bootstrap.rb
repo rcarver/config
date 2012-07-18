@@ -36,17 +36,12 @@ run on a remote server in order to initialize it as a node.
       end
 
       def execute
-        project.require_all
 
-        begin
-          project.get_cluster(cluster_name)
-        rescue Config::Project::UnknownCluster
+        unless project.cluster?(cluster_name)
           abort "unknown cluster #{cluster_name.inspect}"
         end
 
-        begin
-          project.get_blueprint(blueprint_name)
-        rescue Config::Project::UnknownBlueprint
+        unless project.blueprint?(blueprint_name)
           abort "unknown blueprint #{blueprint_name.inspect}"
         end
 
@@ -55,15 +50,20 @@ run on a remote server in order to initialize it as a node.
         access_file = Tempfile.new("access")
         project_file = Tempfile.new("project")
 
-        remote_data_dir = Config::Data::Dir.new("/etc/config")
+        # Configure data storage on the node.
+        remote_private_data = Config::PrivateData.new(Config.system_dir)
+
+        # Configure remotes for the node.
+        settings = project.cluster_settings(cluster_name)
+        remotes = settings.remotes
+        domain = settings.domain
 
         # Local variables for `blueprint` block scope.
         cluster_name = @cluster_name
         blueprint_name = @blueprint_name
         identity = @identity
         project = self.project
-        hub = self.project.hub
-        data_dir = self.data_dir
+        private_data = self.private_data
 
         blueprint do
 
@@ -79,33 +79,32 @@ run on a remote server in order to initialize it as a node.
             p.cluster = cluster_name
             p.blueprint = blueprint_name
             p.identity = identity
-            # TODO: allow the dns_domain_name to be configured per cluster.
-            p.dns_domain_name = hub.domain
+            p.dns_domain_name = domain
             # TODO: allow secret to be configured per cluster.
-            p.secret = data_dir.secret(:default).read
+            p.secret = private_data.secret(:default).read
           end
 
           # Provide access to the git repos.
           add Config::Bootstrap::Access do |p|
             p.path = access_file
-            p.ssh_configs = hub.ssh_configs.map do |c|
-              c.to_host_config(remote_data_dir)
+            p.ssh_configs = remotes.ssh_configs.map do |c|
+              c.to_host_config(remote_private_data)
             end
             p.ssh_keys = begin
               keys = {}
-              hub.ssh_configs.each do |c|
-                file = remote_data_dir.ssh_key(c.ssh_key).path
+              remotes.ssh_configs.each do |c|
+                file = remote_private_data.ssh_key(c.ssh_key).path
                 # TODO: handle the ssh key is missing locally.
-                key = data_dir.ssh_key(c.ssh_key).read
+                key = private_data.ssh_key(c.ssh_key).read
                 keys[file] = key
               end
               keys
             end
             p.ssh_known_hosts = begin
               hosts = {}
-              hub.ssh_hostnames.each do |host|
+              remotes.ssh_hostnames.each do |host|
                 # TODO: handle the host is missing locally.
-                hosts[host] = data_dir.ssh_host_signature(host).read
+                hosts[host] = private_data.ssh_host_signature(host).read
               end
               hosts
             end
@@ -114,8 +113,7 @@ run on a remote server in order to initialize it as a node.
           # Initialize and run the project.
           add Config::Bootstrap::Project do |p|
             p.path = project_file
-            p.git_uri = hub.project_config.url
-            p.update_project_script = project.update_project_script
+            p.git_uri = remotes.project_git_config.url
           end
         end
 

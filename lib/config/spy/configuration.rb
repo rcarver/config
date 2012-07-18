@@ -8,7 +8,8 @@ module Config
     # Pattern.
     class Configuration
 
-      def initialize
+      def initialize(configuration = nil)
+        @configuration = configuration || Config::Configuration.new
         @groups = {}
       end
 
@@ -25,10 +26,14 @@ module Config
       end
 
       def [](group_name)
-        unless group_name.is_a?(Symbol)
-          raise ArgumentError, "Group Name must be a Symbol, got #{group_name.inspect}" 
+        begin
+          Group.new(group_name, @configuration[group_name])
+        rescue Config::Configuration::UnknownGroup
+          unless group_name.is_a?(Symbol)
+            raise ArgumentError, "Group Name must be a Symbol, got #{group_name.inspect}"
+          end
+          @groups[group_name] ||= Group.new(group_name)
         end
-        @groups[group_name] ||= Group.new(group_name)
       end
 
       # Enables dot syntax for groups.
@@ -44,8 +49,9 @@ module Config
       class Group
         include Config::Core::Loggable
 
-        def initialize(name)
+        def initialize(name, group = nil)
           @name = name
+          @group = group || Config::Configuration::Group.new(name)
           @keys = Set.new
         end
 
@@ -65,13 +71,17 @@ module Config
         end
 
         def [](key)
-          unless key.is_a?(Symbol)
-            raise ArgumentError, "Key must be a Symbol, got #{key.inspect}" 
+          begin
+            @group[key]
+          rescue Config::Configuration::UnknownVariable
+            unless key.is_a?(Symbol)
+              raise ArgumentError, "Key must be a Symbol, got #{key.inspect}"
+            end
+            @keys << key
+            value = "fake:#{@name}.#{key}"
+            log << "Read #{@name}.#{key} => #{value.inspect}"
+            value
           end
-          @keys << key
-          value = "fake:#{@name}.#{key}"
-          log << "Read #{@name}.#{key} => #{value.inspect}"
-          value
         end
 
         # Enables dot syntax for keys.

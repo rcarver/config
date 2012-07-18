@@ -28,7 +28,7 @@ module BlueprintTest
 
     let(:blueprint_name) { :webserver }
 
-    subject { Config::Blueprint.from_string(blueprint_name, code) }
+    subject { Config::Blueprint.from_string(blueprint_name, code, __FILE__) }
 
     def log_execute(*args)
       begin
@@ -227,8 +227,8 @@ Execute Blueprint webserver
         STR
       }
 
-      let(:previous) { Config::Blueprint.from_string("previous #{blueprint_name}", previous_code) }
-      subject        { Config::Blueprint.from_string("current #{blueprint_name}", current_code) }
+      let(:previous) { Config::Blueprint.from_string("previous #{blueprint_name}", previous_code, __FILE__) }
+      subject        { Config::Blueprint.from_string("current #{blueprint_name}", current_code, __FILE__) }
 
       before do
         subject.previous_accumulation = previous.accumulate
@@ -278,7 +278,7 @@ Execute Blueprint current webserver
         STR
       }
 
-      let(:configuration) { Config::Core::Configuration.new }
+      let(:configuration) { Config::Configuration.new }
 
       before do
         configuration.set_group(:webserver, my_name: "bob")

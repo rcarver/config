@@ -2,7 +2,11 @@ require 'helper'
 
 describe "filesystem running items", Config::Project do
 
-  subject { Config::Project.new(tmpdir, tmpdir + ".data") }
+  let(:project_loader) { Config::ProjectLoader.new(tmpdir) }
+  let(:private_data)   { Config::PrivateData.new(tmpdir + ".data") }
+  let(:nodes)          { MiniTest::Mock.new }
+
+  subject { Config::Project.new(project_loader, private_data, nodes) }
 
   describe "executing a blueprint" do
 
@@ -54,19 +58,13 @@ describe "filesystem running items", Config::Project do
 
       let(:node) { Config::Node.new("production", "message", "one") }
       let(:facts) { Config::Core::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
-      let(:database) { MiniTest::Mock.new }
 
       before do
         node.facts = facts
-        subject.database = database
-      end
-
-      after do
-        database.verify
       end
 
       it "executes the blueprint" do
-        database.expect(:find_node, node, [node.fqn])
+        nodes.expect(:find_node, node, [node.fqn])
         subject.execute_node(node.fqn)
         (tmpdir + "file1").read.must_equal "hello world"
         (tmpdir + "file2").read.must_equal "127.0.0.1"
@@ -75,47 +73,6 @@ describe "filesystem running items", Config::Project do
       it "executes the blueprint with a previous accumulation" do
         skip "TODO"
       end
-    end
-  end
-
-  describe "#data_dir" do
-
-    it "creates the dir" do
-      subject.data_dir
-      (tmpdir + ".data").must_be :exist?
-    end
-
-    it "does nothing if the dir exists" do
-      (tmpdir + ".data").mkdir
-      subject.data_dir
-    end
-
-    it "can read a secret" do
-      subject.data_dir
-      (tmpdir + ".data/secret-default").open("w") do |f|
-        f.print "shh"
-      end
-      subject.data_dir.secret(:default).read.must_equal "shh"
-    end
-  end
-
-  describe "#get_node" do
-
-    let(:node) { Config::Node.new("production", "message", "one") }
-
-    before do
-      (tmpdir + ".data/project-data/nodes").mkpath
-      (tmpdir + ".data/project-data/nodes/production-message-one.json").open("w") do |f|
-        f.print JSON.dump(node.as_json)
-      end
-    end
-
-    it "returns a node" do
-      subject.get_node("production-message-one").must_be_instance_of Config::Node
-    end
-
-    it "fails if a node is not found" do
-      proc { subject.get_node("other") }.must_raise Config::Project::UnknownNode
     end
   end
 end

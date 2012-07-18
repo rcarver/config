@@ -1,15 +1,19 @@
 require 'helper'
 
-describe "filesystem", Config::Data::File do
+describe "filesystem", Config::Core::File do
 
-  subject { Config::Data::File.new(tmpdir + "mine") }
+  subject { Config::Core::File.new(tmpdir + "mine.rb") }
 
   specify "#path" do
-    subject.path.must_equal (tmpdir + "mine").to_s
+    subject.path.must_equal (tmpdir + "mine.rb").to_s
   end
 
   specify "#name" do
-    subject.name.must_equal "mine"
+    subject.name.must_equal "mine.rb"
+  end
+
+  specify "#basename" do
+    subject.basename.must_equal "mine"
   end
 
   describe "#read" do
@@ -17,7 +21,7 @@ describe "filesystem", Config::Data::File do
       subject.read.must_equal nil
     end
     it "returns the file contents" do
-      (tmpdir + "mine").open("w") do |f|
+      (tmpdir + "mine.rb").open("w") do |f|
         f.print "ok"
       end
       subject.read.must_equal "ok"
@@ -27,7 +31,7 @@ describe "filesystem", Config::Data::File do
   describe "#write" do
     it "writes the file" do
       subject.write("ok")
-      (tmpdir + "mine").read.must_equal "ok"
+      (tmpdir + "mine.rb").read.must_equal "ok"
     end
   end
 end

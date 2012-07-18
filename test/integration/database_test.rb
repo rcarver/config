@@ -1,11 +1,11 @@
 require 'helper'
 
-describe "filesystem", Config::Data::GitDatabase do
+describe "filesystem", Config::Database do
 
   let(:repo) { MiniTest::Mock.new }
   let(:node) { Config::Node.new("prod", "webserver", "1") }
 
-  subject { Config::Data::GitDatabase.new(tmpdir, repo) }
+  subject { Config::Database.new(tmpdir, repo) }
 
   after do
     repo.verify

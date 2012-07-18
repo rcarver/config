@@ -21,7 +21,7 @@ accessed during project execution.
         @hosts.each do |host|
           stderr.puts "Generating signature for #{host.inspect}"
           capture3("ssh-keyscan -H #{host}") do |out, err, status|
-            data_dir.ssh_host_signature(host).write(out)
+            private_data.ssh_host_signature(host).write(out)
           end
         end
       end
