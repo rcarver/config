@@ -1,19 +1,9 @@
 module Config
   class Cluster
 
-    def self.from_file(path)
-      name = File.basename(path, ".rb")
-      content = File.read(path)
-      from_string(name, content, path.to_s, 1)
-    end
-
-    def self.from_string(name, string, _file=nil, _line=nil)
+    def self.from_string(name, string, _file, _line = 1)
       dsl = Config::DSL::ClusterDSL.new
-      if _file && _line
-        dsl.instance_eval(string, _file, _line)
-      else
-        dsl.instance_eval(string)
-      end
+      dsl.instance_eval(string, _file, _line)
       cluster = self.new(name)
       cluster.configuration = dsl._get_configuration
       cluster
@@ -22,7 +12,7 @@ module Config
     def initialize(name)
       @name = name
       @nodes = []
-      @configuration = Config::Core::Configuration.new
+      @configuration = Config::Configuration.new
     end
 
     attr :name

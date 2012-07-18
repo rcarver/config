@@ -24,7 +24,7 @@ describe Config::CLI::KnowHosts do
     it "gets the ssh signature for each host" do
       cli.hosts = ["a"]
       expect_system_call("xyz", "", 0, "ssh-keyscan -H a")
-      data_dir.expect(:ssh_host_signature, expect_write_file("xyz"), ["a"])
+      private_data.expect(:ssh_host_signature, expect_write_file("xyz"), ["a"])
       cli.execute
     end
   end

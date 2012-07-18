@@ -19,8 +19,7 @@ the given node and then execute the node's blueprint.
 
       def execute
         project.update_node(@fqn)
-        project.require_all
-        data_dir.accumulation = project.execute_node(@fqn, data_dir.accumulation)
+        private_data.accumulation = project.execute_node(@fqn, private_data.accumulation)
       end
 
     end

@@ -27,9 +27,6 @@ Config aims to be simple. There are a few key concepts to understand.
     that work together.
   * [Pattern](config/tree/master/doc/PATTERNS.md) A reusable concept
     that makes up a blueprint or another pattern.
-  * [Hub](config/tree/master/doc/HUB.md) A computer that's used to
-    bootstrap nodes. This could be any node in the system or your
-    development workstation.
 
 ## Getting started
 

@@ -32,7 +32,7 @@ class IntegrationSpec < UnitSpec
   #
   # Returns a Pathname.
   def tmpdir(id=:default)
-    @tmpdirs[id] ||= Pathname.new(Dir.mktmpdir)
+    @tmpdirs[id] ||= Pathname.new(Dir.mktmpdir).realdirpath
   end
 
   before do

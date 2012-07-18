@@ -1,5 +1,5 @@
 module Config
-  module Data
+  module Core
     class File
 
       def initialize(path)
@@ -20,11 +20,25 @@ module Config
         @path.basename.to_s
       end
 
+      # Get the basename of the file (the name excluding the extension).
+      #
+      # Returns a String.
+      def basename
+        @path.basename(@path.extname).to_s
+      end
+
+      # Determine if the file exists on disk.
+      #
+      # Returns a Boolean.
+      def exist?
+        @path.exist?
+      end
+
       # Read the file contents from disk.
       #
       # Returns a String or nil.
       def read
-        @path.read if @path.exist?
+        @path.read if exist?
       end
 
       # Write file contents to disk.

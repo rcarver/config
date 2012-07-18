@@ -20,7 +20,7 @@ Store an SSH key for use by the hub to distribute to new nodes.
       end
 
       def execute
-        data_dir.ssh_key(ssh_key_name).write(data)
+        private_data.ssh_key(ssh_key_name).write(data)
       end
 
     end
