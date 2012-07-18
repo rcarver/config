@@ -1,4 +1,6 @@
-0.0.1 / YYYY-MM-DD
+
+0.1.0 / 2012-07-17 
 ==================
 
-  * Initial version
+  * Initial release. This release is primarily to mark the status before
+    some major refactoring occurs.
