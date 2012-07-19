@@ -259,16 +259,28 @@ module Config
       # Internal: Remove all traces of the config runtime environment so that
       # other scripts can execute as if in a standalone system.
       def with_clean_env(&block)
-        path = ::ENV['PATH'] || ""
-        config_path = ::ENV[CONFIG_PATH_ADDITIONS] || ""
-        path_entries = path.split(':')
-        config_path_entries = config_path.split(':')
-        clean_path_entries = path_entries - config_path_entries
-        begin
+        # Bundler.with_clean_env does three things:
+        #
+        # 1. Removes BUNDLE_* vars.
+        # 2. Fixes RUBYOPT
+        # 3. Resets the ENV to what it was when Bundler booted.
+        #
+        # On top of that, we'll remove changes that Config made in order to run.
+        #
+        # When Bundler.with_clean_env exists, it restores the environment.
+        ::Bundler.with_clean_env do
+
+          # Remove CONFIG_PATH_ADDITIONS from PATH.
+          path = ::ENV['PATH'] || ""
+          config_path = ::ENV[CONFIG_PATH_ADDITIONS] || ""
+          path_entries = path.split(':')
+          config_path_entries = config_path.split(':')
+          clean_path_entries = path_entries - config_path_entries
+
           ::ENV['PATH'] = clean_path_entries.join(':')
-          ::Bundler.with_clean_env(&block)
-        ensure
-          ::ENV['PATH'] = path
+          ::ENV.delete(CONFIG_PATH_ADDITIONS)
+
+          yield
         end
       end
     end
