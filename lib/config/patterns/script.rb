@@ -34,11 +34,8 @@ module Config
 
       def should_run?
         return true unless only_if
-        evaluate(only_if)
-      end
 
-      def evaluate(code)
-        out, err, status = Open3.capture3(code)
+        out, err, status = Open3.capture3(only_if)
         successful = status.exitstatus == 0
 
         log.indent do
