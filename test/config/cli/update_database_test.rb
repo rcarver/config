@@ -5,30 +5,65 @@ describe Config::CLI::UpdateDatabase do
   subject { Config::CLI::UpdateDatabase }
 
   specify "#usage" do
-    cli.usage.must_equal "test-command"
+    cli.usage.must_equal "test-command [<fqn>]"
+  end
+
+  describe "#parse" do
+    it "gets the fqn from args" do
+      cli.parse! %w(production-webserver-1)
+      cli.fqn.must_equal "production-webserver-1"
+    end
+    it "has no fqn no args are given" do
+      cli.parse! %w()
+      cli.fqn.must_equal nil
+    end
   end
 
   describe "#execute" do
-    it "executes a blueprint" do
+
+    let(:remotes) { MiniTest::Mock.new }
+    let(:settings) { MiniTest::Mock.new }
+
+    before do
+      database_git_config = MiniTest::Mock.new
+      database_git_config.expect(:url, "repo-url")
+      remotes.expect(:database_git_config, database_git_config)
+
+      settings.expect(:remotes, remotes)
+
       project.expect(:update_database, nil)
+    end
 
-      data_dir = MiniTest::Mock.new
-      data_dir.expect(:repo_path, "repo-path")
+    describe "with an fqn" do
 
-      hub = MiniTest::Mock.new
-      data_config = MiniTest::Mock.new
-      hub.expect(:data_config, data_config)
-      data_config.expect(:url, "hub-url")
+      it "executes a blueprint" do
+        cli.fqn = "production-webserver-1"
 
-      project.expect(:data_dir, data_dir)
-      project.expect(:hub, hub)
+        project.expect(:node_settings, settings, ["production-webserver-1"])
 
-      cli.execute
+        cli.execute
 
-      clones = cli.find_blueprints(Config::Meta::CloneDatabase)
-      clones.size.must_equal 1
-      clones[0].path.must_equal "repo-path"
-      clones[0].url.must_equal "hub-url"
+        clones = cli.find_blueprints(Config::Meta::CloneDatabase)
+        clones.size.must_equal 1
+        clones[0].path.must_equal Config.database_dir
+        clones[0].url.must_equal "repo-url"
+      end
+    end
+
+    describe "without an fqn" do
+
+      it "executes a blueprint" do
+        cli.fqn = nil
+
+        project.expect(:base_settings, settings)
+
+        cli.execute
+
+        clones = cli.find_blueprints(Config::Meta::CloneDatabase)
+        clones.size.must_equal 1
+        clones[0].path.must_equal Config.database_dir
+        clones[0].url.must_equal "repo-url"
+      end
     end
   end
 end

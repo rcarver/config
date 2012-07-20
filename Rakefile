@@ -5,6 +5,9 @@ require 'rake/testtask'
 desc "Run the tests"
 task :test => [:test_fast, :test_slow]
 
+desc "Run all of the tests"
+task :test_all => [:test_fast, :test_slow, :test_acceptance]
+
 desc "Run the fast tests"
 Rake::TestTask.new(:test_fast) do |t|
   t.libs.push "lib", "test"
@@ -17,6 +20,11 @@ Rake::TestTask.new(:test_slow) do |t|
   t.libs.push "lib", "test"
   t.test_files = FileList['test/slow/**/*_test.rb']
   t.verbose = true
+end
+
+desc "Run the acceptance tests"
+task :test_acceptance do
+  sh "test/acceptance/test.sh"
 end
 
 # desc "Run the server"

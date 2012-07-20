@@ -13,17 +13,14 @@ require 'config/core/changeable'
 require 'config/core/conflict_error'
 require 'config/core/executable'
 require 'config/core/executor'
+require 'config/core/facts'
+require 'config/core/file'
 require 'config/core/git_config'
 require 'config/core/git_repo'
 require 'config/core/marshalable'
-require 'config/core/project_loader'
 require 'config/core/validation_error'
-require 'config/core/facts'
+require 'config/core/remotes'
 require 'config/core/ssh_config'
-
-require 'config/data/dir'
-require 'config/data/file'
-require 'config/data/git_database'
 
 require 'config/patterns'
 require 'config/log'
@@ -32,14 +29,18 @@ require 'config/pattern'
 require 'config/blueprint'
 require 'config/cluster'
 require 'config/configuration'
-require 'config/hub'
+require 'config/database'
+require 'config/global'
 require 'config/node'
+require 'config/nodes'
+require 'config/private_data'
 require 'config/project'
+require 'config/project_loader'
+require 'config/project_settings'
 
 require 'config/dsl/blueprint_dsl'
 require 'config/dsl/cluster_dsl'
 require 'config/dsl/node_dsl'
-require 'config/dsl/hub_dsl'
 
 module Config
 
@@ -95,17 +96,119 @@ module Config
     log.color = bool
   end
 
-  # Public: Instantiate a project, using the best guess as to its
-  # location on disk.
+  # Public: Instantiate the current project.
   #
   # Returns a Config::Project.
   def self.project
-    root = Pathname.new("/etc/config")
-    if root.exist?
-      Config::Project.new(root + "project", root)
+    Config::Project.new(project_loader, database, nodes)
+  end
+
+  # Internal: The directory where system-installed projects live.
+  #
+  # Returns a Pathname.
+  def self.system_dir
+    @system_dir ||= Pathname.new("/etc/config")
+  end
+
+  # Internal: Change the directory where system-installed projects live.
+  #
+  # dir - String or Pathname.
+  #
+  # Returns nothing.
+  def self.system_dir=(dir)
+    @system_dir = Pathname.new(dir)
+  end
+
+  # Internal: The directory where the current project lives.
+  #
+  # Returns a Pathname.
+  def self.project_dir
+    if system_dir.exist?
+      system_dir + "project"
     else
-      Config::Project.new(Pathname.pwd, Pathname.pwd + ".data")
+      Pathname.pwd
     end
   end
 
+  # Internal: The directory where the current private data lives.
+  #
+  # Returns a Pathname.
+  def self.private_data_dir
+    if system_dir.exist?
+      system_dir
+    else
+      Pathname.pwd + ".data"
+    end
+  end
+
+  # Internal: The directory where the database lives.
+  #
+  # Returns a Pathname.
+  def self.database_dir
+    if system_dir.exist?
+      system_dir + "database"
+    else
+      private_data_dir + "database"
+    end
+  end
+
+  # Internal: Get the project loader.
+  #
+  # Returns a Config::ProjectLoader.
+  def self.project_loader
+    Config::ProjectLoader.new(project_dir)
+  end
+
+  # Internal: Get the project data.
+  #
+  # Returns a Config::PrivateData.
+  def self.private_data
+    Config::PrivateData.new(private_data_dir)
+  end
+
+  # Internal: Get the project database.
+  #
+  # Returns a Config::Database.
+  def self.database
+    Config::Database.new(database_dir, Config::Core::GitRepo.new(database_dir))
+  end
+
+  # Internal: Get the project nodes.
+  #
+  # Returns a Config::Nodes.
+  def self.nodes
+    Config::Nodes.new(database)
+  end
+
+  # Internal: When no Remotes have been configured, we can gather some useful
+  # defaults from existing git repository configurations.
+  #
+  # Returns a Config::Core::Remotes.
+  def self.default_remotes
+    project_git_config = Config::Core::GitConfig.new
+    database_git_config = Config::Core::GitConfig.new
+
+    if project_dir.exist?
+      Dir.chdir(project_dir) do
+        repo = `git config --get remote.origin.url`
+        project_git_config.url = repo.chomp unless repo.empty?
+      end
+    end
+
+    if database_dir.exist?
+      Dir.chdir(database_dir) do
+        repo = `git config --get remote.origin.url`
+        database_git_config.url = repo.chomp unless repo.empty?
+      end
+    end
+
+    if project_git_config.url && !database_git_config.url
+      database_git_config.url = project_git_config.url.sub(/\.git/, '-db.git')
+    end
+
+    Config::Core::Remotes.new.tap do |remotes|
+      remotes.project_git_config = project_git_config
+      remotes.database_git_config = database_git_config
+    end
+  end
 end

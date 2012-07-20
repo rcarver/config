@@ -29,10 +29,10 @@ describe Config::Core::SSHConfig do
     ssh_key = MiniTest::Mock.new
     ssh_key.expect(:path, "/etc/config/default")
 
-    data_dir = MiniTest::Mock.new
-    data_dir.expect(:ssh_key, ssh_key, ["default"])
+    private_data = MiniTest::Mock.new
+    private_data.expect(:ssh_key, ssh_key, ["default"])
 
-    subject.to_host_config(data_dir).must_equal <<-STR
+    subject.to_host_config(private_data).must_equal <<-STR
 Host examples-are-fun
   Port 99
   Hostname example.com
@@ -42,7 +42,7 @@ Host examples-are-fun
     STR
 
     ssh_key.verify
-    data_dir.verify
+    private_data.verify
   end
 
 end

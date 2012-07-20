@@ -1,8 +1,8 @@
 require 'helper'
 
-describe Config::Core::Configuration do
+describe Config::Configuration do
 
-  subject { Config::Core::Configuration.new }
+  subject { Config::Configuration.new }
 
   specify "#to_s" do
     subject.to_s.must_equal "<Configuration>"
@@ -10,26 +10,53 @@ describe Config::Core::Configuration do
 
   it "allows groups to be defined and accessed" do
     subject.set_group(:test, key: 123)
-    subject.test.must_be_instance_of Config::Core::Configuration::Group
-    subject[:test].must_be_instance_of Config::Core::Configuration::Group
+    subject.test.must_be_instance_of Config::Configuration::Group
+    subject[:test].must_be_instance_of Config::Configuration::Group
   end
 
   it "raises an error if you access an unknown group" do
-    proc { subject.nothing }.must_raise Config::Core::Configuration::UnknownGroup
-    proc { subject[:nothing] }.must_raise Config::Core::Configuration::UnknownGroup
+    proc { subject.nothing }.must_raise Config::Configuration::UnknownGroup
+    proc { subject[:nothing] }.must_raise Config::Configuration::UnknownGroup
+  end
+
+  it "allows the existence of a group to be tested" do
+    subject.set_group(:test, key: 123)
+    subject.defined?(:test).must_equal true
+    subject.defined?(:foo).must_equal false
+    subject.test?.must_equal true
+    subject.foo?.must_equal false
   end
 
   it "does not allow a group to be redefined" do
     subject.set_group(:test, key: 123)
-    proc { subject.set_group(:test, key: 123) }.must_raise Config::Core::Configuration::DuplicateGroup
+    proc { subject.set_group(:test, key: 123) }.must_raise Config::Configuration::DuplicateGroup
+  end
+
+  it "can be merged" do
+    a = Config::Configuration.new
+    a.set_group(:group1, key1: 123, key2: 456, key3: 111)
+    a.set_group(:group2, key1: 123)
+
+    b = Config::Configuration.new
+    b.set_group(:group1, key1: 999, key2: 456, key4: 222)
+    b.set_group(:group3, key1: 123)
+
+    c = a + b
+
+    c.group1.key1.must_equal 999
+    c.group1.key2.must_equal 456
+    c.group1.key3.must_equal 111
+    c.group1.key4.must_equal 222
+    c.group2.key1.must_equal 123
+    c.group3.key1.must_equal 123
   end
 end
 
-describe Config::Core::Configuration::Group do
+describe Config::Configuration::Group do
 
   let(:hash) { {} }
 
-  subject { Config::Core::Configuration::Group.new(:test, hash) }
+  subject { Config::Configuration::Group.new(:test, hash) }
 
   before do
     hash[:name] = "ok"
@@ -50,12 +77,27 @@ describe Config::Core::Configuration::Group do
   end
 
   it "raises an error if you access a nonexistent key" do
-    proc { subject[:foo] }.must_raise Config::Core::Configuration::UnknownVariable
-    proc { subject.foo }.must_raise Config::Core::Configuration::UnknownVariable
+    proc { subject[:foo] }.must_raise Config::Configuration::UnknownVariable
+    proc { subject.foo }.must_raise Config::Configuration::UnknownVariable
   end
 
   it "makes sure you don't call it wrong" do
     proc { subject.name("ok") }.must_raise ArgumentError
+  end
+
+  it "allows the existence of a key to be tested" do
+    subject.defined?(:name).must_equal true
+    subject.defined?(:foo).must_equal false
+    subject.name?.must_equal true
+    subject.foo?.must_equal false
+  end
+
+  it "can iterate over each key (sorted)" do
+    values = []
+    subject.each_key do |key|
+      values << [key, subject[key]]
+    end
+    values.must_equal [[:name, "ok"], [:other, nil], [:value, 123]]
   end
 
   it "logs when a variable is used" do
@@ -64,7 +106,7 @@ describe Config::Core::Configuration::Group do
   end
 
   it "does not log a bad key" do
-    proc { subject.foo }.must_raise Config::Core::Configuration::UnknownVariable
+    proc { subject.foo }.must_raise Config::Configuration::UnknownVariable
     log_string.must_be_empty
   end
 end

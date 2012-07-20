@@ -1,15 +1,15 @@
 require 'helper'
 
-describe Config::Cluster do
+describe Config::Global do
 
   describe ".from_string" do
 
     it "works" do
-      cluster = Config::Cluster.from_string("sample", <<-STR, __FILE__)
+      cluster = Config::Global.from_string(<<-STR, __FILE__)
         configure :foo,
           value: "ok"
       STR
-      cluster.to_s.must_equal "sample cluster"
+      cluster.to_s.must_equal "Config"
       cluster.configuration.foo.value.must_equal "ok"
     end
 
@@ -17,7 +17,7 @@ describe Config::Cluster do
       file = __FILE__
       line = __LINE__ + 2
       begin
-        Config::Cluster.from_string("sample", <<-STR, file, line)
+        Config::Global.from_string(<<-STR, file, line)
           xconfigure :foo,
             value: "ok"
         STR
@@ -29,3 +29,4 @@ describe Config::Cluster do
     end
   end
 end
+

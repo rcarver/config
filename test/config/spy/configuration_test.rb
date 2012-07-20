@@ -2,7 +2,9 @@ require 'helper'
 
 describe Config::Spy::Configuration do
 
-  subject { Config::Spy::Configuration.new }
+  let(:configuration) { Config::Configuration.new }
+
+  subject { Config::Spy::Configuration.new(configuration) }
 
   specify "#to_s" do
     subject.to_s.must_equal "<Spy Configuration>"
@@ -38,11 +40,19 @@ describe Config::Spy::Configuration do
     subject.a
     subject.wont_equal Config::Spy::Configuration.new
   end
+
+  specify "it delegates to the real configuration before spying" do
+    configuration.set_group(:test, a: 1)
+    subject.test.a.must_equal 1
+    subject.get_accessed_groups.size.must_equal 0
+  end
 end
 
 describe Config::Spy::Configuration::Group do
 
-  subject { Config::Spy::Configuration::Group.new(:sample) }
+  let(:group) { Config::Configuration::Group.new(:test, a: 1) }
+
+  subject { Config::Spy::Configuration::Group.new(:sample, group) }
 
   specify "#[]" do
     subject[:ok].must_equal "fake:sample.ok"
@@ -74,5 +84,10 @@ describe Config::Spy::Configuration::Group do
 
   it "behaves like a string" do
     String(subject).must_equal "fake:sample"
+  end
+
+  specify "it delegates to the real group before spying" do
+    subject.a.must_equal 1
+    subject.get_accessed_keys.size.must_equal 0
   end
 end

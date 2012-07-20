@@ -1,14 +1,14 @@
 require 'helper'
 
-describe "filesystem", Config::Data::Dir do
+describe "filesystem", Config::PrivateData do
 
-  subject { Config::Data::Dir.new(tmpdir) }
+  subject { Config::PrivateData.new(tmpdir) }
 
   describe "#ssh_key" do
 
     it "returns a file" do
       file = subject.ssh_key(:default)
-      file.must_be_instance_of Config::Data::File
+      file.must_be_instance_of Config::Core::File
       file.path.must_equal (tmpdir + "ssh-key-default").to_s
     end
   end
@@ -17,7 +17,7 @@ describe "filesystem", Config::Data::Dir do
 
     it "returns a file" do
       file = subject.ssh_host_signature("github.com")
-      file.must_be_instance_of Config::Data::File
+      file.must_be_instance_of Config::Core::File
       file.path.must_equal (tmpdir + "ssh-host-github.com").to_s
     end
   end

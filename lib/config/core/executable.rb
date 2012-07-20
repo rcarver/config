@@ -23,7 +23,6 @@ module Config
           create  unless skip or noop?
         when :destroy
           log << "#{prefix}Destroy #{self}"
-          prepare unless skip
           destroy unless skip or noop?
         when :skip
           log << "Skip #{self}"

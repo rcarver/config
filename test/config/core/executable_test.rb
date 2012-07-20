@@ -7,22 +7,28 @@ describe Config::Core::Executable do
       include Config::Core::Executable
       include Config::Core::Loggable
 
-      attr_reader :result
+      def initialize
+        @result = []
+      end
 
       def to_s
         "Test"
       end
 
+      def result
+        @result.join(' ')
+      end
+
       def prepare
-        @result = "prepared"
+        @result << "prepared"
       end
 
       def create
-        @result << " created"
+        @result << "created"
       end
 
       def destroy
-        @result << " destroyed"
+        @result << "destroyed"
       end
     end
   }
@@ -84,13 +90,13 @@ describe Config::Core::Executable do
     it "destroys" do
       subject.run_mode = :destroy
       subject.execute
-      subject.result.must_equal "prepared destroyed"
+      subject.result.must_equal "destroyed"
       log.must_equal "Destroy Test"
     end
     it "skips" do
       subject.run_mode = :skip
       subject.execute
-      subject.result.must_equal nil
+      subject.result.must_equal ""
       log.must_equal "Skip Test"
     end
     it "skips if a parent is skipped" do
@@ -98,7 +104,7 @@ describe Config::Core::Executable do
       parent.run_mode = :skip
       subject.parent = parent
       subject.execute
-      subject.result.must_equal nil
+      subject.result.must_equal ""
       log.must_equal "Skip Create Test"
     end
     it "describes both a parent skip and its own skip" do
@@ -107,7 +113,7 @@ describe Config::Core::Executable do
       subject.parent = parent
       subject.run_mode = :skip
       subject.execute
-      subject.result.must_equal nil
+      subject.result.must_equal ""
       log.must_equal "Skip Test"
     end
     it "does not support other run modes" do
@@ -130,7 +136,7 @@ describe Config::Core::Executable do
       it "logs destroy but does not execute" do
         subject.run_mode = :destroy
         subject.execute
-        subject.result.must_equal "prepared"
+        subject.result.must_equal ""
         log.must_equal "Destroy Test"
       end
     end

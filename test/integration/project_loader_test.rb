@@ -1,36 +1,8 @@
 require 'helper'
 
-describe "filesystem", Config::Core::ProjectLoader do
+describe "filesystem", Config::ProjectLoader do
 
-  subject { Config::Core::ProjectLoader.new(tmpdir) }
-
-  describe "#get_hub" do
-
-    let(:hub) { subject.get_hub }
-
-    it "has no git urls by default" do
-      hub.project_config.url.must_equal nil
-      hub.data_config.url.must_equal nil
-    end
-
-    it "sets git urls from the current repo" do
-      (tmpdir + ".git").mkdir
-      (tmpdir + ".git/config").open("w") do |f|
-        f.puts '[remote "origin"]'
-        f.puts '        url = git@github.com:foo/bar.git'
-      end
-      hub.project_config.url.must_equal 'git@github.com:foo/bar.git'
-      hub.data_config.url.must_equal    'git@github.com:foo/bar-data.git'
-    end
-
-    it "uses a hub file" do
-      (tmpdir + "hub.rb").open("w") do |f|
-        f.puts "project_repo 'git@github.com:foo/bar.git'"
-      end
-      hub.project_config.url.must_equal 'git@github.com:foo/bar.git'
-      hub.data_config.url.must_equal    'git@github.com:foo/bar-data.git'
-    end
-  end
+  subject { Config::ProjectLoader.new(tmpdir) }
 
   describe "#require_patterns" do
 
@@ -61,6 +33,30 @@ describe "filesystem", Config::Core::ProjectLoader do
       end
 
       proc { subject.require_patterns }.must_raise(SyntaxError)
+    end
+  end
+
+  describe "#require_global" do
+
+    it "loads nothing when no file exists" do
+      subject.require_global
+    end
+
+    it "loads the config" do
+      (tmpdir + "config.rb").open("w") do |f|
+        f.puts "configure :test, :key => 123"
+      end
+
+      subject.require_global
+      subject.get_global.configuration.test.key.must_equal 123
+    end
+
+    it "fails to load a config with a syntax error" do
+      (tmpdir + "config.rb").open("w") do |f|
+        f.puts "x, y"
+      end
+
+      proc { subject.require_global }.must_raise(SyntaxError)
     end
   end
 
@@ -115,6 +111,20 @@ describe "filesystem", Config::Core::ProjectLoader do
 
       skip "this doesn't work because blueprint evaluation doesn't occur until accumulation"
       proc { subject.require_blueprints }.must_raise(SyntaxError)
+    end
+  end
+
+  describe "#get_global" do
+
+    it "returns nil when no file exists" do
+      subject.get_global.must_equal nil
+    end
+
+    it "returns the configured global from disk" do
+      (tmpdir + "config.rb").open("w") do |f|
+        f.puts "configure :test, :ok => 123"
+      end
+      subject.get_global.configuration.test.ok.must_equal 123
     end
   end
 
