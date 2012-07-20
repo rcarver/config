@@ -12,7 +12,7 @@ module Config
       attr :reverse, nil
 
       desc "The code or lambda to evaluate to determine if this script should be run"
-      attr :only_if, nil
+      attr :not_if, nil
 
       def describe
         "Script #{name.inspect}"
@@ -33,16 +33,16 @@ module Config
     protected
 
       def should_run?
-        return true unless only_if
+        return true unless not_if
 
-        out, err, status = Open3.capture3(only_if)
-        successful = status.exitstatus == 0
+        out, err, status = Open3.capture3(not_if)
+        successful = status.exitstatus != 0
 
         log.indent do
           if successful
-            log << "RUNNING because '#{only_if}' exited with a successful status"
+            log << "RUNNING because '#{not_if}' exited with a non-zero status"
           else
-            log << "SKIPPED because '#{only_if}' exited with a non-zero status"
+            log << "SKIPPED because '#{not_if}' exited with a successful status"
           end
         end
 
