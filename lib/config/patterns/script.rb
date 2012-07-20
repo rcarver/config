@@ -34,12 +34,7 @@ module Config
 
       def should_run?
         return true unless only_if
-
-        begin
-          evaluate(only_if)
-        rescue Config::Error
-          false
-        end
+        evaluate(only_if)
       end
 
       def evaluate(code)
