@@ -29,8 +29,8 @@ fi
 
 echo '[linking config-ruby]'
 echo '#!/bin/sh
-export CONFIG_PATH_ADDITIONS=/opt/ruby-config-<%= ruby_version %>/bin
-export PATH=$CONFIG_PATH_ADDITIONS:$PATH
+export CONFIG_ORIGINAL_PATH=$PATH
+export PATH=/opt/ruby-config-<%= ruby_version %>/bin:$PATH
 exec /opt/ruby-config-<%= ruby_version %>/bin/ruby "$@"
 ' > /usr/local/bin/config-ruby
 chmod +x /usr/local/bin/config-ruby
@@ -54,8 +54,8 @@ echo '[installing bundler <%= bundler_version %>]'
 
 echo '[linking config-bundle]'
 echo '#!/bin/sh
-export CONFIG_PATH_ADDITIONS=/opt/ruby-config-<%= ruby_version %>/bin
-export PATH=$CONFIG_PATH_ADDITIONS:$PATH
+export CONFIG_ORIGINAL_PATH=$PATH
+export PATH=/opt/ruby-config-<%= ruby_version %>/bin:$PATH
 exec /opt/ruby-config-<%= ruby_version %>/bin/bundle "$@"
 ' > /usr/local/bin/config-bundle
 chmod +x /usr/local/bin/config-bundle

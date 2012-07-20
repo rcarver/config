@@ -61,31 +61,45 @@ describe Config::CLI do
       describe "PATH" do
 
         before do
-          @original_path = ENV['PATH']
-          @altered_path = "a:#{@original_path}:b"
-          ENV['PATH'] = @altered_path
-          ENV[Config::CLI::CONFIG_PATH_ADDITIONS] = "a:b"
+          # The current path, including Bundler changes.
+          @saved_system_path = ENV['PATH']
+
+          # Fake the user's path before any ClI was run.
+          @original_path = "/bin"
+
+          # Fake the user's path while ruby/rubygems runs.
+          @system_path = "/bin/ruby:/bin"
+
+          ENV['CONFIG_ORIGINAL_PATH'] = @original_path
+          ENV['PATH'] = @system_path
         end
 
         after do
-          ENV.delete Config::CLI::CONFIG_PATH_ADDITIONS
-          ENV['PATH'] = @original_path
+          ENV.delete 'CONFIG_ORIGINAL_PATH'
+          ENV['PATH'] = @saved_system_path
         end
 
-        it "removes config additions" do
+        it "uses the original path during execution" do
           cli.run(argv, env)
           cli.env_path.must_equal @original_path
         end
 
-        it "restores config additions" do
+        it "restores the system path afterwards" do
           cli.run(argv, env)
-          ENV['PATH'].must_equal @altered_path
+          ENV['PATH'].must_equal @system_path
         end
 
-        it "restores config additions on error" do
+        it "restores the system path afterwards, on error" do
           cli.raise_error = true
           proc { cli.run(argv, env) }.must_raise RuntimeError
-          ENV['PATH'].must_equal @altered_path
+          ENV['PATH'].must_equal @system_path
+        end
+
+        it "doesn't change the path if no CONFIG_ORIGINAL_PATH is set" do
+          ENV.delete 'CONFIG_ORIGINAL_PATH'
+          cli.run(argv, env)
+          # If we don't set CONFIG_ORIGINAL_PATH, then the path is determined by bundler.
+          cli.env_path.must_equal @saved_system_path
         end
       end
     end

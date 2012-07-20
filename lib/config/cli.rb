@@ -6,10 +6,9 @@ require 'open3'
 module Config
   module CLI
 
-    # Environment variable that should contain paths that were added to PATH
-    # for the purpose of executing the config project. The format is exactly
-    # the same as a PATH variable - entries delimited by ':'.
-    CONFIG_PATH_ADDITIONS = 'CONFIG_PATH_ADDITIONS'
+    # Environment variable used to store the PATH before running config. This is used
+    # to restore the original path without the ruby runtime environment additions.
+    CONFIG_ORIGINAL_PATH = 'CONFIG_ORIGINAL_PATH'
 
     def self.exec
       cli = self.new(File.basename($0), STDIN, STDOUT, STDERR)
@@ -258,31 +257,23 @@ module Config
 
       # Internal: Remove all traces of the config runtime environment so that
       # other scripts can execute as if in a standalone system.
-      def with_clean_env(&block)
+      def with_clean_env
         # Bundler.with_clean_env does three things:
         #
         # 1. Removes BUNDLE_* vars.
         # 2. Fixes RUBYOPT
         # 3. Resets the ENV to what it was when Bundler booted.
         #
-        # On top of that, we'll remove changes that Config made in order to run.
+        # On top of that, we'll restore the PATH to what it was before ruby executed.
         #
         # When Bundler.with_clean_env exists, it restores the environment.
+        original_path = ::ENV[CONFIG_ORIGINAL_PATH]
         ::Bundler.with_clean_env do
-
-          # Remove CONFIG_PATH_ADDITIONS from PATH.
-          path = ::ENV['PATH'] || ""
-          config_path = ::ENV[CONFIG_PATH_ADDITIONS] || ""
-          path_entries = path.split(':')
-          config_path_entries = config_path.split(':')
-          clean_path_entries = path_entries - config_path_entries
-
-          ::ENV['PATH'] = clean_path_entries.join(':')
-          ::ENV.delete(CONFIG_PATH_ADDITIONS)
-
+          ::ENV['PATH'] = original_path if original_path
           yield
         end
       end
+
     end
   end
 end
