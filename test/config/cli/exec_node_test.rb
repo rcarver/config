@@ -22,6 +22,8 @@ describe Config::CLI::ExecNode do
     it "updates and executes the node" do
       cli.fqn = "a-b-c"
 
+      project_loader.expect(:require_all, nil)
+
       project.expect(:update_node, nil, ["a-b-c"])
 
       private_data.expect(:accumulation, :acc1)

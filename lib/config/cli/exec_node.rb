@@ -18,6 +18,7 @@ the given node and then execute the node's blueprint.
       end
 
       def execute
+        project_loader.require_all # require all so that the marshall'd accumulation can load.
         project.update_node(@fqn)
         private_data.accumulation = project.execute_node(@fqn, private_data.accumulation)
       end

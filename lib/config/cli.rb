@@ -171,7 +171,6 @@ module Config
       attr_writer :project
 
       # Returns a Config::ProjectLoader.
-      # DEPRECATED
       def project_loader
         @project_loader ||= Config.project_loader
       end
