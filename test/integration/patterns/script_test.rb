@@ -68,10 +68,23 @@ describe "filesystem", Config::Patterns::Script do
       STR
     end
 
-    it "doesn't run the script if it exits with a non-zero status" do
+    it "run the script when only_if is true" do
+      subject.only_if = '[ 1 -eq 1 ]'
+      execute :create
+      path.must_be :exist?
+      log_string.must_equal <<-STR
+  RUNNING because '[ 1 -eq 1 ]' exited with a successful status
+  STATUS 0
+      STR
+    end
+
+    it "doesn't run the script only_if is false" do
       subject.only_if = '[ 0 -eq 1 ]'
       execute :create
       path.wont_be :exist?
+      log_string.must_equal <<-STR
+  SKIPPED because '[ 0 -eq 1 ]' exited with a non-zero status
+      STR
     end
   end
 

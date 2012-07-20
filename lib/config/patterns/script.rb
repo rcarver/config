@@ -33,15 +33,28 @@ module Config
     protected
 
       def should_run?
-        if only_if
-          begin
-            run(only_if)
-          rescue Config::Error
-            false
-          end
-        else
-          true
+        return true unless only_if
+
+        begin
+          evaluate(only_if)
+        rescue Config::Error
+          false
         end
+      end
+
+      def evaluate(code)
+        out, err, status = Open3.capture3(code)
+        successful = status.exitstatus == 0
+
+        log.indent do
+          if successful
+            log << "RUNNING because '#{only_if}' exited with a successful status"
+          else
+            log << "SKIPPED because '#{only_if}' exited with a non-zero status"
+          end
+        end
+
+        successful
       end
 
       def run(code)
