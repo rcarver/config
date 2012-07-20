@@ -14,9 +14,6 @@ module Config
       desc "The code or lambda to evaluate to determine if this script should be run"
       attr :only_if, lambda { true }
 
-      desc "The code or lambda to evaluate to determine if this script should not be run"
-      attr :not_if, lambda { false }
-
       def describe
         "Script #{name.inspect}"
       end
@@ -36,7 +33,7 @@ module Config
     protected
 
       def should_run?
-        evaluate(only_if) && !evaluate(not_if)
+        evaluate(only_if)
       end
 
       def evaluate(parameter)

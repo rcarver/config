@@ -60,31 +60,6 @@ describe "filesystem", Config::Patterns::Script do
     end
   end
 
-  describe "#create not_if" do
-
-    before do
-      subject.code = <<-STR
-        if [ ! -f #{path} ]; then
-          echo hello > #{path}
-        else
-          exit 1
-        fi
-      STR
-    end
-
-    it "doesn't run the script if it is true" do
-      subject.not_if = lambda { true }
-      execute :create
-      path.wont_be :exist?
-    end
-
-    it "doesn't run the script if it exits with a zero status" do
-      subject.not_if = 'test 0 -eq 0'
-      execute :create
-      path.wont_be :exist?
-    end
-  end
-
   describe "#create only_if" do
 
     before do
