@@ -64,22 +64,12 @@ describe "filesystem", Config::Patterns::Script do
 
     before do
       subject.code = <<-STR
-        if [ ! -f #{path} ]; then
-          echo hello > #{path}
-        else
-          exit 1
-        fi
+        echo hello > #{path}
       STR
     end
 
-    it "doesn't run the script if is true" do
-      subject.only_if = lambda { false }
-      execute :create
-      path.wont_be :exist?
-    end
-
-    it "doesn't run the script if exits with a non-zero status" do
-      subject.only_if = 'test 0 -eq 1'
+    it "doesn't run the script if it exits with a non-zero status" do
+      subject.only_if = '[ 0 -eq 1 ]'
       execute :create
       path.wont_be :exist?
     end

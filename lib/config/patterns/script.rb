@@ -12,7 +12,7 @@ module Config
       attr :reverse, nil
 
       desc "The code or lambda to evaluate to determine if this script should be run"
-      attr :only_if, lambda { true }
+      attr :only_if, nil
 
       def describe
         "Script #{name.inspect}"
@@ -33,15 +33,14 @@ module Config
     protected
 
       def should_run?
-        evaluate(only_if)
-      end
-
-      def evaluate(parameter)
-        if parameter.is_a? Proc
-          parameter.call
+        if only_if
+          begin
+            run(only_if)
+          rescue Config::Error
+            false
+          end
         else
-          out, err, status = Open3.capture3(parameter)
-          status.exitstatus == 0
+          true
         end
       end
 
