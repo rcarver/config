@@ -6,6 +6,10 @@ require 'open3'
 module Config
   module CLI
 
+    # Environment variable used to store the PATH before running config. This is used
+    # to restore the original path without the ruby runtime environment additions.
+    CONFIG_ORIGINAL_PATH = 'CONFIG_ORIGINAL_PATH'
+
     def self.exec
       cli = self.new(File.basename($0), STDIN, STDOUT, STDERR)
       cli.run(ARGV, ENV)
@@ -75,9 +79,11 @@ module Config
       end
 
       def run(argv, env)
-        parse!(argv, env)
-        Config.log_to(config_log_stream || StringIO.new)
-        execute
+        with_clean_env do
+          parse!(argv, env)
+          Config.log_to(config_log_stream || StringIO.new)
+          execute
+        end
       end
 
       def parse!(argv=[], env={})
@@ -246,6 +252,25 @@ module Config
         yield out, err, status.exitstatus
 
         return
+      end
+
+      # Internal: Remove all traces of the config runtime environment so that
+      # other scripts can execute as if in a standalone system.
+      def with_clean_env
+        # Bundler.with_clean_env does three things:
+        #
+        # 1. Removes BUNDLE_* vars.
+        # 2. Fixes RUBYOPT
+        # 3. Resets the ENV to what it was when Bundler booted.
+        #
+        # On top of that, we'll restore the PATH to what it was before ruby executed.
+        #
+        # When Bundler.with_clean_env exists, it restores the environment.
+        original_path = ::ENV[CONFIG_ORIGINAL_PATH]
+        ::Bundler.with_clean_env do
+          ::ENV['PATH'] = original_path if original_path
+          yield
+        end
       end
 
     end

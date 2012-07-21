@@ -27,9 +27,11 @@ else
 fi
 
 
-echo '[linking ruby-config]'
+echo '[linking config-ruby]'
 echo '#!/bin/sh
-PATH=/opt/ruby-config-<%= ruby_version %>/bin:$PATH exec /opt/ruby-config-<%= ruby_version %>/bin/ruby "$@"
+export CONFIG_ORIGINAL_PATH=$PATH
+export PATH=/opt/ruby-config-<%= ruby_version %>/bin:$PATH
+exec /opt/ruby-config-<%= ruby_version %>/bin/ruby "$@"
 ' > /usr/local/bin/config-ruby
 chmod +x /usr/local/bin/config-ruby
 
@@ -50,9 +52,11 @@ echo '[installing bundler <%= bundler_version %>]'
 /opt/ruby-config-<%= ruby_version %>/bin/gem install bundler --version <%= bundler_version %> --no-ri --no-rdoc
 
 
-echo '[linking bundle-config]'
+echo '[linking config-bundle]'
 echo '#!/bin/sh
-PATH=/opt/ruby-config-<%= ruby_version %>/bin:$PATH exec /opt/ruby-config-<%= ruby_version %>/bin/bundle "$@"
+export CONFIG_ORIGINAL_PATH=$PATH
+export PATH=/opt/ruby-config-<%= ruby_version %>/bin:$PATH
+exec /opt/ruby-config-<%= ruby_version %>/bin/bundle "$@"
 ' > /usr/local/bin/config-bundle
 chmod +x /usr/local/bin/config-bundle
 
