@@ -11,12 +11,15 @@ module Config
       desc "The reverse code"
       attr :reverse, nil
 
+      desc "The code or lambda to evaluate to determine if this script should be run"
+      attr :not_if, nil
+
       def describe
         "Script #{name.inspect}"
       end
 
       def create
-        run(code)
+        run(code) if should_run?
       end
 
       def destroy
@@ -28,6 +31,23 @@ module Config
       end
 
     protected
+
+      def should_run?
+        return true unless not_if
+
+        out, err, status = Open3.capture3(not_if)
+        successful = status.exitstatus != 0
+
+        log.indent do
+          if successful
+            log << "RUNNING because '#{not_if}' exited with a non-zero status"
+          else
+            log << "SKIPPED because '#{not_if}' exited with a successful status"
+          end
+        end
+
+        successful
+      end
 
       def run(code)
         out, err, status = Open3.capture3(code)
