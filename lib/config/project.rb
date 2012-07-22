@@ -93,6 +93,7 @@ module Config
 
       # Execute.
       accumulation = blueprint.accumulate
+
       blueprint.validate
       blueprint.execute
 

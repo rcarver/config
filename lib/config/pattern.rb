@@ -43,18 +43,29 @@ module Config
 
     # Public
     def add(pattern_class, &block)
-      log << "Add #{pattern_class}"
 
+      # Instantiate the pattern.
       pattern = pattern_class.new
-      yield pattern if block_given?
 
-      log << "  > #{pattern}"
-
-      pattern.accumulation = @accumulation
+      # Configure and accumulate the pattern.
+      pattern.accumulation = self.accumulation
       pattern.parent = self
-
       accumulation << pattern
 
+      # Log the pattern addition.
+      log << "+ #{pattern_class}"
+
+      # Indent two to align with the conclusion below. This allows log output
+      # triggered by the pattern setup to fall within this block.
+      log.indent do
+        yield pattern if block_given?
+      end
+
+      # Show the final pattern.
+      log << "  #{pattern}"
+
+      # Indent and call. This triggers a recursive addition of the entire
+      # pattern branch.
       log.indent do
         pattern.call
       end

@@ -76,10 +76,10 @@ module BlueprintTest
       it "logs what happened" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint webserver
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"one"]
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"two"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"one"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"two"]
 Validate Blueprint webserver
 Resolve Blueprint webserver
 Execute Blueprint webserver
@@ -108,8 +108,8 @@ Execute Blueprint webserver
       it "logs what happened" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint webserver
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"the test"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"the test"]
 Validate Blueprint webserver
   ERROR [BlueprintTest::Test name:"the test"] missing value for :value (The value)
         STR
@@ -138,10 +138,10 @@ Validate Blueprint webserver
       it "logs what happened" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint webserver
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"the test"]
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"the test"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"the test"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"the test"]
 Validate Blueprint webserver
 Resolve Blueprint webserver
   CONFLICT [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>1} vs. [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>2}
@@ -176,10 +176,10 @@ Resolve Blueprint webserver
       it "logs what happened" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint webserver
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"the test"]
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"the test"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"the test"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"the test"]
 Validate Blueprint webserver
 Resolve Blueprint webserver
 Execute Blueprint webserver
@@ -246,17 +246,17 @@ Execute Blueprint webserver
       it "logs what happened" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint previous webserver
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"pattern1"]
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"pattern2"]
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"pattern3"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"pattern1"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"pattern2"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"pattern3"]
 Accumulate Blueprint current webserver
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"pattern2"]
-  Add BlueprintTest::Test
-    > [BlueprintTest::Test name:"pattern3"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"pattern2"]
+  + BlueprintTest::Test
+    [BlueprintTest::Test name:"pattern3"]
 Validate Blueprint current webserver
 Resolve Blueprint current webserver
 Execute Blueprint current webserver
@@ -295,9 +295,9 @@ Execute Blueprint current webserver
       it "logs when variables are used" do
         log_execute.must_equal <<-STR
 Accumulate Blueprint webserver
-  Add BlueprintTest::Test
-      Read webserver.my_name => "bob"
-    > [BlueprintTest::Test name:"bob"]
+  + BlueprintTest::Test
+    Read webserver.my_name => "bob"
+    [BlueprintTest::Test name:"bob"]
 Validate Blueprint webserver
 Resolve Blueprint webserver
 Execute Blueprint webserver
