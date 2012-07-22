@@ -44,12 +44,29 @@ module Config
     # Public
     def add(pattern_class, &block)
       log << "Add #{pattern_class}"
-      pattern = nil
-      log.indent(2) do
-        pattern = @accumulation.add_pattern(self, pattern_class, &block)
-      end
+
+      pattern = pattern_class.new
+      yield pattern if block_given?
+
       log << "  > #{pattern}"
+
+      pattern.accumulation = @accumulation
+      pattern.parent = self
+
+      accumulation << pattern
+
+      log.indent do
+        pattern.call
+      end
+
       nil
+    end
+
+    # Internal.
+    attr_writer :accumulation
+
+    def accumulation
+      @accumulation ||= []
     end
 
     def validation_errors
@@ -62,8 +79,6 @@ module Config
       errors.concat validation_errors
       errors
     end
-
-    attr_accessor :accumulation
 
     def inspect
       attrs = JSON.generate(attributes)
