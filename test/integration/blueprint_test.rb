@@ -296,7 +296,7 @@ Execute Blueprint current webserver
         log_execute.must_equal <<-STR
 Accumulate Blueprint webserver
   + BlueprintTest::Test
-    Read webserver.my_name => "bob"
+      Read webserver.my_name => "bob"
     [BlueprintTest::Test name:"bob"]
 Validate Blueprint webserver
 Resolve Blueprint webserver

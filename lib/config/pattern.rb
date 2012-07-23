@@ -53,22 +53,23 @@ module Config
       accumulation << pattern
 
       # Log the pattern addition.
-      log << "+ #{pattern_class}"
+      log << log.colorize("+ #{pattern_class}", :green)
 
       # Indent two to align with the conclusion below. This allows log output
       # triggered by the pattern setup to fall within this block.
-      log.indent do
+      log.indent(2) do
         yield pattern if block_given?
       end
-
-      # Show the final pattern.
-      log << "  #{pattern}"
 
       # Indent and call. This triggers a recursive addition of the entire
       # pattern branch.
       log.indent do
         pattern.call
+
+        # Show the final pattern.
+        log << log.colorize(pattern, :cyan)
       end
+
 
       nil
     end

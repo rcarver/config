@@ -18,14 +18,14 @@ module Config
         end
         case run_mode
         when :create
-          log << "#{prefix}Create #{self}"
+          log << log.colorize("#{prefix}Create #{self}", :green)
           prepare unless skip
           create  unless skip or noop?
         when :destroy
-          log << "#{prefix}Destroy #{self}"
+          log << log.colorize("#{prefix}Destroy #{self}", :red)
           destroy unless skip or noop?
         when :skip
-          log << "Skip #{self}"
+          log << log.colorize("Skip #{self}", :cyan)
         else
           raise "Unknown run_mode #{run_mode.inspect}"
         end
