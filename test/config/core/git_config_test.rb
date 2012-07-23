@@ -4,32 +4,29 @@ describe Config::Core::GitConfig do
 
   subject { Config::Core::GitConfig.new }
 
-  it "defaults the ssh_key" do
-    subject.ssh_key.must_equal "default"
-    subject.ssh_key = "other"
-    subject.ssh_key.must_equal "other"
-  end
-
-  it "creates an ssh config based on the url" do
+  before do
     subject.url = "git@github.com:rcarver/config-example.rig"
-    subject.ssh_key = "foo"
-
-    config = subject.ssh_config
-    config.host.must_equal "github.com"
-    config.user.must_equal "git"
-    config.ssh_key.must_equal "foo"
   end
 
   it "parses a url for the user and host" do
-    subject.url = "git@github.com:rcarver/config-example.rig"
     subject.host.must_equal "github.com"
     subject.user.must_equal "git"
   end
 
-  it "parses a url for the host" do
+  it "parses a url for the host only" do
     subject.url = "github.com:rcarver/config-example.rig"
     subject.host.must_equal "github.com"
     subject.user.must_equal nil
+  end
+
+  it "allows the host to be set" do
+    subject.host = "example.com"
+    subject.host.must_equal "example.com"
+  end
+
+  it "allows the user to be set" do
+    subject.user = "root"
+    subject.user.must_equal "root"
   end
 end
 

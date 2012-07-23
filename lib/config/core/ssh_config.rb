@@ -9,11 +9,16 @@ module Config
       # Get/Set the User to ssh as.
       attr_accessor :user
 
-      # Get/Set the name to the SSH key to use when connecting.
-      attr_accessor :ssh_key
+      # Set the name to the SSH key to use when connecting.
+      attr_writer :ssh_key
+
+      # Get the name to the SSH key to use when connecting.
+      def ssh_key
+        @ssh_key || "default"
+      end
 
       # Set the Port to connect to.
-      attr_writer   :port
+      attr_writer :port
 
       # Get the Port (defaults to 22).
       def port
@@ -21,7 +26,7 @@ module Config
       end
 
       # Set the hostname to connect to.
-      attr_writer   :hostname
+      attr_writer :hostname
 
       # Get the Hostname (defaults to host).
       def hostname

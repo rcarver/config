@@ -51,8 +51,18 @@ describe Config::ProjectSettings do
       remotes = subject.remotes
 
       remotes.project_git_config.url.must_equal "git@github.com:rcarver/config-example.git"
+      remotes.project_git_config.host.must_equal "github.com"
+      remotes.project_git_config.hostname.must_equal "github.com"
+      remotes.project_git_config.user.must_equal "git"
+      remotes.project_git_config.port.must_equal 22
+      remotes.project_git_config.ssh_key.must_equal "default"
 
       remotes.database_git_config.url.must_equal "git@github.com:rcarver/config-example-db.git"
+      remotes.database_git_config.host.must_equal "github.com"
+      remotes.database_git_config.hostname.must_equal "github.com"
+      remotes.database_git_config.user.must_equal "git"
+      remotes.database_git_config.port.must_equal 22
+      remotes.database_git_config.ssh_key.must_equal "default"
 
       # TODO: figure out ssh_configs syntax (current thought is to make a Configuration::RepeatedSet)
       remotes.standalone_ssh_configs.must_be_empty
