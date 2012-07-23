@@ -85,19 +85,19 @@ describe Config::Core::Executable do
       subject.run_mode = :create
       subject.execute
       subject.result.must_equal "prepared created"
-      log.must_equal "Create Test"
+      log.must_equal "+ Test"
     end
     it "destroys" do
       subject.run_mode = :destroy
       subject.execute
       subject.result.must_equal "destroyed"
-      log.must_equal "Destroy Test"
+      log.must_equal "- Test"
     end
     it "skips" do
       subject.run_mode = :skip
       subject.execute
       subject.result.must_equal ""
-      log.must_equal "Skip Test"
+      log.must_equal "SKIP Test"
     end
     it "skips if a parent is skipped" do
       parent = klass.new
@@ -105,7 +105,7 @@ describe Config::Core::Executable do
       subject.parent = parent
       subject.execute
       subject.result.must_equal ""
-      log.must_equal "Skip Create Test"
+      log.must_equal "SKIP + Test"
     end
     it "describes both a parent skip and its own skip" do
       parent = klass.new
@@ -114,7 +114,7 @@ describe Config::Core::Executable do
       subject.run_mode = :skip
       subject.execute
       subject.result.must_equal ""
-      log.must_equal "Skip Test"
+      log.must_equal "SKIP Test"
     end
     it "does not support other run modes" do
       subject.run_mode = :foobar
@@ -131,13 +131,13 @@ describe Config::Core::Executable do
         subject.run_mode = :create
         subject.execute
         subject.result.must_equal "prepared"
-        log.must_equal "Create Test"
+        log.must_equal "+ Test"
       end
       it "logs destroy but does not execute" do
         subject.run_mode = :destroy
         subject.execute
         subject.result.must_equal ""
-        log.must_equal "Destroy Test"
+        log.must_equal "- Test"
       end
     end
   end

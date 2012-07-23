@@ -16,12 +16,10 @@ module PatternIntegrationTest
       end
 
       def call
-        add self.class do |x|
-          x.name = "sub-#{name}"
-          x.value = "sub-#{value}"
-        end
+        @called = true
       end
 
+      attr_reader :called
       attr_reader :result
 
       def create
@@ -57,29 +55,69 @@ module PatternIntegrationTest
       restore.must_equal subject
     end
 
-    describe "#call" do
+    describe "#add" do
 
       before do
-        subject.call
+        subject.add TestPattern do |x|
+          x.name = "sub-name"
+          x.value = "sub-value"
+        end
+      end
+
+      it "accumulates one pattern" do
+        accumulation.size.must_equal 1
       end
 
       let(:child_pattern) { accumulation.to_a.first }
 
-      it "accumulates the child patterns" do
-        accumulation.size.must_equal 1
+      it "calls the child pattern" do
+        child_pattern.called.must_equal true
       end
+
       it "assigns itself to the child pattern" do
         child_pattern.parent.must_equal subject
       end
+
       it "configures the child pattern" do
-        child_pattern.name.must_equal "sub-test"
-        child_pattern.value.must_equal "sub-123"
+        child_pattern.name.must_equal "sub-name"
+        child_pattern.value.must_equal "sub-value"
       end
+
       it "logs the patterns that are added" do
         log_string.must_equal <<-STR
-Add PatternIntegrationTest::TestPattern
-  > [TestPattern:sub-test]
++ PatternIntegrationTest::TestPattern
+  [TestPattern:sub-name]
         STR
+      end
+    end
+
+    describe "#add is recursive" do
+
+      it "recursively calls patterns until all are found" do
+        skip "this is useful but not testable right now"
+
+        called = []
+
+        z, a, b, c, d, e, f, g = nil
+
+        g = lambda       { called << "g"; accumulation << e }
+          e = lambda     { called << "e" }
+        f = lambda       { called << "f"; accumulation << d }
+          d = lambda     { called << "d"; accumulation << c; accumulation << a }
+            c = lambda   { called << "c"; accumulation << b }
+              b = lambda { called << "b" }
+            a = lambda   { called << "a"; accumulation << z }
+              z = lambda { called << "z" }
+
+        accumulation << g
+        accumulation << f
+
+        g.call
+        f.call
+
+        called.size.must_equal 8
+        called.must_equal %w(g e f d c b a z)
+        accumulation.to_a.must_equal [g, e, f, d, c, b, a, z]
       end
     end
 

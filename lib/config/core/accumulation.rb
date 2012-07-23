@@ -17,22 +17,13 @@ module Config
         @current = nil
       end
 
-      # Instantiate and add a Pattern class.
+      # Public: Add a pattern.
       #
-      # parent - A Config::Pattern to define the parent/child
-      #          relationship.
-      # klass  - A sub-Class of Config::Pattern.
+      # pattern - Config::Pattern.
       #
-      # Yields the instantiated Pattern if a block is given.
-      #
-      # Returns the instantiated Pattern.
-      def add_pattern(parent, klass)
-        pattern = klass.new
-        yield pattern if block_given?
-        pattern.accumulation = self
-        pattern.parent = parent
-        self << pattern
-        pattern
+      # Returns nothing.
+      def <<(pattern)
+        @patterns << pattern
       end
 
       # Public: Get a new instance containing only the
@@ -61,11 +52,6 @@ module Config
       # Internal: Serialize the current patterns.
       def serialize
         Marshal.dump(@patterns)
-      end
-
-      # Internal: Add a Pattern.
-      def <<(pattern)
-        @patterns << pattern
       end
 
       # Internal: Get the Patterns.

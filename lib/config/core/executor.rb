@@ -1,31 +1,15 @@
 module Config
   module Core
-    # This class executes the patterns found in a
-    # Config::Core::Accumulation. This process involves several phases:
+    # This class executes the patterns found in a Config::Core::Accumulation.
+    # This process involves several phases:
     #
-    # 1. Accumulate. Given the root patterns, find all of their
-    #    children.
-    # 2. Validate. Ensure that all patterns have been defined properly.
-    # 3. Resolve. Ensure that there are no conflicting or duplicate
-    #    patterns.
-    # 4. Execute. Perform the operations of each pattern.
+    # 1. Validate. Ensure that all patterns have been defined properly.
+    # 2. Resolve. Ensure that there are no conflicting or duplicate patterns.
+    # 3. Execute. Perform the operations of each pattern.
     class Executor
 
       def initialize(accumulation)
         @accumulation = accumulation
-      end
-
-      def accumulate
-        # Get the root patterns.
-        roots = @accumulation.to_a.dup
-        # Reset the accumulation.
-        @accumulation.clear
-        # Rebuild the accumulation as a depth-first
-        # traversal of each root.
-        roots.each do |p|
-          @accumulation << p
-          traverse(@accumulation, p)
-        end
       end
 
       def validate!
@@ -81,15 +65,6 @@ module Config
         end
       end
 
-    protected
-
-      def traverse(accumulation, pattern)
-        size = accumulation.size
-        pattern.call
-        accumulation.to_a.slice(size..-1).each do |p|
-          traverse(accumulation, p)
-        end
-      end
     end
   end
 end

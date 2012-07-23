@@ -18,7 +18,7 @@ module Config
     #
     # Returns nothing.
     def <<(input)
-      input.split("\n").each do |line|
+      input.to_s.split("\n").each do |line|
         @stream.puts "#{current_indent}#{line}"
       end
     end
@@ -87,7 +87,7 @@ module Config
         fore = FOREGROUND[foreground] or raise ArgumentError, "Unknown foreground color #{foreground.inspect}"
         "#{fore}#{str}#{RESET}"
       else
-        str
+        str.to_s
       end
     end
 
