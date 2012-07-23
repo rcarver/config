@@ -14,7 +14,6 @@ class UnitSpec < MiniTest::Spec
 
     # Now execute the result.
     executor = Config::Core::Executor.new(accumulation)
-    executor.accumulate
     executor.validate!
     executor.resolve!
     executor.execute

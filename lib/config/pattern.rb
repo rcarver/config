@@ -43,13 +43,42 @@ module Config
 
     # Public
     def add(pattern_class, &block)
-      log << "Add #{pattern_class}"
-      pattern = nil
+
+      # Instantiate the pattern.
+      pattern = pattern_class.new
+
+      # Configure and accumulate the pattern.
+      pattern.accumulation = self.accumulation
+      pattern.parent = self
+      accumulation << pattern
+
+      # Log the pattern addition.
+      log << log.colorize("+ #{pattern_class}", :green)
+
+      # Indent two to align with the conclusion below. This allows log output
+      # triggered by the pattern setup to fall within this block.
       log.indent(2) do
-        pattern = @accumulation.add_pattern(self, pattern_class, &block)
+        yield pattern if block_given?
       end
-      log << "  > #{pattern}"
+
+      # Indent and call. This triggers a recursive addition of the entire
+      # pattern branch.
+      log.indent do
+        pattern.call
+
+        # Show the final pattern.
+        log << log.colorize(pattern, :cyan)
+      end
+
+
       nil
+    end
+
+    # Internal.
+    attr_writer :accumulation
+
+    def accumulation
+      @accumulation ||= []
     end
 
     def validation_errors
@@ -62,8 +91,6 @@ module Config
       errors.concat validation_errors
       errors
     end
-
-    attr_accessor :accumulation
 
     def inspect
       attrs = JSON.generate(attributes)

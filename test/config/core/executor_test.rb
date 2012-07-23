@@ -6,31 +6,6 @@ describe Config::Core::Executor do
 
   subject { Config::Core::Executor.new(accumulation) }
 
-  describe "#accumulate" do
-
-    it "recursively calls patterns until all are found" do
-      called = []
-
-      a, b, c, d, e, f, g = nil
-
-      g = lambda       { called << "g"; accumulation << e }
-        e = lambda     { called << "e" }
-      f = lambda       { called << "f"; accumulation << d }
-        d = lambda     { called << "d"; accumulation << c; accumulation << b }
-          c = lambda   { called << "c" }
-          b = lambda   { called << "b"; accumulation << a }
-            a = lambda { called << "a" }
-
-      accumulation.concat [g, f]
-
-      subject.accumulate
-
-      called.size.must_equal 7
-      called.must_equal %w(g e f d c b a)
-      accumulation.must_equal [g, e, f, d, c, b, a]
-    end
-  end
-
   describe "#validate!" do
 
     let(:pattern) { MiniTest::Mock.new }

@@ -38,7 +38,6 @@ module Config
       log << "Accumulate #{self}"
       log.indent do
         root.instance_eval(&@block)
-        @executor.accumulate
       end
 
       @accumulation
