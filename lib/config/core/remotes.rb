@@ -7,8 +7,8 @@ module Config
       #
 
       def initialize
-        @project_git_config = nil
-        @database_git_config = nil
+        @project_git_config = Config::Core::GitConfig.new
+        @database_git_config = Config::Core::GitConfig.new
         @standalone_ssh_configs = []
       end
 
@@ -22,8 +22,8 @@ module Config
       # Returns an Array of Config::Core::SSHConfig.
       def ssh_configs
         configs = []
-        configs << project_git_config.ssh_config if project_git_config
-        configs << database_git_config.ssh_config if database_git_config
+        configs << project_git_config if project_git_config.host
+        configs << database_git_config if database_git_config.host
         configs.concat @standalone_ssh_configs
         configs.compact
       end
@@ -32,7 +32,7 @@ module Config
       #
       # Returns an Array of String.
       def ssh_hostnames
-        ssh_configs.map { |c| c.hostname }.uniq.sort
+        ssh_configs.map { |c| c.hostname }.compact.uniq.sort
       end
 
       def dump_yaml
