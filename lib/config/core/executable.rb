@@ -13,19 +13,19 @@ module Config
       # Returns nothing.
       def execute
         if skip_parent?
-          prefix = "Skip "
+          prefix = "SKIP "
           skip = true
         end
         case run_mode
         when :create
-          log << log.colorize("#{prefix}Create #{self}", :green)
+          log << log.colorize("#{prefix}+ #{self}", :green)
           prepare unless skip
           create  unless skip or noop?
         when :destroy
-          log << log.colorize("#{prefix}Destroy #{self}", :red)
+          log << log.colorize("#{prefix}- #{self}", :red)
           destroy unless skip or noop?
         when :skip
-          log << log.colorize("Skip #{self}", :cyan)
+          log << log.colorize("SKIP #{self}", :cyan)
         else
           raise "Unknown run_mode #{run_mode.inspect}"
         end

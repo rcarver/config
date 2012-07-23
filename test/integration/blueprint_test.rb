@@ -83,8 +83,8 @@ Accumulate Blueprint webserver
 Validate Blueprint webserver
 Resolve Blueprint webserver
 Execute Blueprint webserver
-  Create [BlueprintTest::Test name:"one"]
-  Create [BlueprintTest::Test name:"two"]
+  + [BlueprintTest::Test name:"one"]
+  + [BlueprintTest::Test name:"two"]
         STR
       end
     end
@@ -183,8 +183,8 @@ Accumulate Blueprint webserver
 Validate Blueprint webserver
 Resolve Blueprint webserver
 Execute Blueprint webserver
-  Create [BlueprintTest::Test name:"the test"]
-  Skip [BlueprintTest::Test name:"the test"]
+  + [BlueprintTest::Test name:"the test"]
+  SKIP [BlueprintTest::Test name:"the test"]
         STR
       end
     end
@@ -260,9 +260,9 @@ Accumulate Blueprint current webserver
 Validate Blueprint current webserver
 Resolve Blueprint current webserver
 Execute Blueprint current webserver
-  Destroy [BlueprintTest::Test name:"pattern1"]
-  Create [BlueprintTest::Test name:"pattern2"]
-  Create [BlueprintTest::Test name:"pattern3"]
+  - [BlueprintTest::Test name:"pattern1"]
+  + [BlueprintTest::Test name:"pattern2"]
+  + [BlueprintTest::Test name:"pattern3"]
         STR
       end
     end
@@ -301,7 +301,7 @@ Accumulate Blueprint webserver
 Validate Blueprint webserver
 Resolve Blueprint webserver
 Execute Blueprint webserver
-  Create [BlueprintTest::Test name:"bob"]
+  + [BlueprintTest::Test name:"bob"]
         STR
       end
     end
