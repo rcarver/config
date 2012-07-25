@@ -50,7 +50,6 @@ module Config
 
     # Used by get_remotes.
     def build_git_config(name)
-      return unless _set(name)
       git_config = Config::Core::GitConfig.new
       git_config.url = _key(_set(name), :url)
       build_ssh_config(_set(name), git_config)
