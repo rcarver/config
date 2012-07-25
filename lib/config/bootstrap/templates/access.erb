@@ -11,6 +11,7 @@ if [ -f /root/.ssh/config ]; then
   rm /root/.ssh/config
 fi
 
+touch /root/.ssh/config
 <% ssh_configs.each do |config| %>
 echo '<%= config %>' >> /root/.ssh/config
 
@@ -29,6 +30,7 @@ fi
 # TODO: we could use ssh-keygen -F [host] to determine if we need to
 # install it. Or, remove and reinstall it. Or any number of things
 # whereby we wouldn't need to rm known_hosts each time.
+touch /root/.ssh/known_hosts
 <% ssh_known_hosts.each do |host, signature| %>
 echo '<%= signature %>' >> /root/.ssh/known_hosts
 
