@@ -4,6 +4,12 @@ describe Config::Core::SSHConfig do
 
   subject { Config::Core::SSHConfig.new }
 
+  it "defaults the ssh_key" do
+    subject.ssh_key.must_equal "default"
+    subject.ssh_key = "other"
+    subject.ssh_key.must_equal "other"
+  end
+
   it "defaults hostname to host" do
     subject.hostname.must_equal nil
     subject.host = "foo.com"

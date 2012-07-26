@@ -56,12 +56,16 @@ DSL for project settings.
 
   * `project_repo`
 
-        url: Set the git url for the project.
+        url: Set the git url for the project. Setting the url is a
+             shorthand for setting user, host and path.
+        path: Set the path of the git repo.
         (and anything supported by ssh_configs)
 
   * `data_repo`
 
-        url: Set the git url for the database.
+        url: Set the git url for the project. Setting the url is a
+             shorthand for setting user, host and path.
+        path: Set the path of the git repo.
         (and anything supported by ssh_configs)
 
   * `ssh_configs (repeated)
@@ -88,7 +92,8 @@ Examples.
 
     # Long form, specifying the complete ssh configuration.
     configure :project_git_repo,
-      url: "github-project:rcarver/config-example.git",
+      path: "rcarver/config-example.git",
+      host: "github-project",
       hostname: "github.com",
       user: "tig",
       port: 999,
