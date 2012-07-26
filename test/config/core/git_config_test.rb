@@ -19,6 +19,11 @@ describe Config::Core::GitConfig do
       subject.url.must_equal "github.com:rcarver/config-example.git"
     end
 
+    it "generates a url with only a path" do
+      subject.path = "/tmp/repo"
+      subject.url.must_equal "/tmp/repo"
+    end
+
     it "does not generates a url when too few parts are present" do
       subject.host = "github.com"
       subject.url.must_equal nil

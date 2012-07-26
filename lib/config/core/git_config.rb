@@ -15,6 +15,8 @@ module Config
           "#{user}@#{host}:#{path}"
         when host && path
           "#{host}:#{path}"
+        else
+          path
         end
       end
 
