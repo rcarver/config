@@ -12,7 +12,7 @@ module Config
     #
     # Returns a Config::Node or nil.
     def get_node(fqn)
-      @database.get_node(fqn)
+      @database.all_nodes.find { |node| node.fqn == fqn }
     end
 
     # TODO:
