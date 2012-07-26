@@ -20,6 +20,9 @@ describe "filesystem running items", Config::Project do
           file "#{tmpdir}/file2" do |f|
             f.content = node.ec2.ip_address
           end
+          file "#{tmpdir}/file3" do |f|
+            f.content = cluster.name
+          end
         STR
       end
 
@@ -38,19 +41,24 @@ describe "filesystem running items", Config::Project do
         subject.try_blueprint("message", "production")
         log_string.must_include("+ [File #{tmpdir}/file1]")
         log_string.must_include("+ [File #{tmpdir}/file2]")
+        log_string.must_include("+ [File #{tmpdir}/file3]")
         log_string.must_include("hello world")
         (tmpdir + "file1").wont_be :exist?
         (tmpdir + "file2").wont_be :exist?
+        (tmpdir + "file3").wont_be :exist?
       end
 
-      it "executes the blueprint with a spy cluster and spy node" do
+      it "executes the blueprint with a spy configuration, cluster, and node" do
         subject.try_blueprint("message")
         log_string.must_include("+ [File #{tmpdir}/file1]")
         log_string.must_include("+ [File #{tmpdir}/file2]")
+        log_string.must_include("+ [File #{tmpdir}/file3]")
         log_string.must_include("fake:messages.greeting")
         log_string.must_include("fake:ec2.ip_address")
+        log_string.must_include("fake:cluster")
         (tmpdir + "file1").wont_be :exist?
         (tmpdir + "file2").wont_be :exist?
+        (tmpdir + "file3").wont_be :exist?
       end
     end
 
@@ -68,6 +76,7 @@ describe "filesystem running items", Config::Project do
         subject.execute_node(node.fqn)
         (tmpdir + "file1").read.must_equal "hello world"
         (tmpdir + "file2").read.must_equal "127.0.0.1"
+        (tmpdir + "file3").read.must_equal "production"
       end
 
       it "executes the blueprint with a previous accumulation" do

@@ -89,6 +89,7 @@ module Config
       # Configure.
       blueprint.facts = node.facts
       blueprint.configuration = merged_configuration(cluster, node)
+      blueprint.cluster_context = Config::ClusterContext.new(cluster, @nodes)
       blueprint.previous_accumulation = previous_accumulation if previous_accumulation
 
       # Execute.
@@ -116,8 +117,10 @@ module Config
       if cluster_name
         cluster = get_cluster(cluster_name)
         blueprint.configuration = merged_configuration(cluster)
+        blueprint.cluster_context = Config::ClusterContext.new(cluster, @nodes)
       else
         blueprint.configuration = Config::Spy::Configuration.new(merged_configuration)
+        blueprint.cluster_context = Config::Spy::ClusterContext.new
       end
       blueprint.facts = Config::Spy::Facts.new
 

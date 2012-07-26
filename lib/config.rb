@@ -64,6 +64,7 @@ module Config
   end
 
   module Spy
+    autoload :ClusterContext, "config/spy/cluster_context"
     autoload :Configuration, "config/spy/configuration"
     autoload :Facts, "config/spy/facts"
   end
