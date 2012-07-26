@@ -5,7 +5,7 @@ module Config
 
     # These are the configuration sets that are expected to be defined.
     # The definition of any set is optional, though it may result in
-    # missing data at another layer. The keys for each set are also 
+    # missing data at another layer. The keys for each set are also
     # optional.
     #
     # TODO: how to document the sets and keys used here?
@@ -50,10 +50,9 @@ module Config
 
     # Used by get_remotes.
     def build_git_config(name)
-      return unless _set(name)
       git_config = Config::Core::GitConfig.new
       git_config.url = _key(_set(name), :url)
-      build_ssh_config(_set(name), git_config.ssh_config)
+      build_ssh_config(_set(name), git_config)
       git_config
     end
 
