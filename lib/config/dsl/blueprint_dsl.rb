@@ -15,6 +15,11 @@ module Config
       # Returns a Config::Configuration.
       attr_reader :configure
 
+      # Public: Get the current cluster.
+      #
+      # Returns a Config::ClusterContext.
+      attr_reader :cluster
+
       def to_s
         "<Blueprint>"
       end
@@ -29,6 +34,10 @@ module Config
 
       def _set_configuration(configuration)
         @configure = configuration
+      end
+
+      def _set_cluster_context(cluster_context)
+        @cluster = cluster_context
       end
     end
   end
