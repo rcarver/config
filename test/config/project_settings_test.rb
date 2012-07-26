@@ -22,8 +22,8 @@ describe Config::ProjectSettings do
 
     it "loads nothing" do
       remotes = subject.remotes
-      remotes.project_git_config.must_equal nil
-      remotes.database_git_config.must_equal nil
+      remotes.project_git_config.url.must_equal nil
+      remotes.database_git_config.url.must_equal nil
       remotes.standalone_ssh_configs.must_equal []
     end
 
