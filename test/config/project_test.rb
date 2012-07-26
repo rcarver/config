@@ -95,7 +95,7 @@ describe Config::Project do
 
       before do
         node.facts = facts
-        nodes.expect(:find_node, node, [node.fqn])
+        nodes.expect(:get_node, node, [node.fqn])
 
         project_loader.expect(:get_cluster, cluster, ["production"])
         cluster.expect(:configuration, configuration)
@@ -145,7 +145,7 @@ describe Config::Project do
       let(:cluster) { MiniTest::Mock.new }
 
       it "includes the self, cluster and node configurations" do
-        nodes.expect(:find_node, node, ["production-webserver-1"])
+        nodes.expect(:get_node, node, ["production-webserver-1"])
         # TODO: load node configuration
         #node.expect(:configuration, configuration)
         node.expect(:cluster_name, "production")

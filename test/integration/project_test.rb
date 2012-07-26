@@ -64,7 +64,7 @@ describe "filesystem running items", Config::Project do
       end
 
       it "executes the blueprint" do
-        nodes.expect(:find_node, node, [node.fqn])
+        nodes.expect(:get_node, node, [node.fqn])
         subject.execute_node(node.fqn)
         (tmpdir + "file1").read.must_equal "hello world"
         (tmpdir + "file2").read.must_equal "127.0.0.1"

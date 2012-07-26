@@ -144,7 +144,7 @@ module Config
     end
 
     def get_node(name)
-      @nodes.find_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
+      @nodes.get_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
     end
 
     def merged_configuration(cluster = nil, node = nil)
