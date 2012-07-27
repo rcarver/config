@@ -25,6 +25,28 @@ describe Config::Nodes do
     end
   end
 
+  describe "#find_node" do
+
+    it "returns a matching node" do
+      skip
+    end
+
+    it "returns nil if no nodes match" do
+      skip
+    end
+
+    it "raises an exception if more than one node matches" do
+      skip
+    end
+  end
+
+  describe "#find_all_nodes" do
+
+    it "returns matching nodes" do
+      skip
+    end
+  end
+
   describe "#update_node" do
 
     let(:fact_finder) { -> { facts } }
