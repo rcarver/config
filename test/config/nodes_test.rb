@@ -20,8 +20,8 @@ describe Config::Nodes do
     end
 
     it "returns nil if the node does not exist" do
-      database.expect(:all_nodes, [])
-      subject.get_node(node.fqn).must_equal nil
+      database.expect(:all_nodes, [node])
+      subject.get_node("production-other-one").must_equal nil
     end
   end
 
