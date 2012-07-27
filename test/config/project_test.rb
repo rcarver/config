@@ -46,6 +46,7 @@ describe Config::Project do
 
       # Configure the blueprint.
       blueprint.expect(:configuration=, nil, [assigned_configuration_class])
+      blueprint.expect(:cluster_context=, nil, [assigned_cluster_context_class])
       blueprint.expect(:facts=, nil, [facts])
 
       # Execute the blueprint.
@@ -64,6 +65,7 @@ describe Config::Project do
       describe "with a cluster" do
 
         let(:assigned_configuration_class) { Config::Configuration }
+        let(:assigned_cluster_context_class) { Config::ClusterContext }
 
         before do
           project_loader.expect(:get_cluster, cluster, ["production"])
@@ -79,6 +81,7 @@ describe Config::Project do
       describe "without a cluster" do
 
         let(:assigned_configuration_class) { Config::Spy::Configuration }
+        let(:assigned_cluster_context_class) { Config::Spy::ClusterContext }
 
         it "executes the blueprint in noop mode, with a spy cluster" do
           result = subject.try_blueprint("webserver")
@@ -92,10 +95,11 @@ describe Config::Project do
       let(:node) { Config::Node.new("production", "webserver", "1") }
 
       let(:assigned_configuration_class) { Config::Configuration }
+      let(:assigned_cluster_context_class) { Config::ClusterContext }
 
       before do
         node.facts = facts
-        nodes.expect(:find_node, node, [node.fqn])
+        nodes.expect(:get_node, node, [node.fqn])
 
         project_loader.expect(:get_cluster, cluster, ["production"])
         cluster.expect(:configuration, configuration)
@@ -145,7 +149,7 @@ describe Config::Project do
       let(:cluster) { MiniTest::Mock.new }
 
       it "includes the self, cluster and node configurations" do
-        nodes.expect(:find_node, node, ["production-webserver-1"])
+        nodes.expect(:get_node, node, ["production-webserver-1"])
         # TODO: load node configuration
         #node.expect(:configuration, configuration)
         node.expect(:cluster_name, "production")

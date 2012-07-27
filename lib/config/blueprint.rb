@@ -23,6 +23,7 @@ module Config
 
     attr_accessor :facts
     attr_accessor :configuration
+    attr_accessor :cluster_context
     attr_accessor :previous_accumulation
 
     def accumulate
@@ -32,6 +33,7 @@ module Config
       root = Config::DSL::BlueprintDSL.new
       root._set_facts(facts)
       root._set_configuration(configuration)
+      root._set_cluster_context(cluster_context)
       root.accumulation = @accumulation
       root.parent = nil
 
