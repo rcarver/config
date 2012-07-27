@@ -55,7 +55,7 @@ describe "filesystem running items", Config::Project do
         log_string.must_include("+ [File #{tmpdir}/file3]")
         log_string.must_include("fake:messages.greeting")
         log_string.must_include("fake:ec2.ip_address")
-        log_string.must_include("fake:cluster")
+        log_string.must_include("fake:spy_cluster")
         (tmpdir + "file1").wont_be :exist?
         (tmpdir + "file2").wont_be :exist?
         (tmpdir + "file3").wont_be :exist?
