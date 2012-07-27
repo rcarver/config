@@ -11,7 +11,6 @@ module Config
 
     def initialize(name)
       @name = name
-      @nodes = []
       @configuration = Config::Configuration.new
     end
 
@@ -20,28 +19,6 @@ module Config
 
     def to_s
       "#{name} cluster"
-    end
-
-    def find_node(options)
-      nodes = find_all(options)
-      raise AmbiguousNode if nodes.size > 1
-      nodes.first
-    end
-
-    def find_all_nodes(options)
-      @nodes.find_all { |node| node_match?(node, options) }
-    end
-
-  protected
-
-    def node_match?(node, options)
-      options.all? do |pattern, attrs|
-        if pattern = node.patterns[pattern]
-          attrs.all? do |key, value|
-            pattern.attributes[key] == value
-          end
-        end
-      end
     end
 
   end

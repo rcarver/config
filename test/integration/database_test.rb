@@ -27,20 +27,21 @@ Database updated. Now at: a "message"
     end
   end
 
-  describe "#find_node" do
+  describe "#all_nodes" do
 
-    it "instantiates a node from disk" do
+    it "instantiates nodes from disk" do
       node_file.dirname.mkpath
       node_file.open("w") do |f|
         f.print JSON.dump(node.as_json)
       end
-      found = subject.find_node(node.fqn)
-      found.must_equal node
+      found = subject.all_nodes
+      found.size.must_equal 1
+      found.first.must_equal node
     end
 
-    it "returns nil if no node exists" do
-      found = subject.find_node(node.fqn)
-      found.must_equal nil
+    it "returns an empty array if no nodes exists" do
+      found = subject.all_nodes
+      found.must_equal []
     end
   end
 

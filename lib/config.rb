@@ -28,6 +28,7 @@ require 'config/log'
 require 'config/pattern'
 require 'config/blueprint'
 require 'config/cluster'
+require 'config/cluster_context'
 require 'config/configuration'
 require 'config/database'
 require 'config/global'
@@ -63,6 +64,7 @@ module Config
   end
 
   module Spy
+    autoload :ClusterContext, "config/spy/cluster_context"
     autoload :Configuration, "config/spy/configuration"
     autoload :Facts, "config/spy/facts"
   end

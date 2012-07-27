@@ -189,6 +189,44 @@ Execute Blueprint webserver
       end
     end
 
+    describe "using top level variables" do
+
+      let(:code) {
+        <<-STR
+          add BlueprintTest::Test do |t|
+            t.name = node.ip_address
+            t.value = cluster.name
+          end
+          add BlueprintTest::Test do |t|
+            t.name = "another"
+            t.value = configure.sample.value
+          end
+        STR
+      }
+
+      let(:facts) { Config::Core::Facts.new("ip_address" => "192.0.0.1") }
+      let(:cluster) { Config::Cluster.new("prod") }
+      let(:nodes) { MiniTest::Mock.new }
+      let(:configuration) { Config::Configuration.new }
+
+      before do
+        cluster_context = Config::ClusterContext.new(cluster, nodes)
+        configuration.set_group(:sample, value: 123)
+
+        subject.facts = facts
+        subject.configuration = configuration
+        subject.cluster_context = cluster_context
+      end
+
+      it "executes the patterns" do
+        subject.execute
+        BlueprintTest.value.must_equal [
+          [:create, "192.0.0.1", "prod"],
+          [:create, "another", 123]
+        ]
+      end
+    end
+
     describe "with a previous accumulation" do
 
       # Previously we ran three simple patterns.
