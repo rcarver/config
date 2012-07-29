@@ -1,10 +1,10 @@
 require 'helper'
 
-describe Config::Core::Cipher do
+describe Config::Secrets::Cipher do
 
   let(:key) { "shhhh" * 10 }
 
-  subject { Config::Core::Cipher.new(key) }
+  subject { Config::Secrets::Cipher.new(key) }
 
   it "encrypts and decrypts" do
     encrypt = subject.encrypt("hello world")

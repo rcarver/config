@@ -2,7 +2,7 @@ require 'base64'
 require 'openssl'
 
 module Config
-  module Core
+  module Secrets
     # Cipher encrypts and decrypts information using a secret key.
     class Cipher
 
