@@ -2,6 +2,7 @@ require 'active_support'
 require 'active_support/inflector'
 require 'json'
 require 'pathname'
+require 'pbkdf2'
 
 require 'config/version'
 
@@ -23,6 +24,7 @@ require 'config/core/ssh_config'
 require 'config/core/git_config'
 
 require 'config/secrets/cipher'
+require 'config/secrets/generator'
 
 require 'config/patterns'
 require 'config/log'
