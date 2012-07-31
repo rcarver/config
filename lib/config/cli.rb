@@ -36,6 +36,7 @@ module Config
     config "create-pattern", :CreatePattern
     config "create-topic", :CreateTopic
     config "exec-node", :ExecNode
+    config "create-master-secret", :CreateMasterSecret
     config "init-project", :InitProject
     config "know-hosts", :KnowHosts
     config "show-node", :ShowNode

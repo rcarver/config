@@ -3,8 +3,9 @@ require 'helper'
 describe Config::ProjectSettings do
 
   let(:configuration) { Config::Configuration.new }
+  let(:private_data)  { Config::PrivateData.new }
 
-  subject { Config::ProjectSettings.new(configuration) }
+  subject { Config::ProjectSettings.new(configuration, private_data) }
 
   describe "#domain" do
 
@@ -75,6 +76,13 @@ describe Config::ProjectSettings do
 
       #remotes.standalone_ssh_configs[1].host.must_equal "example.com"
       #remotes.standalone_ssh_configs[1].ssh_key.must_equal "example"
+    end
+  end
+
+  describe "#cipher" do
+
+    it "configures a cipher based on the current partition" do
+      skip
     end
   end
 end

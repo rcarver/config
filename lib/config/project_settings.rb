@@ -17,9 +17,13 @@ module Config
     PROJECT_GIT_CONFIG  = :project_git_config
     DATABASE_GIT_CONFIG = :database_git_config
     SSH_CONFIGS         = :ssh_configs
+    #
+    # Secrets
+    SECRETS             = :secrets
 
-    def initialize(configuration)
+    def initialize(configuration, private_data)
       @configuration = configuration
+      @private_data = private_data
     end
 
     def domain
@@ -36,19 +40,41 @@ module Config
       remotes
     end
 
+    def cipher
+      partition = _get(SECRETS, :partition) || "default"
+      key = @private_data.secret(partition).read
+      if key.nil?
+        master_secret = @private_data.secret("master").read
+        if master_secret
+          key = secrets_generator.generate_key(master_secret, partition)
+        end
+      end
+      if key.nil?
+        raise "Neither the #{partition.inspect} secret nor the master secret are available"
+      end
+      Config::Secrets::Cipher.new(key)
+    end
+
   protected
 
+    # Safe reader.
+    def _get(set_name, key_name, &block)
+      _key(_set(set_name), key_name, &block)
+    end
+
     # Safe set reader.
-    def _set(name)
-      @configuration[name] if @configuration.defined?(name)
+    def _set(set_name)
+      @configuration[set_name] if @configuration.defined?(set_name)
     end
 
     # Safe key reader.
-    def _key(set, key)
-      set[key] if set && set.defined?(key)
+    def _key(set, key_name, &block)
+      value = set[key_name] if set && set.defined?(key_name)
+      yield value if value && block_given?
+      value
     end
 
-    # Used by get_remotes.
+    # Used by remotes.
     def build_git_config(name)
       git_config = Config::Core::GitConfig.new
       git_config.url = _key(_set(name), :url)
@@ -56,7 +82,7 @@ module Config
       git_config
     end
 
-    # Used by get_remotes.
+    # Used by remotes.
     def build_ssh_config(set, ssh_config = nil)
       ssh_config ||= Config::Core::SSHConfig.new
       ssh_config.host =     _key(set, :host)
@@ -65,6 +91,15 @@ module Config
       ssh_config.hostname = _key(set, :hostname)
       ssh_config.ssh_key =  _key(set, :ssh_key)
       ssh_config
+    end
+
+    # Used by cipher.
+    def secrets_generator
+      generator = Config::Secrets::Generator.new
+      _get(SECRETS, :hash_function) { |v| generator.hash_function = v }
+      _get(SECRETS, :iterations)    { |v| generator.iterations = v }
+      _get(SECRETS, :key_length)    { |v| generator.key_length = v }
+      generator
     end
 
   end
