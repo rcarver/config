@@ -21,9 +21,8 @@ module Config
     # Secrets
     SECRETS             = :secrets
 
-    def initialize(configuration, private_data)
+    def initialize(configuration)
       @configuration = configuration
-      @private_data = private_data
     end
 
     def domain
@@ -40,19 +39,13 @@ module Config
       remotes
     end
 
-    def cipher
-      partition = _get(SECRETS, :partition) || "default"
-      key = @private_data.secret(partition).read
-      if key.nil?
-        master_secret = @private_data.secret("master").read
-        if master_secret
-          key = secrets_generator.generate_key(master_secret, partition)
-        end
-      end
-      if key.nil?
-        raise "Neither the #{partition.inspect} secret nor the master secret are available"
-      end
-      Config::Secrets::Cipher.new(key)
+    def secrets_generator
+      generator = Config::Secrets::Generator.new
+      _get(SECRETS, :hash_function) { |v| generator.hash_function = v }
+      _get(SECRETS, :iterations)    { |v| generator.iterations = v }
+      _get(SECRETS, :key_length)    { |v| generator.key_length = v }
+      _get(SECRETS, :salt)          { |v| generator.salt = v }
+      generator
     end
 
   protected
@@ -94,13 +87,6 @@ module Config
     end
 
     # Used by cipher.
-    def secrets_generator
-      generator = Config::Secrets::Generator.new
-      _get(SECRETS, :hash_function) { |v| generator.hash_function = v }
-      _get(SECRETS, :iterations)    { |v| generator.iterations = v }
-      _get(SECRETS, :key_length)    { |v| generator.key_length = v }
-      generator
-    end
 
   end
 end

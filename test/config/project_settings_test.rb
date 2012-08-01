@@ -3,9 +3,8 @@ require 'helper'
 describe Config::ProjectSettings do
 
   let(:configuration) { Config::Configuration.new }
-  let(:private_data)  { Config::PrivateData.new }
 
-  subject { Config::ProjectSettings.new(configuration, private_data) }
+  subject { Config::ProjectSettings.new(configuration) }
 
   describe "#domain" do
 
@@ -79,9 +78,9 @@ describe Config::ProjectSettings do
     end
   end
 
-  describe "#cipher" do
+  describe "#secrets_generator" do
 
-    it "configures a cipher based on the current partition" do
+    it "configures a secrets_generator" do
       skip
     end
   end
