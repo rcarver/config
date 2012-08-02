@@ -123,6 +123,22 @@ If the value is stored in a file, pass a Symbol naming the file.
 Decryption is done using the settings defined by the current
 configuration level.
 
+## Secrets and nodes
+
+In order to decrypt secrets, each node must have access to the partition
+key(s). To do this, the node must either have a copy of the master
+secret or the derived partition key. Since distributing the master
+secret would expose all possible derived secrets, Config instead only
+distributes the derived partition keys used by the node.
+
+Key distribution is done when a node is bootstrapped. Doing so means
+that the node has no dependence on a key server or the like. However,
+because the keys are only updated at bootstrap it's important to decide
+up front on the encryption settings for a cluster.
+
+TODO: how would secrets rotation work? It should be possible to
+redistribute keys without necessarily re-bootstrapping a node.
+
 ## Examples
 
 Following is an example to demonstrate the secrets workflow.
