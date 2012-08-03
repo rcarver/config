@@ -51,7 +51,7 @@ module Config
 
         def initialize(name, group = nil)
           @name = name
-          @group = group || Config::Configuration::Group.new(name)
+          @group = group || Config::Configuration::Group.new("Spy", name)
           @keys = Set.new
         end
 

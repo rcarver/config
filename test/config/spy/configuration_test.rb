@@ -50,7 +50,7 @@ end
 
 describe Config::Spy::Configuration::Group do
 
-  let(:group) { Config::Configuration::Group.new(:test, a: 1) }
+  let(:group) { Config::Configuration::Group.new("sample", :test, a: 1) }
 
   subject { Config::Spy::Configuration::Group.new(:sample, group) }
 

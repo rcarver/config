@@ -155,7 +155,7 @@ module Config
       configs << get_global.configuration
       configs << cluster.configuration if cluster
       #configs << node.configuration if node
-      configs.inject(Config::Configuration.new) { |a, config| a + config }
+      Config::Configuration.merge(configs)
     end
 
   end
