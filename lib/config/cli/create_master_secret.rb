@@ -18,8 +18,7 @@ Generate a master secret and store it in your private data.
       def execute
         # TODO: Use a better method to generate the master key.
         password = (rand * 1000).to_s
-        salt = (rand * 1000).to_s
-        key = @secrets_generator.generate_key(password, salt)
+        key = @secrets_generator.generate_key(password)
         private_data.secret("master").write(key)
       end
 

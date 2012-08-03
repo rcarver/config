@@ -33,10 +33,11 @@ module Config
     config "create-blueprint", :CreateBlueprint
     config "create-bootstrap", :CreateBootstrap
     config "create-cluster", :CreateCluster
+    config "create-master-secret", :CreateMasterSecret
     config "create-pattern", :CreatePattern
     config "create-topic", :CreateTopic
+    config "encrypt", :Encrypt
     config "exec-node", :ExecNode
-    config "create-master-secret", :CreateMasterSecret
     config "init-project", :InitProject
     config "know-hosts", :KnowHosts
     config "show-node", :ShowNode

@@ -186,6 +186,37 @@ module Config
     Config::Nodes.new(database)
   end
 
+  # Internal: Get a cipher to encrypt or decrypt secrets.
+  #
+  # secrets_generator - Config::Secrets::Generator.
+  #
+  # Returns a Config::Secrets::Cipher.
+  # Raises an exception if a key cannot be found.
+  def self.cipher(secrets_generator)
+    private_data = self.private_data
+    partition = secrets_generator.partition
+
+    # First look for the key in a file. This means that this partition
+    # key has been stored on the node.
+    key = private_data.secret(partition).read
+
+    # Next look for the master secret. If the master secret is available
+    # then we can generate the key.
+    if key.nil?
+      if master_secret = private_data.secret("master").read
+        key = secrets_generator.generate_key(master_secret, partition)
+      end
+    end
+
+    # If neither the partition key or the master secret are available
+    # then we can't create a cipher.
+    if key.nil?
+      raise "Neither the #{partition.inspect} secret nor the master secret are available"
+    end
+
+    Config::Secrets::Cipher.new(key)
+  end
+
   # Internal: When no Remotes have been configured, we can gather some useful
   # defaults from existing git repository configurations.
   #
