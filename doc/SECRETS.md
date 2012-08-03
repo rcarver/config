@@ -112,13 +112,13 @@ this:
 Secret values are decrypted automatically at runtime. Config knows that
 a value should be decrypted when you set it using the `secret` helper.
 
-  configure :amazon,
-    aws_secret_access_key: secret("<encrypted aws key>")
+    configure :amazon,
+      aws_secret_access_key: secret("<encrypted aws key>")
 
 If the value is stored in a file, pass a Symbol naming the file.
 
-  configure :amazon,
-    aws_secret_access_key: secret(:aws_secret_access_key)
+    configure :amazon,
+      aws_secret_access_key: secret(:aws_secret_access_key)
 
 Decryption is done using the settings defined by the current
 configuration level.
@@ -128,7 +128,7 @@ configuration level.
 In order to decrypt secrets, each node must have access to the partition
 key(s). To do this, the node must either have a copy of the master
 secret or the derived partition key. Since distributing the master
-secret would expose all possible derived secrets, Config instead only
+secret would expose all possible derived secrets, Config only
 distributes the derived partition keys used by the node.
 
 Key distribution is done when a node is bootstrapped. Doing so means
@@ -173,7 +173,7 @@ Following is an example to demonstrate the secrets workflow.
 
         bin/config-encrypt -c prod $AWS_SECRET_ACCESS_KEY
 
-        # config.rb
+        # clusters/prod.rb
         configure :aws,
           secret_access_key: secret("<encrypted string>")
 
