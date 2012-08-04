@@ -13,21 +13,31 @@ module Config
         groups = @groups.find_all { |group| group.defined?(key) }
         raise UnknownVariable if groups.empty?
 
-        if groups.size > 1
-          groups[0...-1].each.with_index do |group, index|
-            log.indent(index) do
-              value = group[key]
-              log << "Skip [#{@name}.#{key} => #{value.inspect}] from #{group._level_name}"
+        group = groups.last
+        value = group[key]
+
+        base_color = :magenta
+        alt_color  = :cyan
+
+        if groups.size == 1
+          log << log.colorize("Read #{@name}.#{key} => #{value.inspect} from #{group._level_name}", base_color)
+        else
+          log << log.colorize("Read #{@name}.#{key}", base_color)
+          log.indent do
+            groups.each.with_index do |g, index|
+              value = g[key]
+              if index == groups.size - 1
+                word = "Use "
+                color = base_color
+              else
+                word = "Skip"
+                color = alt_color
+              end
+              log << log.colorize("#{word} #{value.inspect} from #{g._level_name}", color)
             end
           end
         end
 
-        group = groups.last
-        value = group[key]
-
-        log.indent(groups.size - 1) do
-          log << "Read [#{@name}.#{key} => #{value.inspect}] from #{group._level_name}"
-        end
         value
       end
 
