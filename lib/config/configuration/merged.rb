@@ -1,13 +1,14 @@
 module Config
   module Configuration
     class Merged
+      include Config::Configuration::MethodMissing
 
       def initialize(levels)
         @levels = levels
       end
 
       def [](group_name)
-        levels = @levels.reverse.find_all { |level| level.defined?(group_name) }
+        levels = @levels.find_all { |level| level.defined?(group_name) }
         raise UnknownGroup if levels.empty?
 
         groups = levels.map { |level| level[group_name] }
@@ -19,7 +20,7 @@ module Config
       end
 
       def to_s
-        "<Configuration::Merged #{@levels.map { |l| l.name }.join(', ')}>"
+        "<Configuration::Merged #{@levels.map { |l| l._level_name }.join(', ')}>"
       end
 
     end

@@ -4,6 +4,10 @@ describe Config::Configuration::Level do
 
   subject { Config::Configuration::Level.new("test") }
 
+  specify "#_level_name" do
+    subject._level_name.must_equal "test"
+  end
+
   specify "#to_s" do
     subject.to_s.must_equal "<Configuration::Level \"test\">"
   end

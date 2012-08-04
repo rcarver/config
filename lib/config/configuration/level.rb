@@ -42,6 +42,10 @@ module Config
         "<Configuration::Level #{@name.inspect}>"
       end
 
+      def _level_name
+        @name
+      end
+
     end
   end
 end
