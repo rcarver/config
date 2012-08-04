@@ -5,7 +5,7 @@ describe Config::Global do
   subject { Config::Global.new }
 
   specify "#to_s" do
-    subject.to_s.must_equal "Config"
+    subject.to_s.must_equal "Global"
   end
 
   specify "the configuration name" do

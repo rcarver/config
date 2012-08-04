@@ -10,14 +10,14 @@ module Config
 
     def initialize(name)
       @name = name
-      @configuration = Config::Configuration.new("Cluster #{name}")
+      @configuration = Config::Configuration.new(to_s)
     end
 
     attr :name
     attr_accessor :configuration
 
     def to_s
-      "#{name} cluster"
+      "Cluster[#{name}]"
     end
 
   end

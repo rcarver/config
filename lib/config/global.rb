@@ -11,13 +11,13 @@ module Config
     end
 
     def initialize
-      @configuration = Config::Configuration.new("Global")
+      @configuration = Config::Configuration.new(to_s)
     end
 
     attr_reader :configuration
 
     def to_s
-      "Config"
+      "Global"
     end
   end
 end
