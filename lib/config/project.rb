@@ -151,11 +151,11 @@ module Config
     end
 
     def merged_configuration(cluster = nil, node = nil)
-      configs = []
-      configs << get_global.configuration
-      configs << cluster.configuration if cluster
-      #configs << node.configuration if node
-      Config::Configuration.merge(configs)
+      levels = []
+      levels << get_global.configuration
+      levels << cluster.configuration if cluster
+      #levels << node.configuration if node
+      Config::Configuration.merge(*levels)
     end
 
   end

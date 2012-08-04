@@ -214,7 +214,7 @@ Execute Blueprint webserver
         configuration.set_group(:sample, value: 123)
 
         subject.facts = facts
-        subject.configuration = configuration
+        subject.configuration = Config::Configuration.merge(configuration)
         subject.cluster_context = cluster_context
       end
 
@@ -316,11 +316,11 @@ Execute Blueprint current webserver
         STR
       }
 
-      let(:configuration) { Config::Configuration.new }
+      let(:configuration) { Config::Configuration.new("cfg") }
 
       before do
         configuration.set_group(:webserver, my_name: "bob")
-        subject.configuration = configuration
+        subject.configuration = Config::Configuration.merge(configuration)
       end
 
       it "can use configuration variables" do
@@ -334,7 +334,7 @@ Execute Blueprint current webserver
         log_execute.must_equal <<-STR
 Accumulate Blueprint webserver
   + BlueprintTest::Test
-      Read webserver.my_name => "bob"
+      Read [webserver.my_name => "bob"] from cfg
     [BlueprintTest::Test name:"bob"]
 Validate Blueprint webserver
 Resolve Blueprint webserver

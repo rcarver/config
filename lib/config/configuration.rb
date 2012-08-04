@@ -17,7 +17,7 @@ module Config
       Level.new(name || "[no name]")
     end
 
-    def self.merge(levels)
+    def self.merge(*levels)
       Merged.new(levels)
     end
 
