@@ -12,9 +12,7 @@ module Config
 
       def [](key)
         if @hash.key?(key)
-          value = @hash[key]
-          log << "Read #{@name}.#{key} => #{value.inspect}"
-          value
+          @hash[key]
         else
           raise UnknownVariable, "#{key.to_s} is not defined in #{self}"
         end
@@ -26,6 +24,10 @@ module Config
 
       def to_s
         "<Configuration::Group #{@name.inspect} (#{@level_name.inspect})>"
+      end
+
+      def _level_name
+        @level_name
       end
 
     end

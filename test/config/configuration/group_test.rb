@@ -12,6 +12,10 @@ describe Config::Configuration::Group do
     hash[:other] = nil
   end
 
+  specify "#_level_name" do
+    subject._level_name.must_equal "fake level"
+  end
+
   specify "#to_s" do
     subject.to_s.must_equal "<Configuration::Group :test (\"fake level\")>"
   end
@@ -33,10 +37,6 @@ describe Config::Configuration::Group do
     proc { subject.foo }.must_raise Config::Configuration::UnknownVariable
   end
 
-  it "makes sure you don't call it wrong" do
-    proc { subject.name("ok") }.must_raise ArgumentError
-  end
-
   it "allows the existence of a key to be tested" do
     subject.defined?(:name).must_equal true
     subject.defined?(:foo).must_equal false
@@ -44,14 +44,8 @@ describe Config::Configuration::Group do
     subject.foo?.must_equal false
   end
 
-  it "logs when a variable is used" do
-    subject.name
-    log_string.must_equal "Read test.name => \"ok\"\n"
-  end
-
-  it "does not log a bad key" do
-    proc { subject.foo }.must_raise Config::Configuration::UnknownVariable
-    log_string.must_be_empty
+  it "makes sure you don't call it wrong" do
+    proc { subject.name("ok") }.must_raise ArgumentError
   end
 end
 

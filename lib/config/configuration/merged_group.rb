@@ -1,6 +1,8 @@
 module Config
   module Configuration
     class MergedGroup
+      include Config::Core::Loggable
+      include Config::Configuration::MethodMissing
 
       def initialize(name, groups)
         @name = name
@@ -12,16 +14,20 @@ module Config
         raise UnknownVariable if groups.empty?
 
         if groups.size > 1
-          groups[0..-1].each.with_index do |group, index|
+          groups[0...-1].each.with_index do |group, index|
             log.indent(index) do
-              log << "Skipped #{key} in #{group}"
+              value = group[key]
+              log << "Skip [#{@name}.#{key} => #{value.inspect}] from #{group._level_name}"
             end
           end
         end
 
         group = groups.last
         value = group[key]
-        log << "Read #{@name}.#{key} => #{value.inspect} from #{group.to_s}"
+
+        log.indent(groups.size - 1) do
+          log << "Read [#{@name}.#{key} => #{value.inspect}] from #{group._level_name}"
+        end
         value
       end
 
