@@ -3,8 +3,9 @@ require 'helper'
 describe Config::Configuration::Group do
 
   let(:hash) { {} }
+  let(:value_transformer) { nil }
 
-  subject { Config::Configuration::Group.new("fake level", :test, hash) }
+  subject { Config::Configuration::Group.new("fake level", :test, hash, value_transformer) }
 
   before do
     hash[:name] = "ok"
@@ -46,6 +47,18 @@ describe Config::Configuration::Group do
 
   it "makes sure you don't call it wrong" do
     proc { subject.name("ok") }.must_raise ArgumentError
+  end
+
+  describe "with a value transformer" do
+
+    let(:value_transformer) {
+      -> key, value { [key, value] }
+    }
+
+    it "returns the value via the transformer" do
+      subject.name.must_equal [:name, "ok"]
+      subject[:name].must_equal [:name, "ok"]
+    end
   end
 end
 

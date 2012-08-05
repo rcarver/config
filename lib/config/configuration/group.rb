@@ -15,16 +15,18 @@ module Config
       include Config::Core::Loggable
       include Config::Configuration::MethodMissing
 
-      # Internal: Initialize a new group..
+      # Internal: Initialize a new group.
       #
-      # level_name - String name of the level.
-      # name       - Symbol name of the group.
-      # hash       - Hash of key/values for the group.
+      # level_name        - String name of the level.
+      # name              - Symbol name of the group.
+      # hash              - Hash of key/values for the group.
+      # value_transformer - Proc that takes (key, value) and returns value.
       #
-      def initialize(level_name, name, hash={})
+      def initialize(level_name, name, hash = {}, value_transformer = nil)
         @level_name = level_name
         @name = name
         @hash = hash
+        @value_transformer = value_transformer || -> key, value { value }
       end
 
       # Public: Get the value for a key.
@@ -33,9 +35,10 @@ module Config
       # Raises Config::Configuration::UnknownKey if the key is not defined.
       def [](key)
         if @hash.key?(key)
-          @hash[key]
+          value = @hash[key]
+          @value_transformer.call(key, value)
         else
-          raise UnknownKey, "#{key.to_s} is not defined in #{self}"
+          raise UnknownKey, "#{key.inspect} is not defined in #{self}"
         end
       end
 
