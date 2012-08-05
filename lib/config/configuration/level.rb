@@ -1,8 +1,18 @@
 module Config
   module Configuration
+    # A configuration level is a collection of groups. Your configuration will
+    # typically involve multiple levels such as base, cluster and node. Each
+    # level is stored separately so that, for example, when a lower level
+    # overrides the values at a higher level the behavior is clear and
+    # traceable. Levels are combined via the Config::Configuration::Merged
+    # model which defines the override and union symantics.
     class Level
       include Config::Configuration::MethodMissing
 
+      # Internal: Initialize a new level.
+      #
+      # name - String name of the level.
+      #
       def initialize(name)
         @name = name
         @groups = {}

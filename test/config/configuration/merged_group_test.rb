@@ -43,7 +43,7 @@ Read test.a
   end
 
   it "does not log a bad key" do
-    proc { subject.foo }.must_raise Config::Configuration::UnknownVariable
+    proc { subject.foo }.must_raise Config::Configuration::UnknownKey
     log_string.must_be_empty
   end
 end

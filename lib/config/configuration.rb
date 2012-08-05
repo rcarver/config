@@ -11,19 +11,20 @@ module Config
     UnknownGroup = Class.new(StandardError)
 
     # Error thrown when attempting to read a key that has not been defined.
-    UnknownVariable = Class.new(StandardError)
+    UnknownKey = Class.new(StandardError)
 
+    # Internal: Shorthand for creating a configuration level.
     def self.new(name = nil)
       Level.new(name || "[no name]")
     end
 
+    # Internal: Create a merge from one or more configuration levels.
     def self.merge(*levels)
       Merged.new(levels)
     end
 
+    # Enables dot syntax for levels and groups.
     module MethodMissing
-
-      # Enables dot syntax for keys.
       def method_missing(message, *args, &block)
         raise ArgumentError, "arguments are not allowed: #{message}(#{args.inspect})" if args.any?
         if message =~ /^(.*)\?$/

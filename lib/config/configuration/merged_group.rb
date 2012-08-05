@@ -1,17 +1,25 @@
 module Config
   module Configuration
+    # A merged group contains the union of keys from a set of groups. However,
+    # the value of a key is the value of the last group.
     class MergedGroup
       include Config::Core::Loggable
       include Config::Configuration::MethodMissing
 
+      # Internal: Initialize a merged group.
+      #
+      # name   - Symbol the group name.
+      # groups - Array of Config::Configuration::Group.
+      #
       def initialize(name, groups)
         @name = name
         @groups = groups
       end
 
+      # See Config::Configuration::Group#[].
       def [](key)
         groups = @groups.find_all { |group| group.defined?(key) }
-        raise UnknownVariable if groups.empty?
+        raise UnknownKey if groups.empty?
 
         group = groups.last
         value = group[key]
@@ -41,6 +49,7 @@ module Config
         value
       end
 
+      # See Config::Configuration::Group#defined?
       def defined?(key)
         @groups.any? { |group| group.defined?(key) }
       end

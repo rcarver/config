@@ -73,7 +73,7 @@ module Config
         def [](key)
           begin
             @group[key]
-          rescue Config::Configuration::UnknownVariable
+          rescue Config::Configuration::UnknownKey
             unless key.is_a?(Symbol)
               raise ArgumentError, "Key must be a Symbol, got #{key.inspect}"
             end

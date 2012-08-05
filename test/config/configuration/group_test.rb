@@ -33,8 +33,8 @@ describe Config::Configuration::Group do
   end
 
   it "raises an error if you access a nonexistent key" do
-    proc { subject[:foo] }.must_raise Config::Configuration::UnknownVariable
-    proc { subject.foo }.must_raise Config::Configuration::UnknownVariable
+    proc { subject[:foo] }.must_raise Config::Configuration::UnknownKey
+    proc { subject.foo }.must_raise Config::Configuration::UnknownKey
   end
 
   it "allows the existence of a key to be tested" do
