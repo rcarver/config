@@ -4,13 +4,14 @@ module Config
   class Global
 
     def self.from_string(string, _file, _line = 1)
-      dsl = Config::DSL::ClusterDSL.new
+      global = self.new
+      dsl = Config::DSL::ClusterDSL.new(global.configuration)
       dsl.instance_eval(string, _file, _line)
-      self.new(dsl._get_configuration)
+      global
     end
 
-    def initialize(configuration = nil)
-      @configuration = configuration || Config::Configuration.new
+    def initialize
+      @configuration = Config::Configuration.new("Global")
     end
 
     attr_reader :configuration
