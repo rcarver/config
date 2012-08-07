@@ -6,6 +6,8 @@ A modern, distributed server configuration tool.
 welcome, especially issues and pull requests. Vagrant is the ideal way
 to get started; see below.
 
+[![Build Status](https://secure.travis-ci.org/rcarver/config.png?branch=master)](http://travis-ci.org/rcarver/config)
+
 ## Goals
 
   * Simple and minimal interface and implementation.
