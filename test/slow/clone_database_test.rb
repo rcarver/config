@@ -20,7 +20,8 @@ describe "filesystem", Config::Meta::CloneDatabase do
     subject.path = project_dir
 
     execute_pattern
-    log_string.must_include "Cloning into '#{project_dir}'"
+    log_string.must_include "Cloning into"
+    log_string.must_include project_dir.to_s
 
     (project_dir + ".git").must_be :exist?
 
