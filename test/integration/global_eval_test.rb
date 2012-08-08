@@ -9,7 +9,6 @@ describe Config::Global do
         configure :foo,
           value: "ok"
       STR
-      cluster.to_s.must_equal "Config"
       cluster.configuration.foo.value.must_equal "ok"
     end
 
