@@ -165,9 +165,7 @@ module Config
 
     def merged_spy_configuration
       levels = configuration_levels
-      parent = Config::Configuration.merge(*levels)
-      spy = Config::Spy::Configuration.new("Spy Cluster", parent)
-      Config::Configuration.merge(*(levels + [spy]))
+      Config::Spy::Configuration.merge_and_spy("Spy Cluster", *levels)
     end
   end
 end

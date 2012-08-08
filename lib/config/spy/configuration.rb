@@ -9,6 +9,20 @@ module Config
     class Configuration
       include Config::Configuration::MethodMissing
 
+      # A subclass of normal merge so that it's identifiable.
+      class SpyMerged < Config::Configuration::Merged
+        def initialize(spy, *levels)
+          super levels + [spy]
+        end
+      end
+
+      # Initialize a spy configuration as part of a merged configuration.
+      def self.merge_and_spy(level_name, *levels)
+        parent = Config::Configuration.merge(*levels)
+        spy = Config::Spy::Configuration.new(level_name, parent)
+        SpyMerged.new(spy, *levels)
+      end
+
       def initialize(level_name, parent = nil)
         @level_name = level_name
         @parent = parent || Config::Configuration.merge

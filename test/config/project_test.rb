@@ -80,7 +80,7 @@ describe Config::Project do
 
       describe "without a cluster" do
 
-        let(:assigned_configuration_class) { Config::Configuration::Merged }
+        let(:assigned_configuration_class) { Config::Spy::Configuration::SpyMerged }
         let(:assigned_cluster_context_class) { Config::Spy::ClusterContext }
 
         it "executes the blueprint in noop mode, with a spy cluster" do
