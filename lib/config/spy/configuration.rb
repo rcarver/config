@@ -7,9 +7,11 @@ module Config
     # Spies can be used to inspect the execution of your Blueprint or
     # Pattern.
     class Configuration
+      include Config::Configuration::MethodMissing
 
-      def initialize(configuration = nil)
-        @configuration = configuration || Config::Configuration.new
+      def initialize(level_name, parent = nil)
+        @level_name = level_name
+        @parent = parent || Config::Configuration.merge
         @groups = {}
       end
 
@@ -22,45 +24,57 @@ module Config
       end
 
       def to_s
-        "<Spy Configuration>"
+        "<Spy Configuration #{_level_name}>"
+      end
+
+      def _level_name
+        @level_name
       end
 
       def [](group_name)
-        begin
-          Group.new(group_name, @configuration[group_name])
-        rescue Config::Configuration::UnknownGroup
-          unless group_name.is_a?(Symbol)
-            raise ArgumentError, "Group Name must be a Symbol, got #{group_name.inspect}"
-          end
-          @groups[group_name] ||= Group.new(group_name)
-        end
+        assert_symbol group_name
+        parent_group = @parent.defined?(group_name) ? @parent[group_name] : nil
+        @groups[group_name] ||= Group.new(@level_name, group_name, parent_group)
       end
 
-      # Enables dot syntax for groups.
-      def method_missing(message, *args, &block)
-        raise ArgumentError, "arguments are not allowed: #{message}(#{args.inspect})" if args.any?
-        self[message]
+      def defined?(group_name)
+        assert_symbol group_name
+        true
       end
 
       def ==(other)
-        get_accessed_groups == other.get_accessed_groups
+        _level_name == other._level_name &&
+          get_accessed_groups == other.get_accessed_groups
+      end
+
+    protected
+
+      def assert_symbol(group_name)
+        unless group_name.is_a?(Symbol)
+          raise ArgumentError, "Group Name must be a Symbol, got #{group_name.inspect}"
+        end
       end
 
       class Group
-        include Config::Core::Loggable
+        include Config::Configuration::MethodMissing
 
-        def initialize(name, group = nil)
+        def initialize(level_name, name, parent_group = nil)
+          @level_name = level_name
           @name = name
-          @group = group || Config::Configuration::Group.new("Spy", name)
+          @parent_group = parent_group || Config::Configuration::Group.new(level_name, name)
           @keys = Set.new
         end
 
         def to_s
-          "fake:#{@name}"
+          "spy:#{@name}"
         end
 
         # Behave like a String.
         alias to_str to_s
+
+        def _level_name
+          @level_name
+        end
 
         # Internal: Retrieve the keys that have been accessed. Use this
         # to find out what happened.
@@ -71,24 +85,25 @@ module Config
         end
 
         def [](key)
-          begin
-            @group[key]
-          rescue Config::Configuration::UnknownKey
-            unless key.is_a?(Symbol)
-              raise ArgumentError, "Key must be a Symbol, got #{key.inspect}"
-            end
-            @keys << key
-            value = "fake:#{@name}.#{key}"
-            log << "Read #{@name}.#{key} => #{value.inspect}"
-            value
+          assert_symbol key
+          raise Config::Configuration::UnknownKey if @parent_group.defined?(key)
+          @keys << key
+          "spy:#{@name}.#{key}"
+        end
+
+        def defined?(key)
+          assert_symbol key
+          !@parent_group.defined?(key)
+        end
+
+      protected
+
+        def assert_symbol(key)
+          unless key.is_a?(Symbol)
+            raise ArgumentError, "Key must be a Symbol, got #{key.inspect}"
           end
         end
 
-        # Enables dot syntax for keys.
-        def method_missing(message, *args, &block)
-          raise ArgumentError, "arguments are not allowed: #{message}(#{args.inspect})" if args.any?
-          self[message]
-        end
       end
     end
   end

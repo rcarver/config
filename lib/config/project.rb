@@ -119,7 +119,7 @@ module Config
         blueprint.configuration = merged_configuration(cluster)
         blueprint.cluster_context = Config::ClusterContext.new(cluster, @nodes)
       else
-        blueprint.configuration = Config::Spy::Configuration.new(merged_configuration)
+        blueprint.configuration = merged_spy_configuration
         blueprint.cluster_context = Config::Spy::ClusterContext.new
       end
       blueprint.facts = Config::Spy::Facts.new
@@ -150,13 +150,24 @@ module Config
       @nodes.get_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
     end
 
-    def merged_configuration(cluster = nil, node = nil)
+    def configuration_levels(cluster = nil, node = nil)
       levels = []
       levels << get_global.configuration
       levels << cluster.configuration if cluster
       #levels << node.configuration if node
+      levels
+    end
+
+    def merged_configuration(cluster = nil, node = nil)
+      levels = configuration_levels(cluster, node)
       Config::Configuration.merge(*levels)
     end
 
+    def merged_spy_configuration
+      levels = configuration_levels
+      parent = Config::Configuration.merge(*levels)
+      spy = Config::Spy::Configuration.new("Spy Cluster", parent)
+      Config::Configuration.merge(*(levels + [spy]))
+    end
   end
 end
