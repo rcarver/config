@@ -9,7 +9,7 @@ describe Config::Cluster do
         configure :foo,
           value: "ok"
       STR
-      cluster.to_s.must_equal "sample cluster"
+      cluster.to_s.must_equal "Cluster[sample]"
       cluster.configuration.foo.value.must_equal "ok"
     end
 

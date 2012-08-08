@@ -55,7 +55,7 @@ module BlueprintTest
       }
 
       it "has a name" do
-        subject.to_s.must_equal "Blueprint webserver"
+        subject.to_s.must_equal "Blueprint[webserver]"
       end
 
       it "accumulates the patterns" do
@@ -75,14 +75,14 @@ module BlueprintTest
 
       it "logs what happened" do
         log_execute.must_equal <<-STR
-Accumulate Blueprint webserver
+Blueprint[webserver] Accumulate
   + BlueprintTest::Test
     [BlueprintTest::Test name:"one"]
   + BlueprintTest::Test
     [BlueprintTest::Test name:"two"]
-Validate Blueprint webserver
-Resolve Blueprint webserver
-Execute Blueprint webserver
+Blueprint[webserver] Validate
+Blueprint[webserver] Resolve
+Blueprint[webserver] Execute
   + [BlueprintTest::Test name:"one"]
   + [BlueprintTest::Test name:"two"]
         STR
@@ -107,10 +107,10 @@ Execute Blueprint webserver
 
       it "logs what happened" do
         log_execute.must_equal <<-STR
-Accumulate Blueprint webserver
+Blueprint[webserver] Accumulate
   + BlueprintTest::Test
     [BlueprintTest::Test name:"the test"]
-Validate Blueprint webserver
+Blueprint[webserver] Validate
   ERROR [BlueprintTest::Test name:"the test"] missing value for :value (The value)
         STR
       end
@@ -137,13 +137,13 @@ Validate Blueprint webserver
 
       it "logs what happened" do
         log_execute.must_equal <<-STR
-Accumulate Blueprint webserver
+Blueprint[webserver] Accumulate
   + BlueprintTest::Test
     [BlueprintTest::Test name:"the test"]
   + BlueprintTest::Test
     [BlueprintTest::Test name:"the test"]
-Validate Blueprint webserver
-Resolve Blueprint webserver
+Blueprint[webserver] Validate
+Blueprint[webserver] Resolve
   CONFLICT [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>1} vs. [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>2}
         STR
       end
@@ -175,14 +175,14 @@ Resolve Blueprint webserver
 
       it "logs what happened" do
         log_execute.must_equal <<-STR
-Accumulate Blueprint webserver
+Blueprint[webserver] Accumulate
   + BlueprintTest::Test
     [BlueprintTest::Test name:"the test"]
   + BlueprintTest::Test
     [BlueprintTest::Test name:"the test"]
-Validate Blueprint webserver
-Resolve Blueprint webserver
-Execute Blueprint webserver
+Blueprint[webserver] Validate
+Blueprint[webserver] Resolve
+Blueprint[webserver] Execute
   + [BlueprintTest::Test name:"the test"]
   SKIP [BlueprintTest::Test name:"the test"]
         STR
@@ -214,7 +214,7 @@ Execute Blueprint webserver
         configuration.set_group(:sample, value: 123)
 
         subject.facts = facts
-        subject.configuration = configuration
+        subject.configuration = Config::Configuration.merge(configuration)
         subject.cluster_context = cluster_context
       end
 
@@ -283,21 +283,21 @@ Execute Blueprint webserver
 
       it "logs what happened" do
         log_execute.must_equal <<-STR
-Accumulate Blueprint previous webserver
+Blueprint[previous webserver] Accumulate
   + BlueprintTest::Test
     [BlueprintTest::Test name:"pattern1"]
   + BlueprintTest::Test
     [BlueprintTest::Test name:"pattern2"]
   + BlueprintTest::Test
     [BlueprintTest::Test name:"pattern3"]
-Accumulate Blueprint current webserver
+Blueprint[current webserver] Accumulate
   + BlueprintTest::Test
     [BlueprintTest::Test name:"pattern2"]
   + BlueprintTest::Test
     [BlueprintTest::Test name:"pattern3"]
-Validate Blueprint current webserver
-Resolve Blueprint current webserver
-Execute Blueprint current webserver
+Blueprint[current webserver] Validate
+Blueprint[current webserver] Resolve
+Blueprint[current webserver] Execute
   - [BlueprintTest::Test name:"pattern1"]
   + [BlueprintTest::Test name:"pattern2"]
   + [BlueprintTest::Test name:"pattern3"]
@@ -316,11 +316,11 @@ Execute Blueprint current webserver
         STR
       }
 
-      let(:configuration) { Config::Configuration.new }
+      let(:configuration) { Config::Configuration.new("cfg") }
 
       before do
         configuration.set_group(:webserver, my_name: "bob")
-        subject.configuration = configuration
+        subject.configuration = Config::Configuration.merge(configuration)
       end
 
       it "can use configuration variables" do
@@ -332,13 +332,13 @@ Execute Blueprint current webserver
 
       it "logs when variables are used" do
         log_execute.must_equal <<-STR
-Accumulate Blueprint webserver
+Blueprint[webserver] Accumulate
   + BlueprintTest::Test
-      Read webserver.my_name => "bob"
+      Read webserver.my_name => "bob" from cfg
     [BlueprintTest::Test name:"bob"]
-Validate Blueprint webserver
-Resolve Blueprint webserver
-Execute Blueprint webserver
+Blueprint[webserver] Validate
+Blueprint[webserver] Resolve
+Blueprint[webserver] Execute
   + [BlueprintTest::Test name:"bob"]
         STR
       end

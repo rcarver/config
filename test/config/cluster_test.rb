@@ -9,6 +9,10 @@ describe Config::Cluster do
   end
 
   specify "#to_s" do
-    subject.to_s.must_equal "production cluster"
+    subject.to_s.must_equal "Cluster[production]"
+  end
+
+  specify "the configuration name" do
+    subject.configuration._level_name.must_equal "Cluster[production]"
   end
 end
