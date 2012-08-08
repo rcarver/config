@@ -1,6 +1,6 @@
 # Config (a working title)
 
-A modern, distributed server configuration tool.
+A modern, distributed provisioning tool.
 
 **Product Status:** Config is very alpha. Feedback of all types is
 welcome, especially issues and pull requests. Vagrant is the ideal way
