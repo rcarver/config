@@ -4,8 +4,8 @@ module Config
     # is used to define the configuration for use by blueprints.
     class ClusterDSL
 
-      def initialize
-        @configuration = Config::Configuration.new
+      def initialize(configuration)
+        @configuration = configuration
       end
 
       # Public: Define configuration variables.
@@ -24,10 +24,6 @@ module Config
 
       def inspect
         "<Cluster>"
-      end
-
-      def _get_configuration
-        @configuration
       end
     end
   end

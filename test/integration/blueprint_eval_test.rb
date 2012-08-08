@@ -8,7 +8,7 @@ describe Config::Blueprint do
       blueprint = Config::Blueprint.from_string("sample", <<-STR, __FILE__)
         file "/tmp/file"
       STR
-      blueprint.to_s.must_equal "Blueprint sample"
+      blueprint.to_s.must_equal "Blueprint[sample]"
       accumulation = blueprint.accumulate
       accumulation.size.must_equal 1
     end

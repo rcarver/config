@@ -18,7 +18,7 @@ module Config
     attr :name
 
     def to_s
-      "Blueprint #{@name}"
+      "Blueprint[#{@name}]"
     end
 
     attr_accessor :facts
@@ -37,7 +37,7 @@ module Config
       root.accumulation = @accumulation
       root.parent = nil
 
-      log << "Accumulate #{self}"
+      log << "#{self} Accumulate"
       log.indent do
         root.instance_eval(&@block)
       end
@@ -57,7 +57,7 @@ module Config
       accumulate
 
       begin
-        log << "Validate #{self}"
+        log << "#{self} Validate"
         log.indent do
           @executor.validate!
         end
@@ -71,7 +71,7 @@ module Config
       end
 
       begin
-        log << "Resolve #{self}"
+        log << "#{self} Resolve"
         log.indent do
           @executor.resolve!
         end
@@ -90,7 +90,7 @@ module Config
       @executed = true
       validate
 
-      log << "Execute #{self}"
+      log << "#{self} Execute"
       log.indent do
         @executor.execute(@previous_accumulation)
       end
