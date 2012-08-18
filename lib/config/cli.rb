@@ -182,6 +182,12 @@ module Config
       end
       attr_writer :private_data
 
+      # Returns a Config::Nodes.
+      def nodes
+        @nodes ||= Config.nodes
+      end
+      attr_writer :nodes
+
       # Returns a Kernel.
       def kernel
         @kernel ||= Kernel

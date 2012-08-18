@@ -18,9 +18,12 @@ the given node and then execute the node's blueprint.
       end
 
       def execute
-        project_loader.require_all # require all so that the marshall'd accumulation can load.
-        project.update_node(@fqn)
-        private_data.accumulation = project.execute_node(@fqn, private_data.accumulation)
+        settings = project.node_settings(@fqn)
+        nodes.update_node(@fqn, settings.fact_finder.call)
+
+        project_loader.require_all # require all so that the marshal'd accumulation can load.
+        marshaled_accumulation = private_data.accumulation
+        private_data.accumulation = project.execute_node(@fqn, marshaled_accumulation)
       end
 
     end

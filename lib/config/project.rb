@@ -18,14 +18,6 @@ module Config
       @database.update
     end
 
-    # Update the information about a node and store it in the database.
-    #
-    # Returns nothing.
-    def update_node(fqn)
-      # TODO: facts could be configurable to use ohai or something else.
-      @nodes.update_node(fqn, -> { Config::Facts.invent })
-    end
-
     # Determine if a cluster exists.
     #
     # name - String name of the cluster.

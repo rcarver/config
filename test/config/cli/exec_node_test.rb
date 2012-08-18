@@ -22,10 +22,12 @@ describe Config::CLI::ExecNode do
     it "updates and executes the node" do
       cli.fqn = "a-b-c"
 
+      node_settings = MiniTest::Mock.new
+      node_settings.expect(:fact_finder, -> { "facts" })
+      project.expect(:node_settings, node_settings, ["a-b-c"])
+      nodes.expect(:update_node, nil, ["a-b-c", "facts"])
+
       project_loader.expect(:require_all, nil)
-
-      project.expect(:update_node, nil, ["a-b-c"])
-
       private_data.expect(:accumulation, :acc1)
       project.expect(:execute_node, :acc2, ["a-b-c", :acc1])
       private_data.expect(:accumulation=, nil, [:acc2])
