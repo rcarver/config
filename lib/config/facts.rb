@@ -3,16 +3,6 @@ module Config
   class Facts
     include Config::Core::Loggable
 
-    # Public: Get facts about the execution environment. This uses
-    # ohai underheath to scan the current system.
-    #
-    # Returns a Config::Facts.
-    def self.invent
-      ohai = Ohai::System.new
-      ohai.all_plugins
-      new ohai.data.to_hash
-    end
-
     # Reconstruct facts from JSON data.
     #
     # Returns a Config::Facts.
