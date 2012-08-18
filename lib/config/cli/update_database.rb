@@ -31,7 +31,7 @@ Update the database to the latest version.
           end
         end
 
-        project.update_database
+        database.update_database
       end
 
     end

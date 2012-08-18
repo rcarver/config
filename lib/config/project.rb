@@ -11,13 +11,6 @@ module Config
       @nodes = nodes
     end
 
-    # Update to the latest version of the database.
-    #
-    # Returns nothing.
-    def update_database
-      @database.update
-    end
-
     # Determine if a cluster exists.
     #
     # name - String name of the cluster.

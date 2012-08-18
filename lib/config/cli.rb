@@ -182,6 +182,12 @@ module Config
       end
       attr_writer :private_data
 
+      # Returns a Config::Database.
+      def database
+        @database ||= Config.database
+      end
+      attr_writer :database
+
       # Returns a Config::Nodes.
       def nodes
         @nodes ||= Config.nodes

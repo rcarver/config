@@ -123,6 +123,7 @@ class CliSpec < MiniTest::Spec
   let(:project)        { MiniTest::Mock.new }
   let(:project_loader) { MiniTest::Mock.new }
   let(:private_data)   { MiniTest::Mock.new }
+  let(:database)       { MiniTest::Mock.new }
   let(:nodes)          { MiniTest::Mock.new }
 
   # Fake the execution environment.
@@ -142,6 +143,7 @@ class CliSpec < MiniTest::Spec
     cli.project = project
     cli.project_loader = project_loader
     cli.private_data = private_data
+    cli.database = database
     cli.nodes = nodes
     cli.kernel = kernel
     cli.open3 = open3
@@ -158,6 +160,7 @@ class CliSpec < MiniTest::Spec
     project.verify
     project_loader.verify
     private_data.verify
+    database.verify
     nodes.verify
     kernel.verify
     system.verify
