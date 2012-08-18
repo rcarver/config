@@ -107,7 +107,7 @@ module Config
   #
   # Returns a Config::Project.
   def self.project
-    Config::Project.new(project_loader, database, nodes)
+    Config::Project.new(project_loader, nodes)
   end
 
   # Internal: The directory where system-installed projects live.

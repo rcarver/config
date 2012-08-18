@@ -5,9 +5,8 @@ module Config
     UnknownCluster = Class.new(StandardError)
     UnknownBlueprint = Class.new(StandardError)
 
-    def initialize(loader, database, nodes)
+    def initialize(loader, nodes)
       @loader = loader
-      @database = database
       @nodes = nodes
     end
 

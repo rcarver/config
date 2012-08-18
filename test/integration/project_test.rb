@@ -3,10 +3,9 @@ require 'helper'
 describe "filesystem running items", Config::Project do
 
   let(:project_loader) { Config::ProjectLoader.new(tmpdir) }
-  let(:private_data)   { Config::PrivateData.new(tmpdir + ".data") }
   let(:nodes)          { MiniTest::Mock.new }
 
-  subject { Config::Project.new(project_loader, private_data, nodes) }
+  subject { Config::Project.new(project_loader, nodes) }
 
   describe "executing a blueprint" do
 
