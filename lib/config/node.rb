@@ -28,7 +28,7 @@ module Config
         json["node"]["blueprint"],
         json["node"]["identity"]
       )
-      node.facts = Config::Core::Facts.from_json(json["facts"])
+      node.facts = Config::Facts.from_json(json["facts"])
       node
     end
 
@@ -37,7 +37,7 @@ module Config
       @cluster_name = cluster_name
       @blueprint_name = blueprint_name
       @identity = identity
-      @facts = Config::Core::Facts.new({})
+      @facts = Config::Facts.new({})
     end
 
     attr :cluster_name

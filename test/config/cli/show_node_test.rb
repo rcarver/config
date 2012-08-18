@@ -25,7 +25,7 @@ describe Config::CLI::ShowNode do
     before do
       expect_subcommand("update-database")
 
-      node.facts = Config::Core::Facts.new(
+      node.facts = Config::Facts.new(
         "ec2" => {
           "public_ipv4" => "127.0.0.1",
           "other" => ["a", "b", "c"]

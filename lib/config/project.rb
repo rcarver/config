@@ -23,7 +23,7 @@ module Config
     # Returns nothing.
     def update_node(fqn)
       # TODO: facts could be configurable to use ohai or something else.
-      @nodes.update_node(fqn, -> { Config::Core::Facts.invent })
+      @nodes.update_node(fqn, -> { Config::Facts.invent })
     end
 
     # Determine if a cluster exists.

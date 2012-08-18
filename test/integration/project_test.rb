@@ -65,7 +65,7 @@ describe "filesystem running items", Config::Project do
     describe "#execute_node" do
 
       let(:node) { Config::Node.new("production", "message", "one") }
-      let(:facts) { Config::Core::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
+      let(:facts) { Config::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
 
       before do
         node.facts = facts

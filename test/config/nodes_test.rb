@@ -3,7 +3,7 @@ require 'helper'
 describe Config::Nodes do
 
   let(:node) { Config::Node.new("production", "message", "one") }
-  let(:facts) { Config::Core::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
+  let(:facts) { Config::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
   let(:database) { MiniTest::Mock.new }
 
   subject { Config::Nodes.new(database) }

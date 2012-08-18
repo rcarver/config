@@ -47,7 +47,7 @@ module Config
     # execution environment.
     #
     # fqn         - String Node FQN.
-    # fact_finder - Callable object that returns Config::Core::Facts.
+    # fact_finder - Callable object that returns Config::Facts.
     #
     # Returns a Config::Node.
     def update_node(fqn, fact_finder)
