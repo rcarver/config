@@ -1,12 +1,7 @@
 module Config
   module Core
     class Accumulation
-      include Config::Core::Loggable
       include Enumerable
-
-      def self.from_file(path)
-        from_string ::File.read(path)
-      end
 
       def self.from_string(string)
         new Marshal.restore(string)
@@ -33,20 +28,7 @@ module Config
       #
       # Returns a Config::Core::Accumulation.
       def -(accumulation)
-        accumulation = self.class.new(to_a - accumulation.to_a)
-        accumulation
-      end
-
-      # Public: Store this accumulation on disk so that it can be
-      # restored later.
-      #
-      # path - String path of the file.
-      #
-      # Returns nothing.
-      def write_to_file(path)
-        ::File.open(path, "w") do |f|
-          f.print serialize
-        end
+        self.class.new(to_a - accumulation.to_a)
       end
 
       # Internal: Serialize the current patterns.
