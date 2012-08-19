@@ -31,7 +31,7 @@ Update the database to the latest version.
           end
         end
 
-        database.update_database
+        database.update
       end
 
     end

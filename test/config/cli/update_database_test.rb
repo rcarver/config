@@ -31,7 +31,7 @@ describe Config::CLI::UpdateDatabase do
 
       settings.expect(:remotes, remotes)
 
-      database.expect(:update_database, nil)
+      database.expect(:update, nil)
     end
 
     describe "with an fqn" do
