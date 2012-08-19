@@ -28,6 +28,15 @@ module Config
       !! @loader.get_blueprint(name)
     end
 
+    # Determine if a node exists.
+    #
+    # fqn - String FQN.
+    #
+    # Returns a Boolean.
+    def node?(fqn)
+      !! @nodes.get_node(fqn)
+    end
+
     # Get the top level settings as defined by `config.rb`
     #
     # Returns a Config::ProjectSettings.
@@ -130,8 +139,8 @@ module Config
       @loader.get_blueprint(name) or raise UnknownBlueprint, "Blueprint #{name.inspect} was not found"
     end
 
-    def get_node(name)
-      @nodes.get_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
+    def get_node(fqn)
+      @nodes.get_node(fqn) or raise UnknownNode, "Node #{fqn.inspect} was not found"
     end
 
     def configuration_levels(cluster = nil, node = nil)
