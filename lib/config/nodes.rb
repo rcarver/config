@@ -46,13 +46,13 @@ module Config
     # Public: Update the stored node data by inspecting the current
     # execution environment.
     #
-    # fqn         - String Node FQN.
-    # fact_finder - Callable object that returns Config::Facts.
+    # fqn   - String Node FQN.
+    # facts - Config::Facts to store for the node.
     #
     # Returns a Config::Node.
-    def update_node(fqn, fact_finder)
+    def update_node(fqn, facts)
       node = get_node(fqn) || Config::Node.from_fqn(fqn)
-      node.facts = fact_finder.call
+      node.facts = facts
       @database.update_node(node)
       node
     end
