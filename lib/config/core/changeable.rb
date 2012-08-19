@@ -1,7 +1,6 @@
 module Config
   module Core
     module Changeable
-
       # An array-like object that occumulates change messages.
       class Changes
 
