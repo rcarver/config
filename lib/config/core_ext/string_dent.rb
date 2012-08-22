@@ -1,8 +1,8 @@
 class String
 
   # Public: De-dent a string. Removes leading whitespace from each line of a
-  # string, using the whitespace that exists on the first line as the
-  # indentation level.
+  # string by removing the smallest amount of leading whitespace found on
+  # any line of the string.
   #
   # Examples
   #
@@ -10,13 +10,18 @@ class String
   #       First Line
   #         Indented Line
   #     STR
-  #
   #     str.inspect # => "First Line\n  Indented Line\n"
+  #
+  #     str = <<-STR.dent
+  #         Indented Line
+  #       Second Line
+  #     STR
+  #     str.inspect # => "  Indented Line\nSecond Line\n"
   #
   # Returns a String.
   def dent
     lines = split("\n")
-    head = self[/\A\s*/]
+    head = lines.map { |line| line[/\A\s*/] }.min
     tail = self[/\n*\Z/]
     dented = lines.map { |line| line.sub(/\A#{head}/, '') }
     dented.join("\n") + tail
