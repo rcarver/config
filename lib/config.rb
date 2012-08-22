@@ -5,6 +5,8 @@ require 'pathname'
 
 require 'config/version'
 
+require 'config/core_ext/string_dent'
+
 require 'config/core/loggable'
 
 require 'config/core/accumulation'
