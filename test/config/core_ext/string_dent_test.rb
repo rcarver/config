@@ -2,7 +2,7 @@ require 'helper'
 
 describe String, "#dent" do
 
-  it "de-dents" do
+  it "outdents" do
     str = "  Hello"
     str.dent.must_equal "Hello"
   end
@@ -12,7 +12,7 @@ describe String, "#dent" do
     str.dent(2).must_equal "  Hello"
   end
 
-  it "de-dents and in-dents" do
+  it "outdents and in-dents" do
     str = <<-STR.dent(2)
       One
         Two
@@ -21,45 +21,45 @@ describe String, "#dent" do
   end
 end
 
-describe String, "#dedent" do
+describe String, "#outdent" do
 
-  it "de-dents a multi-line string where the indent level is on the first line" do
+  it "outdents a multi-line string where the indent level is on the first line" do
     str = <<-STR
       One
         Two
           Three
     STR
-    str.dedent.must_equal "One\n  Two\n    Three\n"
+    str.outdent.must_equal "One\n  Two\n    Three\n"
   end
 
-  it "de-dents a multi-line string where the shortest indent is on a later line" do
+  it "outdents a multi-line string where the shortest indent is on a later line" do
     str = <<-STR
           One
         Two
       Three
     STR
-    str.dedent.must_equal "    One\n  Two\nThree\n"
+    str.outdent.must_equal "    One\n  Two\nThree\n"
   end
 
-  it "de-dents a single-line string" do
+  it "outdents a single-line string" do
     str = "  Hello"
-    str.dedent.must_equal "Hello"
+    str.outdent.must_equal "Hello"
   end
 
   it "does not replace whitespace within the string" do
     str = "  Hello  World  "
-    str.dedent.must_equal "Hello  World  "
+    str.outdent.must_equal "Hello  World  "
   end
 
   it "does nothing if there is no indent" do
     str = "Hello"
-    str.dedent.must_equal "Hello"
+    str.outdent.must_equal "Hello"
   end
 
   it "matches the trailing newlines of the original string" do
-    "a".dedent.must_equal "a"
-    "a\n".dedent.must_equal "a\n"
-    "a\n\n".dedent.must_equal "a\n\n"
+    "a".outdent.must_equal "a"
+    "a\n".outdent.must_equal "a\n"
+    "a\n\n".outdent.must_equal "a\n\n"
   end
 
   it "initial blank lines don't cause denting" do
@@ -68,7 +68,7 @@ describe String, "#dedent" do
       Hello
       World
     STR
-    str.dedent.must_equal "\n      Hello\n      World\n"
+    str.outdent.must_equal "\n      Hello\n      World\n"
   end
 end
 

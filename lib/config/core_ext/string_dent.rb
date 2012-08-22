@@ -1,7 +1,7 @@
 class String
 
-  # Public: De-dent and in-dent a string. With no arguments, de-dents. With an
-  # argument, de-dents and then in-dents.
+  # Public: Outdent and indent a string. With no arguments, outdents. With an
+  # argument, outdents and then indents.
   #
   # indent_level - String or Integer used to ident (default: no indent).
   #
@@ -22,32 +22,32 @@ class String
   # Returns a String.
   def dent(indent_level = nil)
     if indent_level
-      dedent.indent(indent_level)
+      outdent.indent(indent_level)
     else
-      dedent
+      outdent
     end
   end
 
-  # Public: De-dent a string. Removes leading whitespace from each line of a
+  # Public: Outdent a string. Removes leading whitespace from each line of a
   # string by removing the smallest amount of leading whitespace found on
   # any line of the string.
   #
   # Examples
   #
-  #     str = <<-STR.dedent
+  #     str = <<-STR.outdent
   #       First Line
   #         Indented Line
   #     STR
   #     str.inspect # => "First Line\n  Indented Line\n"
   #
-  #     str = <<-STR.dedent
+  #     str = <<-STR.outdent
   #         Indented Line
   #       Second Line
   #     STR
   #     str.inspect # => "  Indented Line\nSecond Line\n"
   #
   # Returns a String.
-  def dedent
+  def outdent
     lines = split("\n")
     head = lines.map { |line| line[/\A\s*/] }.min
     tail = self[/\n*\Z/]
@@ -55,7 +55,7 @@ class String
     dented.join("\n") + tail
   end
 
-  # Public: In-dent a string. Addes leading whitespace to each line.
+  # Public: Indent a string. Addes leading whitespace to each line.
   #
   # level - String or Integer used to indent. A String is used as is,
   #         an integer indicates how many spaces to indent.
