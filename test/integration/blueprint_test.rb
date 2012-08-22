@@ -42,7 +42,7 @@ module BlueprintTest
     describe "in general" do
 
       let(:code) {
-        <<-STR
+        <<-STR.dent
           add BlueprintTest::Test do |t|
             t.name = "one"
             t.value = 1
@@ -74,17 +74,17 @@ module BlueprintTest
       end
 
       it "logs what happened" do
-        log_execute.must_equal <<-STR
-Blueprint[webserver] Accumulate
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"one"]
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"two"]
-Blueprint[webserver] Validate
-Blueprint[webserver] Resolve
-Blueprint[webserver] Execute
-  + [BlueprintTest::Test name:"one"]
-  + [BlueprintTest::Test name:"two"]
+        log_execute.must_equal <<-STR.dent
+          Blueprint[webserver] Accumulate
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"one"]
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"two"]
+          Blueprint[webserver] Validate
+          Blueprint[webserver] Resolve
+          Blueprint[webserver] Execute
+            + [BlueprintTest::Test name:"one"]
+            + [BlueprintTest::Test name:"two"]
         STR
       end
     end
@@ -92,7 +92,7 @@ Blueprint[webserver] Execute
     describe "with invalid patterns" do
 
       let(:code) {
-        <<-STR
+        <<-STR.dent
           add BlueprintTest::Test do |t|
             t.name = "the test"
             # no value set
@@ -106,12 +106,12 @@ Blueprint[webserver] Execute
       end
 
       it "logs what happened" do
-        log_execute.must_equal <<-STR
-Blueprint[webserver] Accumulate
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"the test"]
-Blueprint[webserver] Validate
-  ERROR [BlueprintTest::Test name:"the test"] missing value for :value (The value)
+        log_execute.must_equal <<-STR.dent
+          Blueprint[webserver] Accumulate
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"the test"]
+          Blueprint[webserver] Validate
+            ERROR [BlueprintTest::Test name:"the test"] missing value for :value (The value)
         STR
       end
     end
@@ -119,7 +119,7 @@ Blueprint[webserver] Validate
     describe "with conflicting patterns" do
 
       let(:code) {
-        <<-STR
+        <<-STR.dent
           add BlueprintTest::Test do |t|
             t.name = "the test"
             t.value = 1
@@ -136,15 +136,15 @@ Blueprint[webserver] Validate
       end
 
       it "logs what happened" do
-        log_execute.must_equal <<-STR
-Blueprint[webserver] Accumulate
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"the test"]
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"the test"]
-Blueprint[webserver] Validate
-Blueprint[webserver] Resolve
-  CONFLICT [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>1} vs. [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>2}
+        log_execute.must_equal <<-STR.dent
+          Blueprint[webserver] Accumulate
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"the test"]
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"the test"]
+          Blueprint[webserver] Validate
+          Blueprint[webserver] Resolve
+            CONFLICT [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>1} vs. [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>2}
         STR
       end
     end
@@ -152,7 +152,7 @@ Blueprint[webserver] Resolve
     describe "with duplicate patterns" do
 
       let(:code) {
-        <<-STR
+        <<-STR.dent
           add BlueprintTest::Test do |t|
             t.name = "the test"
             t.value = "ok"
@@ -174,17 +174,17 @@ Blueprint[webserver] Resolve
       end
 
       it "logs what happened" do
-        log_execute.must_equal <<-STR
-Blueprint[webserver] Accumulate
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"the test"]
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"the test"]
-Blueprint[webserver] Validate
-Blueprint[webserver] Resolve
-Blueprint[webserver] Execute
-  + [BlueprintTest::Test name:"the test"]
-  SKIP [BlueprintTest::Test name:"the test"]
+        log_execute.must_equal <<-STR.dent
+          Blueprint[webserver] Accumulate
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"the test"]
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"the test"]
+          Blueprint[webserver] Validate
+          Blueprint[webserver] Resolve
+          Blueprint[webserver] Execute
+            + [BlueprintTest::Test name:"the test"]
+            SKIP [BlueprintTest::Test name:"the test"]
         STR
       end
     end
@@ -192,7 +192,7 @@ Blueprint[webserver] Execute
     describe "using top level variables" do
 
       let(:code) {
-        <<-STR
+        <<-STR.dent
           add BlueprintTest::Test do |t|
             t.name = node.ip_address
             t.value = cluster.name
@@ -231,7 +231,7 @@ Blueprint[webserver] Execute
 
       # Previously we ran three simple patterns.
       let(:previous_code) {
-        <<-STR
+        <<-STR.dent
           add BlueprintTest::Test do |t|
             t.name = "pattern1"
             t.value = "ok"
@@ -253,7 +253,7 @@ Blueprint[webserver] Execute
       # pattern2 is the same so it gets run again.
       # pattern3 is changed and the new version is run.
       let(:current_code) {
-        <<-STR
+        <<-STR.dent
           add BlueprintTest::Test do |t|
             t.name = "pattern2"
             t.value = "ok"
@@ -282,25 +282,25 @@ Blueprint[webserver] Execute
       end
 
       it "logs what happened" do
-        log_execute.must_equal <<-STR
-Blueprint[previous webserver] Accumulate
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"pattern1"]
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"pattern2"]
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"pattern3"]
-Blueprint[current webserver] Accumulate
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"pattern2"]
-  + BlueprintTest::Test
-    [BlueprintTest::Test name:"pattern3"]
-Blueprint[current webserver] Validate
-Blueprint[current webserver] Resolve
-Blueprint[current webserver] Execute
-  - [BlueprintTest::Test name:"pattern1"]
-  + [BlueprintTest::Test name:"pattern2"]
-  + [BlueprintTest::Test name:"pattern3"]
+        log_execute.must_equal <<-STR.dent
+          Blueprint[previous webserver] Accumulate
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"pattern1"]
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"pattern2"]
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"pattern3"]
+          Blueprint[current webserver] Accumulate
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"pattern2"]
+            + BlueprintTest::Test
+              [BlueprintTest::Test name:"pattern3"]
+          Blueprint[current webserver] Validate
+          Blueprint[current webserver] Resolve
+          Blueprint[current webserver] Execute
+            - [BlueprintTest::Test name:"pattern1"]
+            + [BlueprintTest::Test name:"pattern2"]
+            + [BlueprintTest::Test name:"pattern3"]
         STR
       end
     end
@@ -308,7 +308,7 @@ Blueprint[current webserver] Execute
     describe "with a configuration" do
 
       let(:code) {
-        <<-STR
+        <<-STR.dent
           add BlueprintTest::Test do |t|
             t.name = configure.webserver.my_name
             t.value = "ok"
@@ -331,15 +331,15 @@ Blueprint[current webserver] Execute
       end
 
       it "logs when variables are used" do
-        log_execute.must_equal <<-STR
-Blueprint[webserver] Accumulate
-  + BlueprintTest::Test
-      Read webserver.my_name => "bob" from cfg
-    [BlueprintTest::Test name:"bob"]
-Blueprint[webserver] Validate
-Blueprint[webserver] Resolve
-Blueprint[webserver] Execute
-  + [BlueprintTest::Test name:"bob"]
+        log_execute.must_equal <<-STR.dent
+          Blueprint[webserver] Accumulate
+            + BlueprintTest::Test
+                Read webserver.my_name => "bob" from cfg
+              [BlueprintTest::Test name:"bob"]
+          Blueprint[webserver] Validate
+          Blueprint[webserver] Resolve
+          Blueprint[webserver] Execute
+            + [BlueprintTest::Test name:"bob"]
         STR
       end
     end

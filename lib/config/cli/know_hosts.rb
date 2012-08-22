@@ -2,9 +2,9 @@ module Config
   module CLI
     class KnowHosts < Config::CLI::Base
 
-      desc <<-STR
-Generate and store hostname signatures for each host that will be
-accessed during project execution.
+      desc <<-STR.dent
+        Generate and store hostname signatures for each host that will be
+        accessed during project execution.
       STR
 
       attr_accessor :hosts

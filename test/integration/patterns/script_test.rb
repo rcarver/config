@@ -39,7 +39,7 @@ describe "filesystem", Config::Patterns::Script do
   describe "#create" do
 
     before do
-      subject.code = <<-STR
+      subject.code = <<-STR.dent
         if [ ! -f #{path} ]; then
           echo hello > #{path}
         else
@@ -63,7 +63,7 @@ describe "filesystem", Config::Patterns::Script do
   describe "#create not_if" do
 
     before do
-      subject.code = <<-STR
+      subject.code = <<-STR.dent
         echo hello > #{path}
       STR
     end
@@ -91,7 +91,7 @@ describe "filesystem", Config::Patterns::Script do
   describe "#create logging" do
 
     it "logs stdout and stderr" do
-      subject.code = <<-STR
+      subject.code = <<-STR.dent
         echo 'one to out' >&1
         echo 'one to err' >&2
         echo 'two to out' >&1
@@ -110,7 +110,7 @@ describe "filesystem", Config::Patterns::Script do
     end
 
     it "logs even if the command fails" do
-      subject.code = <<-STR
+      subject.code = <<-STR.dent
         echo 'one to out' >&1
         echo 'one to err' >&2
         exit 1
@@ -128,7 +128,7 @@ describe "filesystem", Config::Patterns::Script do
     end
 
     it "excludes the header if nothing is written" do
-      subject.code = <<-STR
+      subject.code = <<-STR.dent
         echo hello > /dev/null
         exit 0
       STR
@@ -142,7 +142,7 @@ describe "filesystem", Config::Patterns::Script do
   describe "#destroy" do
 
     before do
-      subject.reverse = <<-STR
+      subject.reverse = <<-STR.dent
         if [ -f #{path} ]; then
           rm #{path}
         else
@@ -166,8 +166,8 @@ describe "filesystem", Config::Patterns::Script do
 
     it "logs" do
       execute :destroy
-      log_string.must_equal <<-STR
-No reverse code was given
+      log_string.must_equal <<-STR.dent
+        No reverse code was given
       STR
     end
   end

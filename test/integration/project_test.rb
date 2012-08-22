@@ -13,7 +13,7 @@ describe "filesystem running items", Config::Project do
     before do
       (tmpdir + "blueprints").mkdir
       (tmpdir + "blueprints/message.rb").open("w") do |f|
-        f.puts <<-STR
+        f.puts <<-STR.dent
           file "#{tmpdir}/file1" do |f|
             f.content = configure.messages.greeting
           end
@@ -28,7 +28,7 @@ describe "filesystem running items", Config::Project do
 
       (tmpdir + "clusters").mkdir
       (tmpdir + "clusters/production.rb").open("w") do |f|
-        f.puts <<-STR
+        f.puts <<-STR.dent
           configure :messages,
             greeting: "hello world"
         STR

@@ -2,8 +2,8 @@ module Config
   module CLI
     class UpdateDatabase < Config::CLI::Base
 
-      desc <<-STR
-Update the database to the latest version.
+      desc <<-STR.dent
+        Update the database to the latest version.
       STR
 
       attr_accessor :fqn

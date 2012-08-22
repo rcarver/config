@@ -84,9 +84,9 @@ module PatternIntegrationTest
       end
 
       it "logs the patterns that are added" do
-        log_string.must_equal <<-STR
-+ PatternIntegrationTest::TestPattern
-  [TestPattern:sub-name]
+        log_string.must_equal <<-STR.dent
+          + PatternIntegrationTest::TestPattern
+            [TestPattern:sub-name]
         STR
       end
     end

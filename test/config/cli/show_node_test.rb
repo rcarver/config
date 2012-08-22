@@ -38,47 +38,47 @@ describe Config::CLI::ShowNode do
     it "gets all node data" do
       cli.path = nil
       cli.execute
-      stdout.string.must_equal <<-STR
-{
-  "node": {
-    "cluster": "a",
-    "blueprint": "b",
-    "identity": "c"
-  },
-  "facts": {
-    "ec2": {
-      "public_ipv4": "127.0.0.1",
-      "other": [
-        "a",
-        "b",
-        "c"
-      ]
-    }
-  }
-}
+      stdout.string.must_equal <<-STR.dent
+        {
+          "node": {
+            "cluster": "a",
+            "blueprint": "b",
+            "identity": "c"
+          },
+          "facts": {
+            "ec2": {
+              "public_ipv4": "127.0.0.1",
+              "other": [
+                "a",
+                "b",
+                "c"
+              ]
+            }
+          }
+        }
       STR
     end
 
     it "gets node data at a subpath" do
       cli.path = "ec2"
       cli.execute
-      stdout.string.must_equal <<-STR
-{
-  "public_ipv4": "127.0.0.1",
-  "other": [
-    "a",
-    "b",
-    "c"
-  ]
-}
+      stdout.string.must_equal <<-STR.dent
+        {
+          "public_ipv4": "127.0.0.1",
+          "other": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
       STR
     end
 
     it "gets node data at a leaf" do
       cli.path = "ec2.public_ipv4"
       cli.execute
-      stdout.string.must_equal <<-STR
-127.0.0.1
+      stdout.string.must_equal <<-STR.dent
+        127.0.0.1
       STR
     end
 

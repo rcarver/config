@@ -21,22 +21,22 @@ describe Config::Configuration::MergedGroup do
 
   it "logs when a single-level, top level variable is used" do
     subject.b
-    log_string.must_equal <<-STR
-Read test.b => 2 from g1
+    log_string.must_equal <<-STR.dent
+      Read test.b => 2 from g1
     STR
   end
 
   it "logs when a single-level, lower level variable is used" do
     subject.c
-    log_string.must_equal <<-STR
-Read test.c => 3 from g2
+    log_string.must_equal <<-STR.dent
+      Read test.c => 3 from g2
     STR
   end
 
   it "logs when a multi-level variable is used" do
     subject.a
-    log_string.must_equal <<-STR
-Read test.a
+    log_string.must_equal <<-STR.dent
+      Read test.a
   Skip 1 from g1
   Use  9 from g2
     STR

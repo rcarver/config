@@ -2,9 +2,9 @@ module Config
   module CLI
     class ExecNode < Config::CLI::Base
 
-      desc <<-STR
-Execute the project. Running this command will update the database for
-the given node and then execute the node's blueprint.
+      desc <<-STR.dent
+        Execute the project. Running this command will update the database for
+        the given node and then execute the node's blueprint.
       STR
 
       attr_accessor :fqn

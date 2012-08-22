@@ -21,8 +21,8 @@ describe "filesystem", Config::Database do
       repo.expect(:pull_rebase, nil)
       repo.expect(:describe_head, ["a", "message"])
       subject.update
-      log_string.must_equal <<-STR
-Database updated. Now at: a "message"
+      log_string.must_equal <<-STR.dent
+        Database updated. Now at: a "message"
        STR
     end
   end
@@ -59,20 +59,20 @@ Database updated. Now at: a "message"
       node_file.must_be :exist?
       # We care about the presentation of this file so 
       # that diffs are efficient.
-      node_file.read.must_equal <<-STR.chomp
-{
-  "node": {
-    "cluster": "prod",
-    "blueprint": "webserver",
-    "identity": "1"
-  },
-  "facts": {
-  }
-}
+      node_file.read.must_equal <<-STR.dent.chomp
+        {
+          "node": {
+            "cluster": "prod",
+            "blueprint": "webserver",
+            "identity": "1"
+          },
+          "facts": {
+          }
+        }
       STR
-      log_string.must_equal <<-STR
-Database commit: add node prod-webserver-1
-Database pushed
+      log_string.must_equal <<-STR.dent
+        Database commit: add node prod-webserver-1
+        Database pushed
       STR
     end
 
@@ -83,9 +83,9 @@ Database pushed
       end
       repo.expect(:commit, nil, ["update node prod-webserver-1"])
       subject.update_node(node)
-      log_string.must_equal <<-STR
-Database commit: update node prod-webserver-1
-Database pushed
+      log_string.must_equal <<-STR.dent
+        Database commit: update node prod-webserver-1
+        Database pushed
       STR
     end
   end
@@ -102,9 +102,9 @@ Database pushed
       repo.expect(:commit, nil, ["remove node prod-webserver-1"])
       repo.expect(:push, nil)
       subject.remove_node(node)
-      log_string.must_equal <<-STR
-Database commit: remove node prod-webserver-1
-Database pushed
+      log_string.must_equal <<-STR.dent
+        Database commit: remove node prod-webserver-1
+        Database pushed
       STR
     end
 
@@ -154,10 +154,10 @@ Database pushed
       end
       repo.pushes.must_equal 3
       repo.pulls.must_equal 2
-      log_string.must_equal <<-STR
-Database pulled to resolve remote changes. Now at: 1 "message one"
-Database pulled to resolve remote changes. Now at: 2 "message two"
-Database pushed
+      log_string.must_equal <<-STR.dent
+        Database pulled to resolve remote changes. Now at: 1 "message one"
+        Database pulled to resolve remote changes. Now at: 2 "message two"
+        Database pushed
       STR
     end
   end

@@ -29,10 +29,10 @@ describe "filesystem", Config::Meta::PatternTopic do
     (tmpdir + "patterns" + "nginx").must_be :exist?
 
     (tmpdir + "patterns" + "nginx" + "README.md").must_be :exist?
-    (tmpdir + "patterns" + "nginx" + "README.md").read.must_equal <<-STR
-# Nginx
+    (tmpdir + "patterns" + "nginx" + "README.md").read.must_equal <<-STR.dent
+      # Nginx
 
-**TODO** Describe the purpose of this topic.
+      **TODO** Describe the purpose of this topic.
     STR
   end
 end
