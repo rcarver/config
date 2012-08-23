@@ -14,7 +14,7 @@ settings might look something like this.
       ssh_key: 'project'
 
     configure :database_git_repo,
-      repo: 'git@github-data:rcarver/config-example-data.git'
+      repo: 'git@github-db:rcarver/config-example-db.git'
       hostname: 'github.com'
       ssh_key: 'database'
 
@@ -29,7 +29,7 @@ The resulting `.ssh/config` looks something like this.
       User git
       Hostname github.com
       IdentityFile /etc/config/ssh-key-project
-    Host github-data
+    Host github-db
       User git
       Hostname github.com
       IdentityFile /etc/config/ssh-key-database

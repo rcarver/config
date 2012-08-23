@@ -44,7 +44,7 @@ Config will infer these settings.
       url: 'git@github.com:rcarver/config-example.git'
 
     configure :datbase_git_repo,
-      url: 'git@github.com:rcarver/config-example-data.git'
+      url: 'git@github.com:rcarver/config-example-db.git'
 
 ## Reference
 
@@ -88,7 +88,7 @@ Examples.
 
     # Short form, uses the "default" ssh key.
     configure: database_git_repo,
-      url: "git@github.com:rcarver/config-example-data.git"
+      url: "git@github.com:rcarver/config-example-db.git"
 
     # Long form, specifying the complete ssh configuration.
     configure :project_git_repo,

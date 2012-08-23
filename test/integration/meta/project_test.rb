@@ -35,6 +35,7 @@ describe "filesystem", Config::Meta::Project do
       bin
       .bundle
       .data
+      .vagrant
     STR
 
     (tmpdir + ".data").must_be :exist?
