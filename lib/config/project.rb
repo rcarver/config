@@ -5,25 +5,9 @@ module Config
     UnknownCluster = Class.new(StandardError)
     UnknownBlueprint = Class.new(StandardError)
 
-    def initialize(loader, database, nodes)
+    def initialize(loader, nodes)
       @loader = loader
-      @database = database
       @nodes = nodes
-    end
-
-    # Update to the latest version of the database.
-    #
-    # Returns nothing.
-    def update_database
-      @database.update
-    end
-
-    # Update the information about a node and store it in the database.
-    #
-    # Returns nothing.
-    def update_node(fqn)
-      # TODO: facts could be configurable to use ohai or something else.
-      @nodes.update_node(fqn, -> { Config::Core::Facts.invent })
     end
 
     # Determine if a cluster exists.
@@ -42,6 +26,15 @@ module Config
     # Returns a Boolean.
     def blueprint?(name)
       !! @loader.get_blueprint(name)
+    end
+
+    # Determine if a node exists.
+    #
+    # fqn - String FQN.
+    #
+    # Returns a Boolean.
+    def node?(fqn)
+      !! @nodes.get_node(fqn)
     end
 
     # Get the top level settings as defined by `config.rb`
@@ -146,8 +139,8 @@ module Config
       @loader.get_blueprint(name) or raise UnknownBlueprint, "Blueprint #{name.inspect} was not found"
     end
 
-    def get_node(name)
-      @nodes.get_node(name) or raise UnknownNode, "Node #{name.inspect} was not found"
+    def get_node(fqn)
+      @nodes.get_node(fqn) or raise UnknownNode, "Node #{fqn.inspect} was not found"
     end
 
     def configuration_levels(cluster = nil, node = nil)

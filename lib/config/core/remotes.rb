@@ -2,10 +2,6 @@ module Config
   module Core
     class Remotes
 
-      #
-      # Instance
-      #
-
       def initialize
         @project_git_config = Config::Core::GitConfig.new
         @database_git_config = Config::Core::GitConfig.new

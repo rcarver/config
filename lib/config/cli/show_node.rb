@@ -29,7 +29,8 @@ necessary to ensure the information shown is up to date.
         update_database = cli("update-database")
         update_database.execute
 
-        node = project.get_node(fqn)
+        node = nodes.get_node(fqn)
+        abort "#{fqn} does not exist" unless node
 
         if path
           data = node.facts.at_path(path)

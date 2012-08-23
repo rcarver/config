@@ -3,7 +3,7 @@ require 'helper'
 describe Config::Nodes do
 
   let(:node) { Config::Node.new("production", "message", "one") }
-  let(:facts) { Config::Core::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
+  let(:facts) { Config::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
   let(:database) { MiniTest::Mock.new }
 
   subject { Config::Nodes.new(database) }
@@ -49,19 +49,17 @@ describe Config::Nodes do
 
   describe "#update_node" do
 
-    let(:fact_finder) { -> { facts } }
-
     it "updates the node's facts and stores it in the database" do
       database.expect(:all_nodes, [node])
       database.expect(:update_node, nil, [node])
-      subject.update_node(node.fqn, fact_finder)
+      subject.update_node(node.fqn, facts)
       node.facts.must_equal facts
     end
 
     it "creates a new node if none exists" do
       database.expect(:all_nodes, [])
       database.expect(:update_node, nil, [node])
-      updated_node = subject.update_node(node.fqn, fact_finder)
+      updated_node = subject.update_node(node.fqn, facts)
       updated_node.facts.must_equal facts
     end
   end

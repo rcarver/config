@@ -3,14 +3,12 @@ require 'helper'
 describe Config::Project do
 
   let(:project_loader) { MiniTest::Mock.new }
-  let(:data)   { MiniTest::Mock.new }
   let(:nodes)  { MiniTest::Mock.new }
 
-  subject { Config::Project.new(project_loader, data, nodes) }
+  subject { Config::Project.new(project_loader, nodes) }
 
   after do
     project_loader.verify
-    data.verify
     nodes.verify
   end
 

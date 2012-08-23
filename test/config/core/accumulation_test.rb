@@ -64,33 +64,10 @@ describe Config::Core::Accumulation do
       subject.serialize.must_be_instance_of String
     end
 
-    it "writes to a File" do
-      file = Tempfile.new('serialize')
-      begin
-        subject.write_to_file(file.path)
-        file.flush
-        File.read(file).must_equal subject.serialize
-      ensure
-        file.close!
-      end
-    end
-
     it "instantiates from a String" do
       serialize = subject.serialize
       restore = Config::Core::Accumulation.from_string(serialize)
       subject.must_equal restore
-    end
-
-    it "instantiates from a File" do
-      file = Tempfile.new('serialize')
-      begin
-        subject.write_to_file(file.path)
-        file.flush
-        restore = Config::Core::Accumulation.from_file(file.path)
-        subject.must_equal restore
-      ensure
-        file.close!
-      end
     end
   end
 
@@ -125,11 +102,6 @@ describe Config::Core::Accumulation do
     it "returns a new object containing the extra patterns" do
       (previous - subject).must_be_instance_of Config::Core::Accumulation
       (previous - subject).to_a.must_equal [c]
-    end
-
-    it "assigns the log" do
-      subtraction = previous - subject
-      subtraction.log.must_be_same_as previous.log
     end
   end
 end
