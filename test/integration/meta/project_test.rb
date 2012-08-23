@@ -31,10 +31,10 @@ describe "filesystem", Config::Meta::Project do
     execute_pattern
 
     (tmpdir + ".gitignore").must_be :exist?
-    (tmpdir + ".gitignore").read.must_equal <<-STR
-bin
-.bundle
-.data
+    (tmpdir + ".gitignore").read.must_equal <<-STR.dent
+      bin
+      .bundle
+      .data
     STR
 
     (tmpdir + ".data").must_be :exist?
@@ -45,21 +45,21 @@ bin
     (tmpdir + "clusters").must_be :exist?
 
     (tmpdir + "config.rb").must_be :exist?
-    (tmpdir + "config.rb").read.must_equal <<-STR
-configure :project_hostname,
-  domain: "internal.example.com"
+    (tmpdir + "config.rb").read.must_equal <<-STR.dent
+      configure :project_hostname,
+        domain: "internal.example.com"
 
-configure :project_git_config,
-  url: "git@github.com:rcarver/config-example.git"
+      configure :project_git_config,
+        url: "git@github.com:rcarver/config-example.git"
 
-configure :database_git_config,
-  url: "git@github.com:rcarver/config-example-db.git"
+      configure :database_git_config,
+        url: "git@github.com:rcarver/config-example-db.git"
     STR
     (tmpdir + "README.md").must_be :exist?
-    (tmpdir + "README.md").read.must_equal <<-STR
-# MyProject
+    (tmpdir + "README.md").read.must_equal <<-STR.dent
+      # MyProject
 
-This project is powered by [Config](https://github.com/rcarver/config).
+      This project is powered by [Config](https://github.com/rcarver/config).
     STR
   end
 

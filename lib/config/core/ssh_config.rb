@@ -46,13 +46,13 @@ module Config
       #
       # Returns a String.
       def to_host_config(private_data)
-        <<-STR
-Host #{host}
-  Port #{port}
-  Hostname #{hostname}
-  User #{user}
-  IdentityFile #{private_data.ssh_key(ssh_key).path}
-  #{extras.join("\n")}
+        <<-STR.dent
+          Host #{host}
+            Port #{port}
+            Hostname #{hostname}
+            User #{user}
+            IdentityFile #{private_data.ssh_key(ssh_key).path}
+            #{extras.join("\n")}
         STR
       end
 

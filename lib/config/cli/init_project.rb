@@ -2,8 +2,8 @@ module Config
   module CLI
     class InitProject < Config::CLI::Base
 
-      desc <<-STR
-Generate the template for a new project.
+      desc <<-STR.dent
+        Generate the template for a new project.
       STR
 
       def usage

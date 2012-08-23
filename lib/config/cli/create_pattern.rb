@@ -2,8 +2,8 @@ module Config
   module CLI
     class CreatePattern < Config::CLI::Base
 
-      desc <<-STR
-Generate the template for a new pattern.
+      desc <<-STR.dent
+        Generate the template for a new pattern.
       STR
 
       attr_accessor :topic_name
