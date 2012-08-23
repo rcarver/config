@@ -45,9 +45,9 @@ describe Config::Log do
     subject.indent do
       subject << "one\ntwo"
     end
-    stream.string.must_equal <<-STR
-  one
-  two
+    stream.string.must_equal <<-STR.dent(2)
+      one
+      two
     STR
   end
 

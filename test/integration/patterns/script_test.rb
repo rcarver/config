@@ -72,9 +72,9 @@ describe "filesystem", Config::Patterns::Script do
       subject.not_if = '[ 1 -eq 0 ]'
       execute :create
       path.must_be :exist?
-      log_string.must_equal <<-STR
-  RUNNING because '[ 1 -eq 0 ]' exited with a non-zero status
-  STATUS 0
+      log_string.must_equal <<-STR.dent(2)
+        RUNNING because '[ 1 -eq 0 ]' exited with a non-zero status
+        STATUS 0
       STR
     end
 
@@ -82,8 +82,8 @@ describe "filesystem", Config::Patterns::Script do
       subject.not_if = '[ 1 -eq 1 ]'
       execute :create
       path.wont_be :exist?
-      log_string.must_equal <<-STR
-  SKIPPED because '[ 1 -eq 1 ]' exited with a successful status
+      log_string.must_equal <<-STR.dent(2)
+        SKIPPED because '[ 1 -eq 1 ]' exited with a successful status
       STR
     end
   end
@@ -98,14 +98,14 @@ describe "filesystem", Config::Patterns::Script do
         echo 'two to err' >&2
       STR
       execute :create
-      log_string.must_equal <<-STR
-  STATUS 0
-  STDOUT
-    one to out
-    two to out
-  STDERR
-    one to err
-    two to err
+      log_string.must_equal <<-STR.dent(2)
+        STATUS 0
+        STDOUT
+          one to out
+          two to out
+        STDERR
+          one to err
+          two to err
       STR
     end
 
@@ -118,12 +118,12 @@ describe "filesystem", Config::Patterns::Script do
         echo 'two to err' >&2
       STR
       proc { execute :create }.must_raise Config::Error
-      log_string.must_equal <<-STR
-  STATUS 1
-  STDOUT
-    one to out
-  STDERR
-    one to err
+      log_string.must_equal <<-STR.dent(2)
+        STATUS 1
+        STDOUT
+          one to out
+        STDERR
+          one to err
       STR
     end
 
@@ -133,8 +133,8 @@ describe "filesystem", Config::Patterns::Script do
         exit 0
       STR
       execute :create
-      log_string.must_equal <<-STR
-  STATUS 0
+      log_string.must_equal <<-STR.dent(2)
+        STATUS 0
       STR
     end
   end
