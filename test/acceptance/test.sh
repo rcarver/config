@@ -103,14 +103,14 @@ echo "gem 'config', :path => '$config_dir'" >> Gemfile
 echo "gem 'vagrant'" >> Gemfile
 bundle install --binstubs --local
 
-# Initialize config.
-bin/config-init-project
-
 # Check in and push to git origin.
 git add .
 git commit -m 'initial comit'
 git remote add origin $project_repo_dir
 git push -u origin master
+
+# Initialize config.
+bin/config-init-project
 
 git add .
 git commit -m 'initialize config'
