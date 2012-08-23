@@ -49,7 +49,7 @@ class String
   # Returns a String.
   def outdent
     lines = split("\n")
-    head = lines.map { |line| line[/\A\s*/] }.min
+    head = lines.map { |line| line[/\A(\s*)[^\s]/, 1] }.compact.min
     tail = self[/\n*\Z/]
     dented = lines.map { |line| line.sub(/\A#{head}/, '') }
     dented.join("\n") + tail

@@ -37,8 +37,8 @@ describe Config::Configuration::MergedGroup do
     subject.a
     log_string.must_equal <<-STR.dent
       Read test.a
-  Skip 1 from g1
-  Use  9 from g2
+        Skip 1 from g1
+        Use  9 from g2
     STR
   end
 

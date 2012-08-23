@@ -62,13 +62,14 @@ describe String, "#outdent" do
     "a\n\n".outdent.must_equal "a\n\n"
   end
 
-  it "initial blank lines don't cause denting" do
+  it "blank lines don't count as indent" do
     str = <<-STR
 
-      Hello
-      World
+        Hello
+
+          World
     STR
-    str.outdent.must_equal "\n      Hello\n      World\n"
+    str.outdent.must_equal "\nHello\n\n  World\n"
   end
 end
 
