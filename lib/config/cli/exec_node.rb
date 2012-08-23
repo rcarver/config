@@ -18,9 +18,23 @@ the given node and then execute the node's blueprint.
       end
 
       def execute
-        project_loader.require_all # require all so that the marshall'd accumulation can load.
-        project.update_node(@fqn)
-        private_data.accumulation = project.execute_node(@fqn, private_data.accumulation)
+        # Get the most appropriate settings. Since this command is now the node
+        # gets created, it is very likely that it doesn't yet exist.
+        if project.node?(@fqn)
+          settings = project.node_settings(@fqn)
+        else
+          settings = project.base_settings
+        end
+
+        # Query the state of the node and store it in the database. This
+        # creates or updates the node.
+        nodes.update_node(@fqn, settings.fact_finder.call)
+
+        # Execute the node by performing the instructions described by its
+        # blueprint.
+        project_loader.require_all # require all so that the marshal'd accumulation can load.
+        marshaled_accumulation = private_data.accumulation
+        private_data.accumulation = project.execute_node(@fqn, marshaled_accumulation)
       end
 
     end

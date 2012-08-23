@@ -1,6 +1,6 @@
 require 'helper'
 
-describe Config::Core::Facts do
+describe Config::Facts do
 
   let(:hash) {
     # Copied from ohai output.
@@ -17,16 +17,16 @@ describe Config::Core::Facts do
     }
   }
 
-  subject { Config::Core::Facts.new(hash) }
+  subject { Config::Facts.new(hash) }
 
   specify "#to_s" do
     subject.to_s.must_equal "[Facts: kernel,languages]"
   end
 
   specify "equality" do
-    a = Config::Core::Facts.new(hash)
-    b = Config::Core::Facts.new(hash)
-    c = Config::Core::Facts.new(hash.merge("other" => "here"))
+    a = Config::Facts.new(hash)
+    b = Config::Facts.new(hash)
+    c = Config::Facts.new(hash.merge("other" => "here"))
     a.must_equal b
     b.must_equal a
     a.wont_equal c
@@ -38,7 +38,7 @@ describe Config::Core::Facts do
   end
 
   specify ".from_json" do
-    facts = Config::Core::Facts.from_json(hash)
+    facts = Config::Facts.from_json(hash)
     facts.must_equal subject
   end
 

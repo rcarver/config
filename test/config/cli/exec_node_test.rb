@@ -19,18 +19,44 @@ describe Config::CLI::ExecNode do
   end
 
   describe "#execute" do
-    it "updates and executes the node" do
+
+    let(:settings) { MiniTest::Mock.new }
+
+    before do
       cli.fqn = "a-b-c"
 
+      settings.expect(:fact_finder, -> { "facts" })
+
+      nodes.expect(:update_node, nil, ["a-b-c", "facts"])
+
       project_loader.expect(:require_all, nil)
-
-      project.expect(:update_node, nil, ["a-b-c"])
-
       private_data.expect(:accumulation, :acc1)
       project.expect(:execute_node, :acc2, ["a-b-c", :acc1])
       private_data.expect(:accumulation=, nil, [:acc2])
+    end
 
-      cli.execute
+    describe "when the node does not exist" do
+
+      before do
+        project.expect(:node?, false, ["a-b-c"])
+        project.expect(:base_settings, settings)
+      end
+
+      it "updates and executes the node" do
+        cli.execute
+      end
+    end
+
+    describe "when the node exists" do
+
+      before do
+        project.expect(:node?, true, ["a-b-c"])
+        project.expect(:node_settings, settings, ["a-b-c"])
+      end
+
+      it "updates and executes the node" do
+        cli.execute
+      end
     end
   end
 end
