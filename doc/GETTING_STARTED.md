@@ -51,7 +51,7 @@ generated is just like what you'll see when you execute your patterns.
 
 Config uses a second repository to store the state of your system. This
 provides a change-by-change history of everything that has happened.
-Typically, this repository is called `myproject-data`. Go ahead and
+Typically, this repository is called `myproject-db`. Go ahead and
 create this second remote repository. Once it's created, config will
 manage it for you.
 
@@ -181,8 +181,8 @@ data down, pass a path to the structure you'd like to see.
     bin/config-show-node production-webserver-1 ec2.public_ipv4
 
 What's happening here? Config pulls down the latest data repo (stored in
-`.data/project-data`) and then reads the contents of
-`project-data/nodes/production-webserver-1.json`.
+`.data/database`) and then reads the contents of
+`nodes/production-webserver-1.json`.
 
 ## DONE
 
