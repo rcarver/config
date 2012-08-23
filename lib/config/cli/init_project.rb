@@ -16,8 +16,8 @@ module Config
           add Config::Meta::Project do |p|
             p.root = Dir.pwd
             p.project_hostname_domain = "internal.example.com"
-            p.project_git_config_url = default_remotes.project_git_config.url
-            p.database_git_config_url = default_remotes.database_git_config.url
+            p.project_git_config_url = default_remotes.project_git_config.url || "<git project url>"
+            p.database_git_config_url = default_remotes.database_git_config.url || "<git database url>"
           end
         end
       end

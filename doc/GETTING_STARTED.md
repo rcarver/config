@@ -32,9 +32,6 @@ to the master branch, it will execute on your servers.
     echo 'gem "config", :git => "git@github.com:rcarver/config.git"' >> Gemfile
     bundle install --binstubs
 
-    # Initialize your config project.
-    bin/config-init-project
-
 Check in the files and push it to a remote repository. If you're using
 GitHub, first create a repository in your account and use the repo ssh
 url that GitHub provides.
@@ -44,10 +41,16 @@ url that GitHub provides.
     git remote add origin <repo ssh url>
     git push -u origin master
 
-By the way, `config-init-project` is written in Config. The output it
-generated is just like what you'll see when you execute your patterns.
+Once the repo has been pushed to a remote, initialize the Config
+project. Pushing to a remote first lets Config detect where it's stored,
+and set up good defaults for you.
 
-## Create the data repo
+    bin/config-init-project
+
+By the way, `config-init-project` is written in Config. The output it
+generates is just like what you'll see when you execute your project.
+
+## Create the database repo
 
 Config uses a second repository to store the state of your system. This
 provides a change-by-change history of everything that has happened.
@@ -59,7 +62,11 @@ manage it for you.
 
 Config itself needs a small amount of configuration. Most importantly,
 it must know how to access the git repositories. This information is set
-in the file `./config.rb`.
+in the file `./config.rb`. This information should be set up for you,
+but review it now and make any changes you'd like.
+
+    configure :project_hostname,
+      domain: "internal.example.com"
 
     configure :project_git_config,
       url: "<url of repo>"
