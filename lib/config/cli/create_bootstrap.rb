@@ -4,9 +4,9 @@ module Config
   module CLI
     class CreateBootstrap < Config::CLI::Base
 
-      desc <<-STR
-Generate a bootstrap script and write it to STDOUT. The script can be
-run on a remote server in order to initialize it as a node.
+      desc <<-STR.dent
+        Generate a bootstrap script and write it to STDOUT. The script can be
+        run on a remote server in order to initialize it as a node.
       STR
 
       attr_accessor :cluster_name

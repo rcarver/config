@@ -2,8 +2,8 @@ module Config
   module CLI
     class StoreSSHKey < Config::CLI::Base
 
-      desc <<-STR
-Store an SSH key for use by the hub to distribute to new nodes.
+      desc <<-STR.dent
+        Store an SSH key for use by the hub to distribute to new nodes.
       STR
 
       attr_accessor :ssh_key_name

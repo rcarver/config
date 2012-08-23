@@ -2,8 +2,8 @@ module Config
   module CLI
     class CreateBlueprint < Config::CLI::Base
 
-      desc <<-STR
-Generate the template for a new blueprint.
+      desc <<-STR.dent
+        Generate the template for a new blueprint.
       STR
 
       attr_accessor :blueprint_names

@@ -5,7 +5,7 @@ describe Config::Cluster do
   describe ".from_string" do
 
     it "works" do
-      cluster = Config::Cluster.from_string("sample", <<-STR, __FILE__)
+      cluster = Config::Cluster.from_string("sample", <<-STR.dent, __FILE__)
         configure :foo,
           value: "ok"
       STR
@@ -17,7 +17,7 @@ describe Config::Cluster do
       file = __FILE__
       line = __LINE__ + 2
       begin
-        Config::Cluster.from_string("sample", <<-STR, file, line)
+        Config::Cluster.from_string("sample", <<-STR.dent, file, line)
           xconfigure :foo,
             value: "ok"
         STR

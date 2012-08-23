@@ -5,7 +5,7 @@ describe Config::Blueprint do
   describe ".from_string" do
 
     it "works" do
-      blueprint = Config::Blueprint.from_string("sample", <<-STR, __FILE__)
+      blueprint = Config::Blueprint.from_string("sample", <<-STR.dent, __FILE__)
         file "/tmp/file"
       STR
       blueprint.to_s.must_equal "Blueprint[sample]"
@@ -16,7 +16,7 @@ describe Config::Blueprint do
     it "provides useful information for a syntax error" do
       file = __FILE__
       line = __LINE__ + 2
-      blueprint = Config::Blueprint.from_string("sample", <<-STR, __FILE__, __LINE__)
+      blueprint = Config::Blueprint.from_string("sample", <<-STR.dent, __FILE__, __LINE__)
         file "/tmp/file"
         xfile "/tmp/other"
       STR

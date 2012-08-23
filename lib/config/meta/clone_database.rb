@@ -8,7 +8,7 @@ class Config::Meta::CloneDatabase < Config::Pattern
 
   def call
     script "clone the repo" do |s|
-      s.code = <<-STR
+      s.code = <<-STR.dent
         if [ ! -d #{path} ]; then
           git clone #{url} #{path}
         fi

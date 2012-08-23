@@ -9,9 +9,9 @@ describe Config::Log do
   it "appends" do
     subject << "one"
     subject << "two"
-    stream.string.must_equal <<-STR
-one
-two
+    stream.string.must_equal <<-STR.dent
+      one
+      two
     STR
   end
 
@@ -25,12 +25,12 @@ two
       subject << "d"
     end
     subject << "e"
-    stream.string.must_equal <<-STR
-a
-  b
-    c
-  d
-e
+    stream.string.must_equal <<-STR.dent
+      a
+        b
+          c
+        d
+      e
     STR
   end
 
@@ -45,9 +45,9 @@ e
     subject.indent do
       subject << "one\ntwo"
     end
-    stream.string.must_equal <<-STR
-  one
-  two
+    stream.string.must_equal <<-STR.dent(2)
+      one
+      two
     STR
   end
 

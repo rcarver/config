@@ -57,13 +57,13 @@ describe Config::Spy::Facts::Value do
 
   it "logs when a key is first accessed" do
     subject.three
-    log_string.must_equal <<-STR
-Read one.two.three => "fake:one.two.three"
+    log_string.must_equal <<-STR.dent
+      Read one.two.three => "fake:one.two.three"
     STR
     subject.three.four
-    log_string.must_equal <<-STR
-Read one.two.three => "fake:one.two.three"
-Read one.two.three.four => "fake:one.two.three.four"
+    log_string.must_equal <<-STR.dent
+      Read one.two.three => "fake:one.two.three"
+      Read one.two.three.four => "fake:one.two.three.four"
     STR
   end
 

@@ -39,28 +39,28 @@ describe "filesystem", Config::Meta::Pattern do
     (tmpdir + "patterns" + "nginx").must_be :exist?
 
     (tmpdir + "patterns" + "nginx" + "service.rb").must_be :exist?
-    (tmpdir + "patterns" + "nginx" + "service.rb").read.must_equal <<-STR
-class Nginx::Service < Config::Pattern
+    (tmpdir + "patterns" + "nginx" + "service.rb").read.must_equal <<-STR.dent
+      class Nginx::Service < Config::Pattern
 
-  desc "The name"
-  key  :name
+        desc "The name"
+        key  :name
 
-  desc "The value"
-  attr :value
+        desc "The value"
+        attr :value
 
-  def call
-    # add patterns here
-  end
-end
+        def call
+          # add patterns here
+        end
+      end
     STR
 
     (tmpdir + "patterns" + "nginx" + "README.md").must_be :exist?
-    (tmpdir + "patterns" + "nginx" + "README.md").read.must_equal <<-STR
-# NGINX
+    (tmpdir + "patterns" + "nginx" + "README.md").read.must_equal <<-STR.dent
+      # NGINX
 
-## Service
+      ## Service
 
-**TODO** Describe the purpose of this pattern.
+      **TODO** Describe the purpose of this pattern.
     STR
   end
 end
