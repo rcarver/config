@@ -49,6 +49,7 @@ module Config
     end
 
     def fact_finder
+      # TODO: allow use of other facts-like systems.
       -> {
         ohai = ::Ohai::System.new
         ohai.all_plugins
@@ -93,8 +94,6 @@ module Config
       ssh_config.ssh_key =  _key(set, :ssh_key)
       ssh_config
     end
-
-    # Used by cipher.
 
   end
 end
