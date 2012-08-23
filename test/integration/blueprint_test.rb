@@ -204,7 +204,7 @@ module BlueprintTest
         STR
       }
 
-      let(:facts) { Config::Core::Facts.new("ip_address" => "192.0.0.1") }
+      let(:facts) { Config::Facts.new("ip_address" => "192.0.0.1") }
       let(:cluster) { Config::Cluster.new("prod") }
       let(:nodes) { MiniTest::Mock.new }
       let(:configuration) { Config::Configuration.new }

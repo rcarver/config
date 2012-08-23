@@ -1,7 +1,7 @@
 module Config
   module Spy
-    # Spy::Facts is an alternative implementation of Config::Core::Facts
-    # that returns fake values for any item accessed.
+    # Spy::Facts is an alternative implementation of Config::Facts that
+    # returns fake values for any item accessed.
     #
     # Spies can be used to inspect the execution of a Blueprint or
     # Pattern.

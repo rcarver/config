@@ -7,7 +7,7 @@ module Config
 
       # Public: Get the current node facts.
       #
-      # Returns a Config::Core::Facts.
+      # Returns a Config::Facts.
       attr_reader :node
 
       # Public: Get the current configuration.

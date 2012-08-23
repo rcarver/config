@@ -31,7 +31,7 @@ module Config
           end
         end
 
-        project.update_database
+        database.update
       end
 
     end

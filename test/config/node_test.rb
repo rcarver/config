@@ -13,7 +13,7 @@ describe Config::Node do
   subject { Config::Node.new(cluster_name, blueprint_name, identity) }
 
   before do
-    subject.facts = Config::Core::Facts.new(facts_data)
+    subject.facts = Config::Facts.new(facts_data)
   end
 
   specify "#fqn" do
@@ -35,7 +35,7 @@ describe Config::Node do
     (a.eql? c).must_equal false
     (c.eql? a).must_equal false
 
-    b.facts = Config::Core::Facts.new("info" => "here")
+    b.facts = Config::Facts.new("info" => "here")
 
     (a == b).must_equal true
     (a.eql? b).must_equal true

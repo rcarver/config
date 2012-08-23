@@ -36,6 +36,15 @@ module Config
       remotes
     end
 
+    def fact_finder
+      -> {
+        ohai = ::Ohai::System.new
+        ohai.all_plugins
+        Config::Facts.new(ohai.data.to_hash)
+      }
+    end
+
+
   protected
 
     # Safe set reader.

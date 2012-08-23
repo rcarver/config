@@ -15,7 +15,6 @@ require 'config/core/changeable'
 require 'config/core/conflict_error'
 require 'config/core/executable'
 require 'config/core/executor'
-require 'config/core/facts'
 require 'config/core/file'
 require 'config/core/git_repo'
 require 'config/core/marshalable'
@@ -38,6 +37,7 @@ require 'config/blueprint'
 require 'config/cluster'
 require 'config/cluster_context'
 require 'config/database'
+require 'config/facts'
 require 'config/global'
 require 'config/node'
 require 'config/nodes'
@@ -109,7 +109,7 @@ module Config
   #
   # Returns a Config::Project.
   def self.project
-    Config::Project.new(project_loader, database, nodes)
+    Config::Project.new(project_loader, nodes)
   end
 
   # Internal: The directory where system-installed projects live.
