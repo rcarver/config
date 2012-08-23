@@ -2,9 +2,9 @@ module Config
   module CLI
     class ShowNode < Config::CLI::Base
 
-      desc <<-STR
-Show information about a node. The database will be cloned or synced as
-necessary to ensure the information shown is up to date.
+      desc <<-STR.dent
+        Show information about a node. The database will be cloned or synced as
+        necessary to ensure the information shown is up to date.
       STR
 
       attr_accessor :fqn
@@ -29,7 +29,8 @@ necessary to ensure the information shown is up to date.
         update_database = cli("update-database")
         update_database.execute
 
-        node = project.get_node(fqn)
+        node = nodes.get_node(fqn)
+        abort "#{fqn} does not exist" unless node
 
         if path
           data = node.facts.at_path(path)

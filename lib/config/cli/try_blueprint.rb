@@ -2,12 +2,12 @@ module Config
   module CLI
     class TryBlueprint < Config::CLI::Base
 
-      desc <<-STR
-Execute a blueprint in order to inspect what it does. The execution will
-not touch the filesystem or otherwise manipulate the machine that
-executes this command. Specifying a cluster will use and validate that
-the cluster provides all required variables. Otherwise, the variables
-used during execution will be collected and reported.
+      desc <<-STR.dent
+        Execute a blueprint in order to inspect what it does. The execution will
+        not touch the filesystem or otherwise manipulate the machine that
+        executes this command. Specifying a cluster will use and validate that
+        the cluster provides all required variables. Otherwise, the variables
+        used during execution will be collected and reported.
       STR
 
       attr_accessor :blueprint_name

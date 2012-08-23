@@ -3,17 +3,16 @@ require 'helper'
 describe "filesystem running items", Config::Project do
 
   let(:project_loader) { Config::ProjectLoader.new(tmpdir) }
-  let(:private_data)   { Config::PrivateData.new(tmpdir + ".data") }
   let(:nodes)          { MiniTest::Mock.new }
 
-  subject { Config::Project.new(project_loader, private_data, nodes) }
+  subject { Config::Project.new(project_loader, nodes) }
 
   describe "executing a blueprint" do
 
     before do
       (tmpdir + "blueprints").mkdir
       (tmpdir + "blueprints/message.rb").open("w") do |f|
-        f.puts <<-STR
+        f.puts <<-STR.dent
           file "#{tmpdir}/file1" do |f|
             f.content = configure.messages.greeting
           end
@@ -28,7 +27,7 @@ describe "filesystem running items", Config::Project do
 
       (tmpdir + "clusters").mkdir
       (tmpdir + "clusters/production.rb").open("w") do |f|
-        f.puts <<-STR
+        f.puts <<-STR.dent
           configure :messages,
             greeting: "hello world"
         STR
@@ -65,7 +64,7 @@ describe "filesystem running items", Config::Project do
     describe "#execute_node" do
 
       let(:node) { Config::Node.new("production", "message", "one") }
-      let(:facts) { Config::Core::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
+      let(:facts) { Config::Facts.new("ec2" => { "ip_address" => "127.0.0.1" }) }
 
       before do
         node.facts = facts

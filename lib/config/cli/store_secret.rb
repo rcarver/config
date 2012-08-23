@@ -2,9 +2,9 @@ module Config
   module CLI
     class StoreSecret < Config::CLI::Base
 
-      desc <<-STR
-Store a configuration secret for use by the hub to distribute to 
-new nodes.
+      desc <<-STR.dent
+        Store a configuration secret for use by the hub to distribute to 
+        new nodes.
       STR
 
       attr_accessor :secret_name

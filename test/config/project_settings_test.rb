@@ -84,4 +84,11 @@ describe Config::ProjectSettings do
       skip
     end
   end
+
+  describe "#fact_finder" do
+
+    it "returns a lambda" do
+      subject.fact_finder.class.must_equal Proc
+    end
+  end
 end

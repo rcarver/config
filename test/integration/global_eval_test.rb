@@ -5,7 +5,7 @@ describe Config::Global do
   describe ".from_string" do
 
     it "works" do
-      cluster = Config::Global.from_string(<<-STR, __FILE__)
+      cluster = Config::Global.from_string(<<-STR.dent, __FILE__)
         configure :foo,
           value: "ok"
       STR
@@ -16,7 +16,7 @@ describe Config::Global do
       file = __FILE__
       line = __LINE__ + 2
       begin
-        Config::Global.from_string(<<-STR, file, line)
+        Config::Global.from_string(<<-STR.dent, file, line)
           xconfigure :foo,
             value: "ok"
         STR

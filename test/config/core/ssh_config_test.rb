@@ -38,13 +38,13 @@ describe Config::Core::SSHConfig do
     private_data = MiniTest::Mock.new
     private_data.expect(:ssh_key, ssh_key, ["default"])
 
-    subject.to_host_config(private_data).must_equal <<-STR
-Host examples-are-fun
-  Port 99
-  Hostname example.com
-  User foo
-  IdentityFile /etc/config/default
-  PreferredAuthentications publickey
+    subject.to_host_config(private_data).must_equal <<-STR.dent
+      Host examples-are-fun
+        Port 99
+        Hostname example.com
+        User foo
+        IdentityFile /etc/config/default
+        PreferredAuthentications publickey
     STR
 
     ssh_key.verify
