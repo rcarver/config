@@ -90,7 +90,7 @@ describe Config::Core::Executable do
     it "destroys" do
       subject.run_mode = :destroy
       subject.execute
-      subject.result.must_equal "destroyed"
+      subject.result.must_equal "prepared destroyed"
       log.must_equal "- Test"
     end
     it "skips" do
@@ -136,7 +136,7 @@ describe Config::Core::Executable do
       it "logs destroy but does not execute" do
         subject.run_mode = :destroy
         subject.execute
-        subject.result.must_equal ""
+        subject.result.must_equal "prepared"
         log.must_equal "- Test"
       end
     end

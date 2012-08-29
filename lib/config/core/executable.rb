@@ -23,6 +23,7 @@ module Config
           create  unless skip or noop?
         when :destroy
           log << log.colorize("#{prefix}- #{self}", :red)
+          prepare unless skip
           destroy unless skip or noop?
         when :skip
           log << log.colorize("SKIP #{self}", :cyan)
