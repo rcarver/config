@@ -23,12 +23,20 @@ module Config
           create  unless skip or noop?
         when :destroy
           log << log.colorize("#{prefix}- #{self}", :red)
+          prepare unless skip
           destroy unless skip or noop?
         when :skip
           log << log.colorize("SKIP #{self}", :cyan)
         else
           raise "Unknown run_mode #{run_mode.inspect}"
         end
+      end
+
+      # Public: Determine if this pattern is running in destroy mode.
+      #
+      # Returns a Boolean.
+      def destroy?
+        run_mode == :destroy
       end
 
       #
