@@ -2,17 +2,16 @@ module Config
   module Patterns
     class Bash < Config::Pattern
 
-      #desc { Config::Patterns::Script[:name].desc }
-      desc "Name of the script"
+      desc { Config::Patterns::Script[:name].desc }
       key :name
 
-      desc "The code"
+      desc { Config::Patterns::Script[:code].desc }
       attr :code
 
-      desc "The reverse code"
+      desc { Config::Patterns::Script[:reverse].desc }
       attr :reverse, nil
 
-      desc "The code or lambda to evaluate to determine if this script should be run"
+      desc { Config::Patterns::Script[:not_if].desc }
       attr :not_if, nil
 
       desc "Set sensible default options (-e and -u)"

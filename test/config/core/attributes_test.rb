@@ -58,6 +58,22 @@ describe Config::Core::Attributes do
       attr.description.must_equal nil
     end
 
+    it "allows lookup of an attr" do
+      klass[:name].must_be_instance_of Config::Core::Attributes::ClassMethods::Attr
+      klass[:name].desc.must_equal "The name"
+    end
+
+    it "allows description to be defined with a block" do
+      klass.desc { "yay" }
+      klass.attr :foo
+      attr = klass[:foo]
+      attr.description.must_equal "yay"
+    end
+
+    it "is an error to describe with both a string and a block" do
+      proc { klass.desc("yay") { "yay" } }.must_raise ArgumentError
+    end
+
     describe "#error_messages" do
 
       describe "when the attribute has no default value" do
@@ -110,7 +126,7 @@ describe Config::Core::Attributes do
         end
 
         it "is an error to not have a description" do
-          subject.description = nil
+          subject._description = nil
           subject.error_messages("ok").must_equal [
             "missing description for :name"
           ]
