@@ -28,6 +28,7 @@ describe "filesystem", Config::Patterns::Script do
   let(:path) { tmpdir + "test.txt" }
 
   def execute(run_mode)
+    subject.run_mode = run_mode
     subject.prepare
     subject.public_send(run_mode)
   end
@@ -60,7 +61,7 @@ describe "filesystem", Config::Patterns::Script do
     end
   end
 
-  describe "#create not_if" do
+  describe "#create with not_if" do
 
     before do
       subject.code = <<-STR.dent
@@ -68,12 +69,17 @@ describe "filesystem", Config::Patterns::Script do
       STR
     end
 
-    it "run the script when not_if is false" do
+    it "runs the script when not_if is false" do
       subject.not_if = '[ 1 -eq 0 ]'
       execute :create
       path.must_be :exist?
       log_string.must_equal <<-STR.dent(2)
-        RUNNING because '[ 1 -eq 0 ]' exited with a non-zero status
+          not_if
+          [ 1 -eq 0 ]
+          >>>
+          echo hello > #{path}
+          <<<
+        RUNNING because not_if exited with status 1
         STATUS 0
       STR
     end
@@ -83,7 +89,12 @@ describe "filesystem", Config::Patterns::Script do
       execute :create
       path.wont_be :exist?
       log_string.must_equal <<-STR.dent(2)
-        SKIPPED because '[ 1 -eq 1 ]' exited with a successful status
+          not_if
+          [ 1 -eq 1 ]
+          >>>
+          echo hello > #{path}
+          <<<
+        SKIPPED because not_if exited with zero status
       STR
     end
   end
@@ -99,6 +110,12 @@ describe "filesystem", Config::Patterns::Script do
       STR
       execute :create
       log_string.must_equal <<-STR.dent(2)
+          >>>
+          echo 'one to out' >&1
+          echo 'one to err' >&2
+          echo 'two to out' >&1
+          echo 'two to err' >&2
+          <<<
         STATUS 0
         STDOUT
           one to out
@@ -119,6 +136,13 @@ describe "filesystem", Config::Patterns::Script do
       STR
       proc { execute :create }.must_raise Config::Error
       log_string.must_equal <<-STR.dent(2)
+          >>>
+          echo 'one to out' >&1
+          echo 'one to err' >&2
+          exit 1
+          echo 'two to out' >&1
+          echo 'two to err' >&2
+          <<<
         STATUS 1
         STDOUT
           one to out
@@ -134,6 +158,10 @@ describe "filesystem", Config::Patterns::Script do
       STR
       execute :create
       log_string.must_equal <<-STR.dent(2)
+          >>>
+          echo hello > /dev/null
+          exit 0
+          <<<
         STATUS 0
       STR
     end
@@ -155,6 +183,16 @@ describe "filesystem", Config::Patterns::Script do
       path.open("w") { |f| f.print "here" }
       execute :destroy
       path.wont_be :exist?
+      log_string.must_equal <<-STR.dent(2)
+          >>>
+          if [ -f #{path} ]; then
+            rm #{path}
+          else
+            exit 1
+          fi
+          <<<
+        STATUS 0
+      STR
     end
 
     it "fails if the script returns non-zero status" do
@@ -166,7 +204,7 @@ describe "filesystem", Config::Patterns::Script do
 
     it "logs" do
       execute :destroy
-      log_string.must_equal <<-STR.dent
+      log_string.must_equal <<-STR.dent(4)
         No reverse code was given
       STR
     end
