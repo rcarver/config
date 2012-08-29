@@ -95,9 +95,9 @@ module Config
           @new_content = new_template.result(template_context.get_binding)
         end
         log.indent(2) do
-          log << ">>>"
+          log << log.colorize(">>>", :cyan)
           log << log_content
-          log << "<<<"
+          log << log.colorize("<<<", :cyan)
         end
       end
 
