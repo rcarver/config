@@ -79,8 +79,8 @@ describe "filesystem", Config::Patterns::Script do
           >>>
           echo hello > #{path}
           <<<
-        RUNNING because not_if exited with status 1
-        STATUS 0
+        RUNNING (not_if exited with status 1)
+        [?] 0
       STR
     end
 
@@ -94,7 +94,7 @@ describe "filesystem", Config::Patterns::Script do
           >>>
           echo hello > #{path}
           <<<
-        SKIPPED because not_if exited with zero status
+        SKIPPED (not_if exited with zero status)
       STR
     end
   end
@@ -116,13 +116,11 @@ describe "filesystem", Config::Patterns::Script do
           echo 'two to out' >&1
           echo 'two to err' >&2
           <<<
-        STATUS 0
-        STDOUT
-          one to out
-          two to out
-        STDERR
-          one to err
-          two to err
+        [o] one to out
+        [e] one to err
+        [o] two to out
+        [e] two to err
+        [?] 0
       STR
     end
 
@@ -143,11 +141,9 @@ describe "filesystem", Config::Patterns::Script do
           echo 'two to out' >&1
           echo 'two to err' >&2
           <<<
-        STATUS 1
-        STDOUT
-          one to out
-        STDERR
-          one to err
+        [o] one to out
+        [e] one to err
+        [?] 1
       STR
     end
 
@@ -162,7 +158,7 @@ describe "filesystem", Config::Patterns::Script do
           echo hello > /dev/null
           exit 0
           <<<
-        STATUS 0
+        [?] 0
       STR
     end
   end
@@ -191,7 +187,7 @@ describe "filesystem", Config::Patterns::Script do
             exit 1
           fi
           <<<
-        STATUS 0
+        [?] 0
       STR
     end
 
