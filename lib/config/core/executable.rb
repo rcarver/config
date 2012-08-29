@@ -32,6 +32,13 @@ module Config
         end
       end
 
+      # Public: Determine if this pattern is running in destroy mode.
+      #
+      # Returns a Boolean.
+      def destroy?
+        run_mode == :destroy
+      end
+
       #
       # Internal API
       #

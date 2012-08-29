@@ -141,4 +141,13 @@ describe Config::Core::Executable do
       end
     end
   end
+
+  describe "#destroy?" do
+
+    it "is true when the run_mode is destroy" do
+      subject.wont_be :destroy?
+      subject.run_mode = :destroy
+      subject.must_be :destroy?
+    end
+  end
 end
