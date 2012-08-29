@@ -103,6 +103,19 @@ module Config
       end
     end
 
+    # Public: Add a bash script.
+    #
+    # name - String name of the script.
+    #
+    # Yields a Config::Patterns::Bash.
+    #
+    def bash(name, &block)
+      add Config::Patterns::Bash do |p|
+        p.name = name
+        yield p if block_given?
+      end
+    end
+
     # Public: Add a package.
     #
     # name - String name of the package.
@@ -118,6 +131,7 @@ module Config
 
     # Autoload builtin patterns.
 
+    autoload :Bash, 'config/patterns/bash'
     autoload :Directory, 'config/patterns/directory'
     autoload :File, 'config/patterns/file'
     autoload :Package, 'config/patterns/package'

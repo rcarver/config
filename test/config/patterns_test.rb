@@ -89,6 +89,24 @@ describe Config::Patterns do
     end
   end
 
+  describe "#bash" do
+
+    let(:pattern) { Config::Patterns::Bash }
+
+    it "sets the name and adds the pattern" do
+      mock.expect(:name=, nil, ["the test"])
+      subject.bash "the test"
+    end
+
+    it "calls the block" do
+      mock.expect(:name=, nil, ["the test"])
+      mock.expect(:other=, nil, ["value"])
+      subject.bash "the test" do |s|
+        s.other = "value"
+      end
+    end
+  end
+
   describe "#package" do
 
     let(:pattern) { Config::Patterns::Package }
