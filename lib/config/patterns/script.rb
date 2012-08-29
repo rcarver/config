@@ -18,6 +18,28 @@ module Config
         "Script #{name.inspect}"
       end
 
+      def prepare
+        log.indent(2) do
+          if destroy?
+            if reverse
+              log << log.colorize(">>>", :cyan)
+              log << reverse
+              log << log.colorize("<<<", :cyan)
+            else
+              log << "No reverse code was given"
+            end
+          else
+            if not_if
+              log << log.colorize("not_if", :cyan)
+              log << not_if
+            end
+            log << log.colorize(">>>", :cyan)
+            log << code
+            log << log.colorize("<<<", :cyan)
+          end
+        end
+      end
+
       def create
         run(code) if should_run?
       end
@@ -25,28 +47,26 @@ module Config
       def destroy
         if reverse
           run(reverse)
-        else
-          log << "No reverse code was given"
         end
       end
 
     protected
 
       def should_run?
-        return true unless not_if
+        return true if not_if.nil?
 
         out, err, status = Open3.capture3(not_if)
-        successful = status.exitstatus != 0
+        successful = status.exitstatus == 0
 
         log.indent do
           if successful
-            log << "RUNNING because '#{not_if}' exited with a non-zero status"
+            log << "SKIPPED because not_if exited with zero status"
           else
-            log << "SKIPPED because '#{not_if}' exited with a successful status"
+            log << "RUNNING because not_if exited with status #{status.exitstatus}"
           end
         end
 
-        successful
+        not successful
       end
 
       def run(code)

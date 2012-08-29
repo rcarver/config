@@ -251,9 +251,9 @@ describe "filesystem", Config::Patterns::File do
         log.color = true
         execute :create
         log_string.must_equal <<-STR.dent(2)
-            >>>
+            \e[36m>>>\e[0m
             Hello \e[34mname:\e[0m\e[31mbob\e[0m
-            <<<
+            \e[36m<<<\e[0m
           created
         STR
       end
