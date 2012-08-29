@@ -73,12 +73,12 @@ describe "filesystem", Config::Patterns::Script do
       subject.not_if = '[ 1 -eq 0 ]'
       execute :create
       path.must_be :exist?
-      log_string.must_equal <<-STR.dent(2)
-          not_if
-          [ 1 -eq 0 ]
-          >>>
-          echo hello > #{path}
-          <<<
+      log_string.must_equal <<-STR.dent(4)
+        not_if
+        [ 1 -eq 0 ]
+        >>>
+        echo hello > #{path}
+        <<<
         RUNNING (not_if exited with status 1)
         [?] 0
       STR
@@ -88,12 +88,12 @@ describe "filesystem", Config::Patterns::Script do
       subject.not_if = '[ 1 -eq 1 ]'
       execute :create
       path.wont_be :exist?
-      log_string.must_equal <<-STR.dent(2)
-          not_if
-          [ 1 -eq 1 ]
-          >>>
-          echo hello > #{path}
-          <<<
+      log_string.must_equal <<-STR.dent(4)
+        not_if
+        [ 1 -eq 1 ]
+        >>>
+        echo hello > #{path}
+        <<<
         SKIPPED (not_if exited with zero status)
       STR
     end
@@ -109,13 +109,13 @@ describe "filesystem", Config::Patterns::Script do
         echo 'two to err' >&2
       STR
       execute :create
-      log_string.must_equal <<-STR.dent(2)
-          >>>
-          echo 'one to out' >&1
-          echo 'one to err' >&2
-          echo 'two to out' >&1
-          echo 'two to err' >&2
-          <<<
+      log_string.must_equal <<-STR.dent(4)
+        >>>
+        echo 'one to out' >&1
+        echo 'one to err' >&2
+        echo 'two to out' >&1
+        echo 'two to err' >&2
+        <<<
         [o] one to out
         [e] one to err
         [o] two to out
@@ -133,14 +133,14 @@ describe "filesystem", Config::Patterns::Script do
         echo 'two to err' >&2
       STR
       proc { execute :create }.must_raise Config::Error
-      log_string.must_equal <<-STR.dent(2)
-          >>>
-          echo 'one to out' >&1
-          echo 'one to err' >&2
-          exit 1
-          echo 'two to out' >&1
-          echo 'two to err' >&2
-          <<<
+      log_string.must_equal <<-STR.dent(4)
+        >>>
+        echo 'one to out' >&1
+        echo 'one to err' >&2
+        exit 1
+        echo 'two to out' >&1
+        echo 'two to err' >&2
+        <<<
         [o] one to out
         [e] one to err
         [?] 1
@@ -153,11 +153,11 @@ describe "filesystem", Config::Patterns::Script do
         exit 0
       STR
       execute :create
-      log_string.must_equal <<-STR.dent(2)
-          >>>
-          echo hello > /dev/null
-          exit 0
-          <<<
+      log_string.must_equal <<-STR.dent(4)
+        >>>
+        echo hello > /dev/null
+        exit 0
+        <<<
         [?] 0
       STR
     end
@@ -179,14 +179,14 @@ describe "filesystem", Config::Patterns::Script do
       path.open("w") { |f| f.print "here" }
       execute :destroy
       path.wont_be :exist?
-      log_string.must_equal <<-STR.dent(2)
-          >>>
-          if [ -f #{path} ]; then
-            rm #{path}
-          else
-            exit 1
-          fi
-          <<<
+      log_string.must_equal <<-STR.dent(4)
+        >>>
+        if [ -f #{path} ]; then
+          rm #{path}
+        else
+          exit 1
+        fi
+        <<<
         [?] 0
       STR
     end
