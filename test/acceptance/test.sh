@@ -3,15 +3,36 @@
 # Helpful urls for bash programming:
 # http://fvue.nl/wiki/Bash:_Error_handling
 
+# Abort on the first error.
 set -o errexit
 set -o errtrace
-set -o nounset
+
+# INIT means don't boot vagrant and don't clean up.
+if [ -n "${INIT}" ]; then
+  NOVAGRANT=1
+  NOCLEANUP=1
+fi
 
 # Boot vagrant by default.
-BOOT_VAGRANT=1
+# NOVAGRANT means don't boot the vagrant box.
+if [ -n "${NOVAGRANT}" ]; then
+  BOOT_VAGRANT=''
+else
+  BOOT_VAGRANT=1
+fi
 
 # Clean up files by default.
-CLEANUP=1
+# NOCLEANUP means don't clean up what was created. By default, everything is
+# cleaned up on success.
+if [ -n "${NOCLEANUP}" ]; then
+  CLEANUP=''
+else
+  CLEANUP=1
+fi
+
+# All variables are defined, so now be strict about it.
+set -o nounset
+
 CLEANUP_TASKS=( )
 
 # Trap certain errors on exit.
@@ -45,6 +66,9 @@ function onexit() {
       eval $task
       ((i-=1))
     done
+  fi
+  if [ -n "${INIT}" ]; then
+    echo Initialized project at: $project_dir
   fi
   exit $exit_status
 }
