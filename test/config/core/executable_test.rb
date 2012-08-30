@@ -21,14 +21,17 @@ describe Config::Core::Executable do
 
       def prepare
         @result << "prepared"
+        log << "preparing"
       end
 
       def create
         @result << "created"
+        log << "creating"
       end
 
       def destroy
         @result << "destroyed"
+        log << "destroying"
       end
     end
   }
@@ -36,7 +39,7 @@ describe Config::Core::Executable do
   subject { klass.new }
 
   def log
-    log_string.chomp
+    log_string
   end
 
   describe "pattern hierarchy" do
@@ -85,19 +88,29 @@ describe Config::Core::Executable do
       subject.run_mode = :create
       subject.execute
       subject.result.must_equal "prepared created"
-      log.must_equal "+ Test"
+      log.must_equal <<-STR.dent
+        + Test
+            preparing
+            creating
+      STR
     end
     it "destroys" do
       subject.run_mode = :destroy
       subject.execute
       subject.result.must_equal "prepared destroyed"
-      log.must_equal "- Test"
+      log.must_equal <<-STR.dent
+        - Test
+            preparing
+            destroying
+      STR
     end
     it "skips" do
       subject.run_mode = :skip
       subject.execute
       subject.result.must_equal ""
-      log.must_equal "SKIP Test"
+      log.must_equal <<-STR.dent
+        SKIP Test
+      STR
     end
     it "skips if a parent is skipped" do
       parent = klass.new
@@ -105,7 +118,9 @@ describe Config::Core::Executable do
       subject.parent = parent
       subject.execute
       subject.result.must_equal ""
-      log.must_equal "SKIP + Test"
+      log.must_equal <<-STR.dent
+        SKIP + Test
+      STR
     end
     it "describes both a parent skip and its own skip" do
       parent = klass.new
@@ -114,7 +129,9 @@ describe Config::Core::Executable do
       subject.run_mode = :skip
       subject.execute
       subject.result.must_equal ""
-      log.must_equal "SKIP Test"
+      log.must_equal <<-STR.dent
+        SKIP Test
+      STR
     end
     it "does not support other run modes" do
       subject.run_mode = :foobar
@@ -131,13 +148,19 @@ describe Config::Core::Executable do
         subject.run_mode = :create
         subject.execute
         subject.result.must_equal "prepared"
-        log.must_equal "+ Test"
+        log.must_equal <<-STR.dent
+          + Test
+              preparing
+        STR
       end
       it "logs destroy but does not execute" do
         subject.run_mode = :destroy
         subject.execute
         subject.result.must_equal "prepared"
-        log.must_equal "- Test"
+        log.must_equal <<-STR.dent
+          - Test
+              preparing
+        STR
       end
     end
   end

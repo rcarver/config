@@ -50,9 +50,7 @@ module Config
       #
       def changes
         @changes ||= Changes.new do |msg|
-          log.indent do
-            log << msg
-          end
+          log << msg
         end
       end
 

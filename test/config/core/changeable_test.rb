@@ -20,7 +20,7 @@ describe Config::Core::Changeable do
   it "writes to the log when changes occur" do
     subject.changes << "first thing"
     subject.changes << "second thing"
-    log_string.must_equal <<-STR.dent(2)
+    log_string.must_equal <<-STR.dent
       first thing
       second thing
     STR

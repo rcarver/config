@@ -73,7 +73,7 @@ describe "filesystem", Config::Patterns::Script do
       subject.not_if = '[ 1 -eq 0 ]'
       execute :create
       path.must_be :exist?
-      log_string.must_equal <<-STR.dent(4)
+      log_string.must_equal <<-STR.dent
         not_if
         [ 1 -eq 0 ]
         >>>
@@ -88,7 +88,7 @@ describe "filesystem", Config::Patterns::Script do
       subject.not_if = '[ 1 -eq 1 ]'
       execute :create
       path.wont_be :exist?
-      log_string.must_equal <<-STR.dent(4)
+      log_string.must_equal <<-STR.dent
         not_if
         [ 1 -eq 1 ]
         >>>
@@ -109,7 +109,7 @@ describe "filesystem", Config::Patterns::Script do
         echo 'two to err' >&2
       STR
       execute :create
-      log_string.must_equal <<-STR.dent(4)
+      log_string.must_equal <<-STR.dent
         >>>
         echo 'one to out' >&1
         echo 'one to err' >&2
@@ -133,7 +133,7 @@ describe "filesystem", Config::Patterns::Script do
         echo 'two to err' >&2
       STR
       proc { execute :create }.must_raise Config::Error
-      log_string.must_equal <<-STR.dent(4)
+      log_string.must_equal <<-STR.dent
         >>>
         echo 'one to out' >&1
         echo 'one to err' >&2
@@ -153,7 +153,7 @@ describe "filesystem", Config::Patterns::Script do
         exit 0
       STR
       execute :create
-      log_string.must_equal <<-STR.dent(4)
+      log_string.must_equal <<-STR.dent
         >>>
         echo hello > /dev/null
         exit 0
@@ -179,7 +179,7 @@ describe "filesystem", Config::Patterns::Script do
       path.open("w") { |f| f.print "here" }
       execute :destroy
       path.wont_be :exist?
-      log_string.must_equal <<-STR.dent(4)
+      log_string.must_equal <<-STR.dent
         >>>
         if [ -f #{path} ]; then
           rm #{path}
@@ -200,7 +200,7 @@ describe "filesystem", Config::Patterns::Script do
 
     it "logs" do
       execute :destroy
-      log_string.must_equal <<-STR.dent(4)
+      log_string.must_equal <<-STR.dent
         No reverse code was given
       STR
     end

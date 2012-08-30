@@ -19,24 +19,22 @@ module Config
       end
 
       def prepare
-        log.indent(2) do
-          if destroy?
-            if reverse
-              log << log.colorize(">>>", :cyan)
-              log << reverse
-              log << log.colorize("<<<", :cyan)
-            else
-              log << "No reverse code was given"
-            end
-          else
-            if not_if
-              log << log.colorize("not_if", :cyan)
-              log << not_if
-            end
+        if destroy?
+          if reverse
             log << log.colorize(">>>", :cyan)
-            log << code
+            log << reverse
             log << log.colorize("<<<", :cyan)
+          else
+            log << "No reverse code was given"
           end
+        else
+          if not_if
+            log << log.colorize("not_if", :cyan)
+            log << not_if
+          end
+          log << log.colorize(">>>", :cyan)
+          log << code
+          log << log.colorize("<<<", :cyan)
         end
       end
 
@@ -58,12 +56,10 @@ module Config
         out, err, status = Open3.capture3(not_if)
         successful = status.exitstatus == 0
 
-        log.indent(2) do
-          if successful
-            log << "SKIPPED (not_if exited with zero status)"
-          else
-            log << "RUNNING (not_if exited with status #{status.exitstatus})"
-          end
+        if successful
+          log << "SKIPPED (not_if exited with zero status)"
+        else
+          log << "RUNNING (not_if exited with status #{status.exitstatus})"
         end
 
         not successful
@@ -72,25 +68,23 @@ module Config
       def run(code)
         status = nil
 
-        log.indent(2) do
-          Open3.popen3(code) do |stdin, stdout, stderr, thread|
+        Open3.popen3(code) do |stdin, stdout, stderr, thread|
 
-            until stdout.eof? && stderr.eof?
-              out = stdout.gets
-              err = stderr.gets
-              log << log.colorize("[o] ", :cyan)    + out if out
-              log << log.colorize("[e] ", :magenta) + err if err
-            end
-
-            status = thread.value
+          until stdout.eof? && stderr.eof?
+            out = stdout.gets
+            err = stderr.gets
+            log << log.colorize("[o] ", :cyan)    + out if out
+            log << log.colorize("[e] ", :magenta) + err if err
           end
 
-          color = status.exitstatus == 0 ? :cyan : :red
-          log << log.colorize("[?] ", color) + status.exitstatus.to_s
+          status = thread.value
+        end
 
-          unless status.exitstatus == 0
-            raise Config::Error, "#{self} returned status #{status.exitstatus}"
-          end
+        color = status.exitstatus == 0 ? :cyan : :red
+        log << log.colorize("[?] ", color) + status.exitstatus.to_s
+
+        unless status.exitstatus == 0
+          raise Config::Error, "#{self} returned status #{status.exitstatus}"
         end
       end
 

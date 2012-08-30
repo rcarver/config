@@ -147,10 +147,10 @@ describe "filesystem", Config::Patterns::File do
         path.open("w") { |f| f.print subject.content }
         execute :create
         subject.changes.must_be_empty
-        log_string.must_equal <<-STR.dent(2)
-            >>>
-            hello world
-            <<<
+        log_string.must_equal <<-STR.dent
+          >>>
+          hello world
+          <<<
           identical
         STR
       end
@@ -199,11 +199,11 @@ describe "filesystem", Config::Patterns::File do
 
       it "logs the file content" do
         execute :create
-        log_string.must_equal <<-STR.dent(2)
-            >>>
-            hello
-            world
-            <<<
+        log_string.must_equal <<-STR.dent
+          >>>
+          hello
+          world
+          <<<
           created
         STR
       end
@@ -239,10 +239,10 @@ describe "filesystem", Config::Patterns::File do
 
       it "logs a debug template" do
         execute :create
-        log_string.must_equal <<-STR.dent(2)
-            >>>
-            Hello [name:bob]
-            <<<
+        log_string.must_equal <<-STR.dent
+          >>>
+          Hello [name:bob]
+          <<<
           created
         STR
       end
@@ -250,10 +250,10 @@ describe "filesystem", Config::Patterns::File do
       it "colorizes the debug template" do
         log.color = true
         execute :create
-        log_string.must_equal <<-STR.dent(2)
-            \e[36m>>>\e[0m
-            Hello \e[34mname:\e[0m\e[31mbob\e[0m
-            \e[36m<<<\e[0m
+        log_string.must_equal <<-STR.dent
+          \e[36m>>>\e[0m
+          Hello \e[34mname:\e[0m\e[31mbob\e[0m
+          \e[36m<<<\e[0m
           created
         STR
       end

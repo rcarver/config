@@ -94,11 +94,9 @@ module Config
           new_template = Erubis::Eruby.new(template)
           @new_content = new_template.result(template_context.get_binding)
         end
-        log.indent(2) do
-          log << log.colorize(">>>", :cyan)
-          log << log_content
-          log << log.colorize("<<<", :cyan)
-        end
+        log << log.colorize(">>>", :cyan)
+        log << log_content
+        log << log.colorize("<<<", :cyan)
       end
 
       def create
@@ -129,9 +127,7 @@ module Config
             pn.open("a") { |f| f.print @new_content }
             changes << change_status
           when "identical"
-            log.indent do
-              log << "identical"
-            end
+            log << "identical"
           end
         end
 
