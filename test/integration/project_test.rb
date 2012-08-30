@@ -38,9 +38,9 @@ describe "filesystem running items", Config::Project do
 
       it "executes the blueprint in noop mode" do
         subject.try_blueprint("message", "production")
-        log_string.must_include("+ [File #{tmpdir}/file1]")
-        log_string.must_include("+ [File #{tmpdir}/file2]")
-        log_string.must_include("+ [File #{tmpdir}/file3]")
+        log_string.must_include("+ File #{tmpdir}/file1")
+        log_string.must_include("+ File #{tmpdir}/file2")
+        log_string.must_include("+ File #{tmpdir}/file3")
         log_string.must_include("hello world")
         (tmpdir + "file1").wont_be :exist?
         (tmpdir + "file2").wont_be :exist?
@@ -49,9 +49,9 @@ describe "filesystem running items", Config::Project do
 
       it "executes the blueprint with a spy configuration, cluster, and node" do
         subject.try_blueprint("message")
-        log_string.must_include("+ [File #{tmpdir}/file1]")
-        log_string.must_include("+ [File #{tmpdir}/file2]")
-        log_string.must_include("+ [File #{tmpdir}/file3]")
+        log_string.must_include("+ File #{tmpdir}/file1")
+        log_string.must_include("+ File #{tmpdir}/file2")
+        log_string.must_include("+ File #{tmpdir}/file3")
         log_string.must_include("spy:messages.greeting")
         log_string.must_include("fake:ec2.ip_address")
         log_string.must_include("fake:spy_cluster")

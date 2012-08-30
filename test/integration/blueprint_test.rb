@@ -77,14 +77,14 @@ module BlueprintTest
         log_execute.must_equal <<-STR.dent
           Blueprint[webserver] Accumulate
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"one"]
+              BlueprintTest::Test name:"one"
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"two"]
+              BlueprintTest::Test name:"two"
           Blueprint[webserver] Validate
           Blueprint[webserver] Resolve
           Blueprint[webserver] Execute
-            + [BlueprintTest::Test name:"one"]
-            + [BlueprintTest::Test name:"two"]
+            + BlueprintTest::Test name:"one"
+            + BlueprintTest::Test name:"two"
         STR
       end
     end
@@ -109,7 +109,7 @@ module BlueprintTest
         log_execute.must_equal <<-STR.dent
           Blueprint[webserver] Accumulate
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"the test"]
+              BlueprintTest::Test name:"the test"
           Blueprint[webserver] Validate
             ERROR [BlueprintTest::Test name:"the test"] missing value for :value (The value)
         STR
@@ -139,9 +139,9 @@ module BlueprintTest
         log_execute.must_equal <<-STR.dent
           Blueprint[webserver] Accumulate
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"the test"]
+              BlueprintTest::Test name:"the test"
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"the test"]
+              BlueprintTest::Test name:"the test"
           Blueprint[webserver] Validate
           Blueprint[webserver] Resolve
             CONFLICT [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>1} vs. [BlueprintTest::Test name:"the test"] {:name=>"the test", :value=>2}
@@ -177,14 +177,14 @@ module BlueprintTest
         log_execute.must_equal <<-STR.dent
           Blueprint[webserver] Accumulate
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"the test"]
+              BlueprintTest::Test name:"the test"
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"the test"]
+              BlueprintTest::Test name:"the test"
           Blueprint[webserver] Validate
           Blueprint[webserver] Resolve
           Blueprint[webserver] Execute
-            + [BlueprintTest::Test name:"the test"]
-            SKIP [BlueprintTest::Test name:"the test"]
+            + BlueprintTest::Test name:"the test"
+            SKIP BlueprintTest::Test name:"the test"
         STR
       end
     end
@@ -285,22 +285,22 @@ module BlueprintTest
         log_execute.must_equal <<-STR.dent
           Blueprint[previous webserver] Accumulate
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"pattern1"]
+              BlueprintTest::Test name:"pattern1"
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"pattern2"]
+              BlueprintTest::Test name:"pattern2"
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"pattern3"]
+              BlueprintTest::Test name:"pattern3"
           Blueprint[current webserver] Accumulate
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"pattern2"]
+              BlueprintTest::Test name:"pattern2"
             + BlueprintTest::Test
-              [BlueprintTest::Test name:"pattern3"]
+              BlueprintTest::Test name:"pattern3"
           Blueprint[current webserver] Validate
           Blueprint[current webserver] Resolve
           Blueprint[current webserver] Execute
-            - [BlueprintTest::Test name:"pattern1"]
-            + [BlueprintTest::Test name:"pattern2"]
-            + [BlueprintTest::Test name:"pattern3"]
+            - BlueprintTest::Test name:"pattern1"
+            + BlueprintTest::Test name:"pattern2"
+            + BlueprintTest::Test name:"pattern3"
         STR
       end
     end
@@ -335,11 +335,11 @@ module BlueprintTest
           Blueprint[webserver] Accumulate
             + BlueprintTest::Test
                 Read webserver.my_name => "bob" from cfg
-              [BlueprintTest::Test name:"bob"]
+              BlueprintTest::Test name:"bob"
           Blueprint[webserver] Validate
           Blueprint[webserver] Resolve
           Blueprint[webserver] Execute
-            + [BlueprintTest::Test name:"bob"]
+            + BlueprintTest::Test name:"bob"
         STR
       end
     end

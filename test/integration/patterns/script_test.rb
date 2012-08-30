@@ -17,7 +17,7 @@ describe Config::Patterns::Script do
 
   specify "#to_s" do
     subject.name = "say ok"
-    subject.to_s.must_equal %([Script "say ok"])
+    subject.to_s.must_equal %(Script "say ok")
   end
 end
 

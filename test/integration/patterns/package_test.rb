@@ -16,9 +16,9 @@ describe Config::Patterns::Package do
 
   specify "#to_s" do
     subject.name = "nginx"
-    subject.to_s.must_equal %([Package "nginx"])
+    subject.to_s.must_equal %(Package "nginx")
     subject.version = "1.1"
-    subject.to_s.must_equal %([Package "nginx" at "1.1"])
+    subject.to_s.must_equal %(Package "nginx" at "1.1")
   end
   
   def call_pattern

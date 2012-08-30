@@ -16,7 +16,7 @@ describe Config::Patterns::Bash do
 
   specify "#to_s" do
     subject.name = "say ok"
-    subject.to_s.must_equal %([Bash "say ok"])
+    subject.to_s.must_equal %(Bash "say ok")
   end
 end
 

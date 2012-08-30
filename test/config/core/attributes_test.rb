@@ -22,7 +22,7 @@ describe Config::Core::Attributes do
       attr :other, "ok"
 
       def to_s
-        "[Test Class]"
+        "Test Class"
       end
     end
   }
