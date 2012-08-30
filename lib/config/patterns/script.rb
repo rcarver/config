@@ -57,7 +57,7 @@ module Config
         successful = status.exitstatus == 0
 
         if successful
-          log << log.colorize("SKIPPED (not_if exited with zero status)", :brown)
+          log << log.colorize("SKIPPED (not_if exited with zero status)", :cyan)
         else
           log << log.colorize("RUNNING (not_if exited with status #{status.exitstatus})", :brown)
         end
