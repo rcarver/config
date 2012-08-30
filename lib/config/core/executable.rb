@@ -19,18 +19,18 @@ module Config
         case run_mode
         when :create
           log << log.colorize("#{prefix}+ #{self}", :green)
-          log.indent(2) do
+          log.indent do
             prepare unless skip
             create  unless skip or noop?
           end
         when :destroy
           log << log.colorize("#{prefix}- #{self}", :red)
-          log.indent(2) do
+          log.indent do
             prepare unless skip
             destroy unless skip or noop?
           end
         when :skip
-          log << log.colorize("SKIP #{self}", :cyan)
+          log << log.colorize("SKIP #{self}", :blue)
         else
           raise "Unknown run_mode #{run_mode.inspect}"
         end

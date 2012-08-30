@@ -57,9 +57,9 @@ module Config
         successful = status.exitstatus == 0
 
         if successful
-          log << "SKIPPED (not_if exited with zero status)"
+          log << log.colorize("SKIPPED (not_if exited with zero status)", :brown)
         else
-          log << "RUNNING (not_if exited with status #{status.exitstatus})"
+          log << log.colorize("RUNNING (not_if exited with status #{status.exitstatus})", :brown)
         end
 
         not successful
@@ -73,8 +73,8 @@ module Config
           until stdout.eof? && stderr.eof?
             out = stdout.gets
             err = stderr.gets
-            log << log.colorize("[o] ", :cyan)    + out if out
-            log << log.colorize("[e] ", :magenta) + err if err
+            log << log.colorize("[o] ", :cyan)  + out if out
+            log << log.colorize("[e] ", :white) + err if err
           end
 
           status = thread.value

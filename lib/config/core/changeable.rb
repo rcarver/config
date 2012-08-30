@@ -4,8 +4,7 @@ module Config
       # An array-like object that occumulates change messages.
       class Changes
 
-        def initialize(&block)
-          @block = block
+        def initialize
           @changes = []
         end
 
@@ -16,7 +15,6 @@ module Config
         # Returns nothing.
         def <<(msg)
           @changes << msg
-          @block.call(msg)
           nil
         end
 
@@ -49,9 +47,7 @@ module Config
       #   changes << "created a file"
       #
       def changes
-        @changes ||= Changes.new do |msg|
-          log << msg
-        end
+        @changes ||= Changes.new
       end
 
       # Public: Determine if any changes occurred.

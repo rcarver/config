@@ -151,7 +151,7 @@ describe "filesystem", Config::Patterns::File do
           >>>
           hello world
           <<<
-          identical
+          IDENTICAL
         STR
       end
     end
@@ -204,7 +204,7 @@ describe "filesystem", Config::Patterns::File do
           hello
           world
           <<<
-          created
+          CREATED
         STR
       end
     end
@@ -243,7 +243,7 @@ describe "filesystem", Config::Patterns::File do
           >>>
           Hello [name:bob]
           <<<
-          created
+          CREATED
         STR
       end
 
@@ -254,7 +254,7 @@ describe "filesystem", Config::Patterns::File do
           \e[36m>>>\e[0m
           Hello \e[34mname:\e[0m\e[31mbob\e[0m
           \e[36m<<<\e[0m
-          created
+          \e[33mCREATED\e[0m
         STR
       end
     end

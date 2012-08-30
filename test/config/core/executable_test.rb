@@ -90,8 +90,8 @@ describe Config::Core::Executable do
       subject.result.must_equal "prepared created"
       log.must_equal <<-STR.dent
         + Test
-            preparing
-            creating
+          preparing
+          creating
       STR
     end
     it "destroys" do
@@ -100,8 +100,8 @@ describe Config::Core::Executable do
       subject.result.must_equal "prepared destroyed"
       log.must_equal <<-STR.dent
         - Test
-            preparing
-            destroying
+          preparing
+          destroying
       STR
     end
     it "skips" do
@@ -150,7 +150,7 @@ describe Config::Core::Executable do
         subject.result.must_equal "prepared"
         log.must_equal <<-STR.dent
           + Test
-              preparing
+            preparing
         STR
       end
       it "logs destroy but does not execute" do
@@ -159,7 +159,7 @@ describe Config::Core::Executable do
         subject.result.must_equal "prepared"
         log.must_equal <<-STR.dent
           - Test
-              preparing
+            preparing
         STR
       end
     end

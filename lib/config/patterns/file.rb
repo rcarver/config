@@ -123,11 +123,13 @@ module Config
           when "created", "updated"
             pn.open("w") { |f| f.print @new_content }
             changes << change_status
+            log << log.colorize(change_status.upcase, :brown)
           when "appended"
             pn.open("a") { |f| f.print @new_content }
             changes << change_status
+            log << log.colorize(change_status.upcase, :brown)
           when "identical"
-            log << "identical"
+            log << log.colorize("IDENTICAL", :cyan)
           end
         end
 
