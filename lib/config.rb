@@ -148,6 +148,11 @@ module Config
     @directories ||= Config::Core::Directories.new("/etc/config", Dir.pwd)
   end
 
+  # Internal: Set the directories.
+  def self.directories=(directories)
+    @directories = directories
+  end
+
   # Internal: When no Remotes have been configured, we can gather some useful
   # defaults from existing git repository configurations.
   #
