@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Config
   module Core
     # This class describes the various directories that config uses.
@@ -58,6 +60,17 @@ module Config
         end
       end
 
+      # Create the run directory or recreate it if it exists. After this
+      # method the run directory will exist and be empty. Only operates
+      # on a system-level run directory.
+      #
+      # Returns nothing.
+      def create_run_dir!
+        if @system_dir.exist?
+          ::FileUtils.rm_rf(run_dir) if ::File.exist?(run_dir)
+          ::FileUtils.mkdir_p(run_dir)
+        end
+      end
     end
   end
 end
