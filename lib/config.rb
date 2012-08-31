@@ -106,14 +106,6 @@ module Config
     log.color = bool
   end
 
-  def self.directories
-    @directories ||= Config::Core::Directories.new("/etc/config", Dir.pwd)
-  end
-
-  def self.directories=(directories)
-    @directories = directories
-  end
-
   # Public: Instantiate the current project.
   #
   # Returns a Config::Project.
@@ -147,6 +139,13 @@ module Config
   # Returns a Config::Nodes.
   def self.nodes
     Config::Nodes.new(database)
+  end
+
+  # Internal: The directories where config accesses everything.
+  #
+  # Returns a Config::Core::Directories.
+  def self.directories
+    @directories ||= Config::Core::Directories.new("/etc/config", Dir.pwd)
   end
 
   # Internal: When no Remotes have been configured, we can gather some useful
