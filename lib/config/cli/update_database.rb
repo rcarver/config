@@ -22,11 +22,12 @@ module Config
         else project.base_settings
         end
 
+        directories = self.directories
         remotes = settings.remotes
 
         blueprint do
           add Config::Meta::CloneDatabase do |p|
-            p.path = Config.database_dir
+            p.path = directories.database_dir
             p.url = remotes.database_git_config.url
           end
         end
