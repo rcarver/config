@@ -33,6 +33,9 @@ describe Config::CLI::ExecNode do
       private_data.expect(:accumulation, :acc1)
       project.expect(:execute_node, :acc2, ["a-b-c", :acc1])
       private_data.expect(:accumulation=, nil, [:acc2])
+
+      directories.expect(:create_run_dir!, nil)
+      directories.expect(:run_dir, "/tmp")
     end
 
     describe "when the node does not exist" do
