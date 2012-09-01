@@ -34,7 +34,14 @@ module Config
         # blueprint.
         project_loader.require_all # require all so that the marshal'd accumulation can load.
         marshaled_accumulation = private_data.accumulation
-        private_data.accumulation = project.execute_node(@fqn, marshaled_accumulation)
+
+        # Ensure that the run dir exists and is empty.
+        directories.create_run_dir!
+
+        # Execute from the run dir.
+        ::Dir.chdir(directories.run_dir) do
+          private_data.accumulation = project.execute_node(@fqn, marshaled_accumulation)
+        end
       end
 
     end

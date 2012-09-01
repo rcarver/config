@@ -2,53 +2,9 @@ require 'helper'
 
 describe "filesystem", Config do
 
-  let(:system_dir) { tmpdir + "system" }
-
-  before do
-    @current_dir = Dir.pwd
-    Dir.chdir tmpdir
-  end
-
-  after do
-    Dir.chdir @current_dir
-  end
-
-  def setup_system_dir
-    system_dir.mkdir
-    Config.system_dir = system_dir
-  end
-
-  specify ".system_dir" do
-    Config.system_dir.must_equal Pathname.new("/etc/config")
-  end
-
-  describe ".project_dir" do
-    it "loads from the system dir" do
-      setup_system_dir
-      Config.project_dir.must_equal system_dir + "project"
-    end
-    it "loads from the local dir" do
-      Config.project_dir.must_equal Pathname.pwd
-    end
-  end
-
-  describe ".private_data_dir" do
-    it "loads from the system dir" do
-      setup_system_dir
-      Config.private_data_dir.must_equal system_dir
-    end
-    it "loads from the local dir" do
-      Config.private_data_dir.must_equal Pathname.pwd + ".data"
-    end
-  end
-
-  describe ".database_dir" do
-    it "loads from the system dir" do
-      setup_system_dir
-      Config.database_dir.must_equal system_dir + "database"
-    end
-    it "loads from the local dir" do
-      Config.database_dir.must_equal Pathname.pwd + ".data" + "database"
+  describe ".directories" do
+    it "returns a directories" do
+      Config.directories.must_be_instance_of Config::Core::Directories
     end
   end
 
@@ -84,11 +40,17 @@ describe "filesystem", Config do
 
   describe ".default_remotes" do
 
-    let(:remotes) { Config.default_remotes }
+    let(:system_dir) { tmpdir + "system" }
+    let(:current_dir) { tmpdir + "current" }
+
+    let(:dirs) { Config::Core::Directories.new(system_dir, current_dir) }
 
     before do
-      setup_system_dir
+      current_dir.mkdir
+      Config.directories = dirs
     end
+
+    let(:remotes) { Config.default_remotes }
 
     specify "when nothing is in git" do
       remotes.project_git_config.url.must_equal  nil
@@ -96,8 +58,8 @@ describe "filesystem", Config do
     end
 
     specify "when the project is in git but the database is not" do
-      (Config.project_dir + ".git").mkpath
-      (Config.project_dir + ".git/config").open("w") do |f|
+      (dirs.project_dir + ".git").mkpath
+      (dirs.project_dir + ".git/config").open("w") do |f|
         f.puts '[remote "origin"]'
         f.puts '        url = git@github.com:foo/bar.git'
       end
@@ -106,13 +68,13 @@ describe "filesystem", Config do
     end
 
     specify "when the project is in git and the database is in git" do
-      (Config.project_dir + ".git").mkpath
-      (Config.project_dir + ".git/config").open("w") do |f|
+      (dirs.project_dir + ".git").mkpath
+      (dirs.project_dir + ".git/config").open("w") do |f|
         f.puts '[remote "origin"]'
         f.puts '        url = git@github.com:foo/bar.git'
       end
-      (Config.database_dir + ".git").mkpath
-      (Config.database_dir + ".git/config").open("w") do |f|
+      (dirs.database_dir + ".git").mkpath
+      (dirs.database_dir + ".git/config").open("w") do |f|
         f.puts '[remote "origin"]'
         f.puts '        url = git@github.com:foo/bar-database.git'
       end

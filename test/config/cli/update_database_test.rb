@@ -29,6 +29,8 @@ describe Config::CLI::UpdateDatabase do
       database_git_config.expect(:url, "repo-url")
       remotes.expect(:database_git_config, database_git_config)
 
+      directories.expect(:database_dir, "db-dir")
+
       settings.expect(:remotes, remotes)
 
       database.expect(:update, nil)
@@ -45,7 +47,7 @@ describe Config::CLI::UpdateDatabase do
 
         clones = cli.find_blueprints(Config::Meta::CloneDatabase)
         clones.size.must_equal 1
-        clones[0].path.must_equal Config.database_dir
+        clones[0].path.must_equal "db-dir"
         clones[0].url.must_equal "repo-url"
       end
     end
@@ -61,7 +63,7 @@ describe Config::CLI::UpdateDatabase do
 
         clones = cli.find_blueprints(Config::Meta::CloneDatabase)
         clones.size.must_equal 1
-        clones[0].path.must_equal Config.database_dir
+        clones[0].path.must_equal "db-dir"
         clones[0].url.must_equal "repo-url"
       end
     end

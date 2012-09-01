@@ -120,6 +120,7 @@ class CliSpec < MiniTest::Spec
   let(:subcommand_builder) { MiniTest::Mock.new }
 
   # Fake the Config world.
+  let(:directories)    { MiniTest::Mock.new }
   let(:project)        { MiniTest::Mock.new }
   let(:project_loader) { MiniTest::Mock.new }
   let(:private_data)   { MiniTest::Mock.new }
@@ -140,6 +141,7 @@ class CliSpec < MiniTest::Spec
 
     # Inject fake objects.
     cli.subcommand_builder = subcommand_builder
+    cli.directories = directories
     cli.project = project
     cli.project_loader = project_loader
     cli.private_data = private_data
@@ -157,6 +159,7 @@ class CliSpec < MiniTest::Spec
 
   after do
     subcommand_builder.verify
+    directories.verify
     project.verify
     project_loader.verify
     private_data.verify
