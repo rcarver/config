@@ -60,11 +60,19 @@ module Config
       # interprted in the log output.
       def sanitize_for_logging(original)
         code = original.dup
+        code.gsub!(/\a/, '\a')
+        #code.gsub!(/\b/, '\b')
+        #code.gsub!(/\c/, '\c')
+        code.gsub!(/\f/, '\f')
+        #code.gsub!(/\n/, '\n')
         code.gsub!(/\r/, '\r')
-        #code.gsub!(/\n[^n]/, '\n')
+        code.gsub!(/\t/, '\t')
+        code.gsub!(/\v/, '\v')
         code
       end
 
+      # Determine if the command should run by checking the conditional
+      # command.
       def should_run?
         return true if not_if.nil?
 
@@ -128,6 +136,7 @@ module Config
         end
       end
 
+      # Stream an IO, specifically handling \r line continuations.
       def stream(io, prefix)
         buffer = ""
         while char = io.gets(1)

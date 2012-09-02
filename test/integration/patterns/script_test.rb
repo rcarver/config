@@ -117,9 +117,32 @@ describe "filesystem", Config::Patterns::Script do
         echo 'two to err' >&2
         <<<
         [o] one to out
-        [e] one to err
         [o] two to out
+        [e] one to err
         [e] two to err
+        [?] 0
+      STR
+    end
+
+    it "logs control characters" do
+      # NOTE: this is not complete but \b, \c and \n are weird.
+      subject.open = "bash"
+      subject.code = <<-STR.dent
+        test -n '\a'
+        test -n '\f'
+        test -n '\r'
+        test -n '\t'
+        test -n '\v'
+      STR
+      execute :create
+      log_string.must_equal <<-STR.dent
+        >>>
+        test -n '\\a'
+        test -n '\\f'
+        test -n '\\r'
+        test -n '\\t'
+        test -n '\\v'
+        <<<
         [?] 0
       STR
     end
