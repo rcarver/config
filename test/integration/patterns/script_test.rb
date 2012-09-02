@@ -227,9 +227,9 @@ describe "filesystem", Config::Patterns::Script do
     it "handles \r line continuations" do
       subject.open = "bash"
       subject.code = <<-STR.dent
-        echo -ne '#\\r'
+        echo -ne '#\r'
         echo -ne '##\r'
-        echo -ne '###\\r'
+        echo -ne '###\r'
         echo done
       STR
       execute :create
