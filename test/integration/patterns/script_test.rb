@@ -184,6 +184,27 @@ describe "filesystem", Config::Patterns::Script do
         [?] 0
       STR
     end
+
+    it "handles \\r line continuations" do
+      subject.open = "bash"
+      subject.code = <<-STR.dent
+        echo -ne '#\\r'
+        echo -ne '##\r'
+        echo -ne '###\\r'
+        echo done
+      STR
+      execute :create
+      log_string.must_equal <<-STR.dent
+        >>>
+        echo -ne '#\\r'
+        echo -ne '##\\r'
+        echo -ne '###\\r'
+        echo done
+        <<<
+        [o] #\r[o] ##\r[o] ###\r[o] done
+        [?] 0
+      STR
+    end
   end
 
   describe "#destroy" do
