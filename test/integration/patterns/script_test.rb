@@ -74,9 +74,9 @@ describe "filesystem", Config::Patterns::Script do
       execute :create
       path.must_be :exist?
       log_string.must_equal <<-STR.dent
-        not_if
+        not_if sh
         [ 1 -eq 0 ]
-        >>>
+        >>> sh
         echo hello > #{path}
         <<<
         RUNNING (not_if exited with status 1)
@@ -89,9 +89,9 @@ describe "filesystem", Config::Patterns::Script do
       execute :create
       path.wont_be :exist?
       log_string.must_equal <<-STR.dent
-        not_if
+        not_if sh
         [ 1 -eq 1 ]
-        >>>
+        >>> sh
         echo hello > #{path}
         <<<
         SKIPPED (not_if exited with zero status)
@@ -110,7 +110,7 @@ describe "filesystem", Config::Patterns::Script do
       STR
       execute :create
       log_string.must_equal <<-STR.dent
-        >>>
+        >>> sh
         echo 'one to out' >&1
         echo 'one to err' >&2
         echo 'two to out' >&1
@@ -136,7 +136,7 @@ describe "filesystem", Config::Patterns::Script do
       STR
       execute :create
       log_string.must_equal <<-STR.dent
-        >>>
+        >>> bash
         test -n '\\a'
         test -n '\\f'
         test -n '\\r'
@@ -157,7 +157,7 @@ describe "filesystem", Config::Patterns::Script do
       STR
       proc { execute :create }.must_raise Config::Error
       log_string.must_equal <<-STR.dent
-        >>>
+        >>> sh
         echo 'one to out' >&1
         echo 'one to err' >&2
         exit 1
@@ -177,7 +177,7 @@ describe "filesystem", Config::Patterns::Script do
       STR
       execute :create
       log_string.must_equal <<-STR.dent
-        >>>
+        >>> sh
         echo hello > /dev/null
         exit 0
         <<<
@@ -195,7 +195,7 @@ describe "filesystem", Config::Patterns::Script do
       STR
       execute :create
       log_string.must_equal <<-STR.dent
-        >>>
+        >>> bash
         echo -ne '#\\r'
         echo -ne '##\\r'
         echo -ne '###\\r'
@@ -224,7 +224,7 @@ describe "filesystem", Config::Patterns::Script do
       execute :destroy
       path.wont_be :exist?
       log_string.must_equal <<-STR.dent
-        >>>
+        >>> sh
         if [ -f #{path} ]; then
           rm #{path}
         else

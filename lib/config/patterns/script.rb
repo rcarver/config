@@ -27,7 +27,7 @@ module Config
       def prepare
         if destroy?
           if reverse
-            log << log.colorize(">>>", :cyan)
+            log << log.colorize(">>> #{command_string}", :cyan)
             log << sanitize_for_logging(reverse)
             log << log.colorize("<<<", :cyan)
           else
@@ -35,10 +35,10 @@ module Config
           end
         else
           if not_if
-            log << log.colorize("not_if", :cyan)
+            log << log.colorize("not_if #{not_if_command_string}", :cyan)
             log << sanitize_for_logging(not_if)
           end
-          log << log.colorize(">>>", :cyan)
+          log << log.colorize(">>> #{command_string}", :cyan)
           log << sanitize_for_logging(code)
           log << log.colorize("<<<", :cyan)
         end
@@ -71,12 +71,20 @@ module Config
         code
       end
 
+      def not_if_command
+        "sh"
+      end
+
+      def not_if_command_string
+        Array(not_if_command).join(" ")
+      end
+
       # Determine if the command should run by checking the conditional
       # command.
       def should_run?
         return true if not_if.nil?
 
-        out, err, status = Open3.capture3(not_if)
+        out, err, status = Open3.capture3(not_if_command, stdin_data: not_if)
         successful = status.exitstatus == 0
 
         if successful
