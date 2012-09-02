@@ -22,7 +22,7 @@ module Config
         if destroy?
           if reverse
             log << log.colorize(">>>", :cyan)
-            log << reverse
+            log << sanitize_for_logging(reverse)
             log << log.colorize("<<<", :cyan)
           else
             log << "No reverse code was given"
@@ -30,10 +30,10 @@ module Config
         else
           if not_if
             log << log.colorize("not_if", :cyan)
-            log << not_if
+            log << sanitize_for_logging(not_if)
           end
           log << log.colorize(">>>", :cyan)
-          log << code
+          log << sanitize_for_logging(code)
           log << log.colorize("<<<", :cyan)
         end
       end
@@ -49,6 +49,15 @@ module Config
       end
 
     protected
+
+      # Escape control characters from the code so that they aren't
+      # interprted in the log output.
+      def sanitize_for_logging(original)
+        code = original.dup
+        code.gsub!(/\r/, '\r')
+        #code.gsub!(/\n[^n]/, '\n')
+        code
+      end
 
       def should_run?
         return true if not_if.nil?
