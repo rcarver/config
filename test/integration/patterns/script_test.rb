@@ -73,29 +73,12 @@ describe "filesystem", Config::Patterns::Script do
       subject.not_if = '[ 1 -eq 0 ]'
       execute :create
       path.must_be :exist?
-      log_string.must_equal <<-STR.dent
-        not_if sh
-        [ 1 -eq 0 ]
-        >>> sh
-        echo hello > #{path}
-        <<<
-        RUNNING (not_if exited with status 1)
-        [?] 0
-      STR
     end
 
     it "doesn't run the script not_if is true" do
       subject.not_if = '[ 1 -eq 1 ]'
       execute :create
       path.wont_be :exist?
-      log_string.must_equal <<-STR.dent
-        not_if sh
-        [ 1 -eq 1 ]
-        >>> sh
-        echo hello > #{path}
-        <<<
-        SKIPPED (not_if exited with zero status)
-      STR
     end
   end
 
@@ -115,16 +98,6 @@ describe "filesystem", Config::Patterns::Script do
       path.open("w") { |f| f.print "here" }
       execute :destroy
       path.wont_be :exist?
-      log_string.must_equal <<-STR.dent
-        >>> sh
-        if [ -f #{path} ]; then
-          rm #{path}
-        else
-          exit 1
-        fi
-        <<<
-        [?] 0
-      STR
     end
 
     it "fails if the script returns non-zero status" do
@@ -142,7 +115,57 @@ describe "filesystem", Config::Patterns::Script do
     end
   end
 
-  describe "logging" do
+  describe "not_if logging" do
+
+    before do
+      subject.code = "echo 123"
+    end
+
+    specify "when false" do
+      subject.not_if = '[ 1 -eq 0 ]'
+      execute :create
+      log_string.must_equal <<-STR.dent
+        not_if sh
+        [ 1 -eq 0 ]
+        >>> sh
+        echo 123
+        <<<
+        RUNNING (not_if exited with status 1)
+        [o] 123
+        [?] 0
+      STR
+    end
+
+    specify "when true" do
+      subject.not_if = '[ 1 -eq 1 ]'
+      execute :create
+      log_string.must_equal <<-STR.dent
+        not_if sh
+        [ 1 -eq 1 ]
+        >>> sh
+        echo 123
+        <<<
+        SKIPPED (not_if exited with zero status)
+      STR
+    end
+
+    specify "when it has output" do
+      subject.not_if = 'echo ok; test 0 -eq 1'
+      execute :create
+      log_string.must_equal <<-STR.dent
+        not_if sh
+        echo ok; test 0 -eq 1
+        >>> sh
+        echo 123
+        <<<
+        RUNNING (not_if exited with status 1)
+        [o] 123
+        [?] 0
+      STR
+    end
+  end
+
+  describe "specifics of logging" do
 
     it "logs stdout and stderr" do
       subject.code = <<-STR.dent
@@ -201,26 +224,6 @@ describe "filesystem", Config::Patterns::Script do
         test -n '\\v'
         <<<
         [?] 0
-      STR
-    end
-
-    it "logs even if the command fails" do
-      subject.code = <<-STR.dent
-        echo 'one to out' >&1
-        echo 'one to err' >&2
-        exit 1
-        echo 'two to out' >&1
-        echo 'two to err' >&2
-      STR
-      proc { execute :create }.must_raise Config::Error
-      # The output is non-deterministic due to the use of Thread to
-      # capture both stout and stderr at the same time.
-      output = log_string.split("\n")[6..-1].sort
-      output.must_equal <<-STR.dent.split("\n").sort
-        <<<
-        [o] one to out
-        [e] one to err
-        [?] 1
       STR
     end
 
