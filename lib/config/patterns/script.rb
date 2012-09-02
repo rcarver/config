@@ -5,10 +5,16 @@ module Config
       desc "Name of the script"
       key :name
 
-      desc "The code"
+      desc "Command to open"
+      attr :open, "sh"
+
+      desc "Arguments passed to the command"
+      attr :args, nil
+
+      desc "The code to execute"
       attr :code
 
-      desc "The reverse code"
+      desc "The reverse code to execute"
       attr :reverse, nil
 
       desc "The code or lambda to evaluate to determine if this script should be run"
@@ -74,10 +80,32 @@ module Config
         not successful
       end
 
+      # Translate `open` and `args` into what Process.spawn expects.
+      # http://www.ruby-doc.org/core-1.9.3/Process.html#method-c-spawn
+      def command
+        parts = [open]
+        case args
+        when NilClass
+        when Array  then parts << args.join(" ")
+        when String then parts << args
+        else raise ArgumentError, "Cannot handle args: #{args.inspect}"
+        end
+        parts.size == 1 ? parts.first : parts
+      end
+
+      def command_string
+        Array(command).join(" ")
+      end
+
+      # Run code via an interpreter and log the results.
+      # Raises an error if the process does not return 0.
       def run(code)
         status = nil
 
-        Open3.popen3(code) do |stdin, stdout, stderr, thread|
+        Open3.popen3(command) do |stdin, stdout, stderr, thread|
+          stdin.print code
+          stdin.close
+
           threads = [thread]
 
           threads << Thread.new do
