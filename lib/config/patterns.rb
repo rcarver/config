@@ -118,13 +118,15 @@ module Config
 
     # Public: Add a package.
     #
-    # name - String name of the package.
+    # name    - String name of the package.
+    # version - String version of the package (default: any version).
     #
     # Yields a Config::Patterns::Package.
     #
-    def package(name, &block)
+    def package(name, version = nil, &block)
       add Config::Patterns::Package do |p|
         p.name = name
+        p.version = version if version
         yield p if block_given?
       end
     end

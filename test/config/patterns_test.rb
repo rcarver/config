@@ -116,6 +116,12 @@ describe Config::Patterns do
       subject.package "nginx"
     end
 
+    it "sets the name, version and adds the pattern" do
+      mock.expect(:name=, nil, ["nginx"])
+      mock.expect(:version=, nil, ["1.0"])
+      subject.package "nginx", "1.0"
+    end
+
     it "calls the block" do
       mock.expect(:name=, nil, ["nginx"])
       mock.expect(:other=, nil, ["1.1"])
