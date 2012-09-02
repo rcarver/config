@@ -104,23 +104,29 @@ describe "filesystem", Config::Patterns::Script do
     it "logs stdout and stderr" do
       subject.code = <<-STR.dent
         echo 'one to out' >&1
-        echo 'one to err' >&2
         echo 'two to out' >&1
+        echo 'one to err' >&2
         echo 'two to err' >&2
       STR
       execute :create
-      log_string.must_equal <<-STR.dent
+      # We have to split up these assertions because the order of output
+      # is non-deterministic due to the use of Thread to capture both
+      # stout and stderr at the same time.
+      a = log_string.split("\n").first(6).join("\n") + "\n"
+      a.must_equal <<-STR.dent
         >>> sh
         echo 'one to out' >&1
-        echo 'one to err' >&2
         echo 'two to out' >&1
+        echo 'one to err' >&2
         echo 'two to err' >&2
         <<<
+      STR
+      b = log_string.split("\n")[6..-2].sort
+      b.must_equal <<-STR.dent.split("\n").sort
         [o] one to out
         [o] two to out
         [e] one to err
         [e] two to err
-        [?] 0
       STR
     end
 
