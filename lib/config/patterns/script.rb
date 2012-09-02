@@ -69,14 +69,17 @@ module Config
         status = nil
 
         Open3.popen3(code) do |stdin, stdout, stderr, thread|
+          threads = [thread]
 
-          until stdout.eof? && stderr.eof?
-            out = stdout.gets
-            err = stderr.gets
-            log << log.colorize("[o] ", :cyan)  + out if out
-            log << log.colorize("[e] ", :white) + err if err
+          threads << Thread.new do
+            stream(stdout, log.colorize("[o]", :cyan))
           end
 
+          threads << Thread.new do
+            stream(stderr, log.colorize("[e]", :white))
+          end
+
+          threads.each { |t| t.join }
           status = thread.value
         end
 
@@ -88,6 +91,16 @@ module Config
         end
       end
 
+      def stream(io, prefix)
+        buffer = ""
+        while char = io.gets(1)
+          buffer << char
+          if char == "\n" || char == "\r"
+            log.verbatim "#{prefix} #{buffer}"
+            buffer.clear
+          end
+        end
+      end
     end
   end
 end
