@@ -99,7 +99,50 @@ describe "filesystem", Config::Patterns::Script do
     end
   end
 
-  describe "#create logging" do
+  describe "#destroy" do
+
+    before do
+      subject.reverse = <<-STR.dent
+        if [ -f #{path} ]; then
+          rm #{path}
+        else
+          exit 1
+        fi
+      STR
+    end
+
+    it "runs the script" do
+      path.open("w") { |f| f.print "here" }
+      execute :destroy
+      path.wont_be :exist?
+      log_string.must_equal <<-STR.dent
+        >>> sh
+        if [ -f #{path} ]; then
+          rm #{path}
+        else
+          exit 1
+        fi
+        <<<
+        [?] 0
+      STR
+    end
+
+    it "fails if the script returns non-zero status" do
+      proc { execute :destroy }.must_raise Config::Error
+    end
+  end
+
+  describe "#destroy when no reverse is given" do
+
+    it "logs" do
+      execute :destroy
+      log_string.must_equal <<-STR.dent
+        No reverse code was given
+      STR
+    end
+  end
+
+  describe "logging" do
 
     it "logs stdout and stderr" do
       subject.code = <<-STR.dent
@@ -118,6 +161,22 @@ describe "filesystem", Config::Patterns::Script do
         [o] two to out
         [e] one to err
         [e] two to err
+        [?] 0
+      STR
+    end
+
+    it "shows the command and options that are used to run the code" do
+      subject.open = "ruby"
+      subject.args = "-r open3"
+      subject.code = <<-STR.dent
+        puts Open3.class
+      STR
+      execute :create
+      log_string.must_equal <<-STR.dent
+        >>> ruby -r open3
+        puts Open3.class
+        <<<
+        [o] Module
         [?] 0
       STR
     end
@@ -165,22 +224,7 @@ describe "filesystem", Config::Patterns::Script do
       STR
     end
 
-    it "excludes the header if nothing is written" do
-      subject.code = <<-STR.dent
-        echo hello > /dev/null
-        exit 0
-      STR
-      execute :create
-      log_string.must_equal <<-STR.dent
-        >>> sh
-        echo hello > /dev/null
-        exit 0
-        <<<
-        [?] 0
-      STR
-    end
-
-    it "handles \\r line continuations" do
+    it "handles \r line continuations" do
       subject.open = "bash"
       subject.code = <<-STR.dent
         echo -ne '#\\r'
@@ -198,49 +242,6 @@ describe "filesystem", Config::Patterns::Script do
         <<<
         [o] #\r[o] ##\r[o] ###\r[o] done
         [?] 0
-      STR
-    end
-  end
-
-  describe "#destroy" do
-
-    before do
-      subject.reverse = <<-STR.dent
-        if [ -f #{path} ]; then
-          rm #{path}
-        else
-          exit 1
-        fi
-      STR
-    end
-
-    it "runs the script" do
-      path.open("w") { |f| f.print "here" }
-      execute :destroy
-      path.wont_be :exist?
-      log_string.must_equal <<-STR.dent
-        >>> sh
-        if [ -f #{path} ]; then
-          rm #{path}
-        else
-          exit 1
-        fi
-        <<<
-        [?] 0
-      STR
-    end
-
-    it "fails if the script returns non-zero status" do
-      proc { execute :destroy }.must_raise Config::Error
-    end
-  end
-
-  describe "#destroy when no reverse is given" do
-
-    it "logs" do
-      execute :destroy
-      log_string.must_equal <<-STR.dent
-        No reverse code was given
       STR
     end
   end
