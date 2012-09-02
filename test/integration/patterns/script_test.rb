@@ -84,7 +84,7 @@ describe "filesystem", Config::Patterns::Script do
       STR
     end
 
-    it "doesn't run the script only_if is true" do
+    it "doesn't run the script not_if is true" do
       subject.not_if = '[ 1 -eq 1 ]'
       execute :create
       path.wont_be :exist?
