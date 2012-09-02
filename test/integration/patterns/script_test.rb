@@ -109,26 +109,17 @@ describe "filesystem", Config::Patterns::Script do
         echo 'two to err' >&2
       STR
       execute :create
-      # We have to split up these assertions because the order of output
-      # is non-deterministic due to the use of Thread to capture both
-      # stout and stderr at the same time.
-      a = log_string.split("\n").first(6).join("\n") + "\n"
-      a.must_equal <<-STR.dent
-        >>> sh
-        echo 'one to out' >&1
-        echo 'two to out' >&1
-        echo 'one to err' >&2
-        echo 'two to err' >&2
+      # The output is non-deterministic due to the use of Thread to
+      # capture both stout and stderr at the same time.
+      output = log_string.split("\n")[5..-1].sort
+      output.must_equal <<-STR.dent.split("\n").sort
         <<<
-      STR
-      b = log_string.split("\n")[6..-2].sort
-      b.must_equal <<-STR.dent.split("\n").sort
         [o] one to out
         [o] two to out
         [e] one to err
         [e] two to err
+        [?] 0
       STR
-      log_string.split("\n").last.must_equal "[?] 0"
     end
 
     it "logs control characters" do
@@ -163,25 +154,15 @@ describe "filesystem", Config::Patterns::Script do
         echo 'two to err' >&2
       STR
       proc { execute :create }.must_raise Config::Error
-      # We have to split up these assertions because the order of output
-      # is non-deterministic due to the use of Thread to capture both
-      # stout and stderr at the same time.
-      a = log_string.split("\n").first(7).join("\n") + "\n"
-      a.must_equal <<-STR.dent
-        >>> sh
-        echo 'one to out' >&1
-        echo 'one to err' >&2
-        exit 1
-        echo 'two to out' >&1
-        echo 'two to err' >&2
+      # The output is non-deterministic due to the use of Thread to
+      # capture both stout and stderr at the same time.
+      output = log_string.split("\n")[6..-1].sort
+      output.must_equal <<-STR.dent.split("\n").sort
         <<<
-      STR
-      b = log_string.split("\n")[7..-2].sort
-      b.must_equal <<-STR.dent.split("\n").sort
         [o] one to out
         [e] one to err
+        [?] 1
       STR
-      log_string.split("\n").last.must_equal "[?] 1"
     end
 
     it "excludes the header if nothing is written" do
