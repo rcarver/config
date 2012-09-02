@@ -17,7 +17,7 @@ module Config
       desc "The reverse code to execute"
       attr :reverse, nil
 
-      desc "The code or lambda to evaluate to determine if this script should be run"
+      desc "The sh code to determine if this script should be run"
       attr :not_if, nil
 
       def describe
