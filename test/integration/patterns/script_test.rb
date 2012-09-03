@@ -80,6 +80,40 @@ describe "filesystem", Config::Patterns::Script do
       execute :create
       path.wont_be :exist?
     end
+
+    describe "the shell command" do
+
+      let(:shell_command) { subject.send(:not_if_shell_command) }
+
+      before do
+        subject.open = "bash"
+        subject.args = "-e"
+      end
+
+      it "uses the open command and args by default" do
+        shell_command.command.must_equal "bash"
+        shell_command.args.must_equal "-e"
+      end
+
+      it "can use its own command and args" do
+        subject.open_not_if = "ruby"
+        subject.args_not_if = "-I lib"
+        shell_command.command.must_equal "ruby"
+        shell_command.args.must_equal "-I lib"
+      end
+
+      it "uses no args if a not_if command is given but no args" do
+        subject.open_not_if = "ruby"
+        shell_command.command.must_equal "ruby"
+        shell_command.args.must_equal nil
+      end
+
+      it "uses reverse args if given" do
+        subject.args_not_if = "-e -u"
+        shell_command.command.must_equal "bash"
+        shell_command.args.must_equal "-e -u"
+      end
+    end
   end
 
   describe "#destroy" do
@@ -103,15 +137,39 @@ describe "filesystem", Config::Patterns::Script do
     it "fails if the script returns non-zero status" do
       proc { execute :destroy }.must_raise Config::Error
     end
-  end
 
-  describe "#destroy when no reverse is given" do
+    describe "the shell command" do
 
-    it "logs" do
-      execute :destroy
-      log_string.must_equal <<-STR.dent
-        No reverse code was given
-      STR
+      let(:shell_command) { subject.send(:reverse_shell_command) }
+
+      before do
+        subject.open = "bash"
+        subject.args = "-e"
+      end
+
+      it "uses the open command and args by default" do
+        shell_command.command.must_equal "bash"
+        shell_command.args.must_equal "-e"
+      end
+
+      it "can use its own command and args" do
+        subject.open_reverse = "ruby"
+        subject.args_reverse = "-I lib"
+        shell_command.command.must_equal "ruby"
+        shell_command.args.must_equal "-I lib"
+      end
+
+      it "uses no args if a reverse command is given but no args" do
+        subject.open_reverse = "ruby"
+        shell_command.command.must_equal "ruby"
+        shell_command.args.must_equal nil
+      end
+
+      it "uses reverse args if given" do
+        subject.args_reverse = "-e -u"
+        shell_command.command.must_equal "bash"
+        shell_command.args.must_equal "-e -u"
+      end
     end
   end
 
@@ -158,9 +216,20 @@ describe "filesystem", Config::Patterns::Script do
         >>> sh
         echo 123
         <<<
+        [o] ok
         RUNNING (not_if exited with status 1)
         [o] 123
         [?] 0
+      STR
+    end
+  end
+
+  describe "#destroy logging given" do
+
+    it "logs if no reverse code is given" do
+      execute :destroy
+      log_string.must_equal <<-STR.dent
+        No reverse code was given
       STR
     end
   end
@@ -249,5 +318,3 @@ describe "filesystem", Config::Patterns::Script do
     end
   end
 end
-
-

@@ -14,8 +14,20 @@ module Config
       desc "The code to execute"
       attr :code
 
+      desc "The reverse command to open"
+      attr :open_reverse, nil
+
+      desc "Arguments passed to the reverse command"
+      attr :args_reverse, nil
+
       desc "The reverse code to execute"
       attr :reverse, nil
+
+      desc "The not_if command to open"
+      attr :open_not_if, nil
+
+      desc "Arguments passed to the not_if command"
+      attr :args_not_if, nil
 
       desc "The sh code to determine if this script should be run"
       attr :not_if, nil
@@ -27,7 +39,7 @@ module Config
       def prepare
         if destroy?
           if reverse
-            log << log.colorize(">>> #{command_string}", :cyan)
+            log << log.colorize(">>> #{reverse_shell_command}", :cyan)
             log << sanitize_for_logging(reverse)
             log << log.colorize("<<<", :cyan)
           else
@@ -35,26 +47,68 @@ module Config
           end
         else
           if not_if
-            log << log.colorize("not_if #{not_if_command_string}", :cyan)
+            log << log.colorize("not_if #{not_if_shell_command}", :cyan)
             log << sanitize_for_logging(not_if)
           end
-          log << log.colorize(">>> #{command_string}", :cyan)
+          log << log.colorize(">>> #{shell_command}", :cyan)
           log << sanitize_for_logging(code)
           log << log.colorize("<<<", :cyan)
         end
       end
 
       def create
-        run(code) if should_run?
+        if should_run?
+          execute!(shell_command)
+        end
       end
 
       def destroy
         if reverse
-          run(reverse)
+          execute!(reverse_shell_command)
         end
       end
 
     protected
+
+      def shell_command
+        Config::Core::ShellCommand.new do |s|
+          s.command = open
+          s.args = args
+          s.stdin_data = code
+          s.on_stdout = on_stdout
+          s.on_stderr = on_stderr
+        end
+      end
+
+      def reverse_shell_command
+        Config::Core::ShellCommand.new do |s|
+          if open_reverse
+            s.command = open_reverse
+            s.args = args_reverse
+          else
+            s.command = open
+            s.args = args_reverse || args
+          end
+          s.stdin_data = reverse
+          s.on_stdout = on_stdout
+          s.on_stderr = on_stderr
+        end
+      end
+
+      def not_if_shell_command
+        Config::Core::ShellCommand.new do |s|
+          if open_not_if
+            s.command = open_not_if
+            s.args = args_not_if
+          else
+            s.command = open
+            s.args = args_not_if || args
+          end
+          s.stdin_data = not_if
+          s.on_stdout = on_stdout
+          s.on_stderr = on_stderr
+        end
+      end
 
       # Escape control characters from the code so that they aren't
       # interprted in the log output.
@@ -71,90 +125,42 @@ module Config
         code
       end
 
-      def not_if_command
-        "sh"
-      end
-
-      def not_if_command_string
-        Array(not_if_command).join(" ")
-      end
-
       # Determine if the command should run by checking the conditional
       # command.
       def should_run?
         return true if not_if.nil?
 
-        out, err, status = Open3.capture3(not_if_command, stdin_data: not_if)
-        successful = status.exitstatus == 0
+        shell = not_if_shell_command
+        shell.execute
 
-        if successful
+        if shell.success?
           log << log.colorize("SKIPPED (not_if exited with zero status)", :cyan)
         else
-          log << log.colorize("RUNNING (not_if exited with status #{status.exitstatus})", :brown)
+          log << log.colorize("RUNNING (not_if exited with status #{shell.exitstatus})", :brown)
         end
 
-        not successful
+        not shell.success?
       end
 
-      # Translate `open` and `args` into what Process.spawn expects.
-      # http://www.ruby-doc.org/core-1.9.3/Process.html#method-c-spawn
-      def command
-        parts = [open]
-        case args
-        when NilClass
-        when Array  then parts << args.join(" ")
-        when String then parts << args
-        else raise ArgumentError, "Cannot handle args: #{args.inspect}"
-        end
-        parts.size == 1 ? parts.first : parts
-      end
+      def execute!(shell)
+        shell.execute
 
-      def command_string
-        Array(command).join(" ")
-      end
+        color = shell.exitstatus == 0 ? :cyan : :red
+        log << log.colorize("[?] ", color) + shell.exitstatus.to_s
 
-      # Run code via an interpreter and log the results.
-      # Raises an error if the process does not return 0.
-      def run(code)
-        status = nil
-
-        Open3.popen3(command) do |stdin, stdout, stderr, thread|
-          stdin.print code
-          stdin.close
-
-          threads = [thread]
-
-          threads << Thread.new do
-            stream(stdout, log.colorize("[o]", :cyan))
-          end
-
-          threads << Thread.new do
-            stream(stderr, log.colorize("[e]", :white))
-          end
-
-          threads.each { |t| t.join }
-          status = thread.value
-        end
-
-        color = status.exitstatus == 0 ? :cyan : :red
-        log << log.colorize("[?] ", color) + status.exitstatus.to_s
-
-        unless status.exitstatus == 0
-          raise Config::Error, "#{self} returned status #{status.exitstatus}"
+        unless shell.success?
+          raise Config::Error, "#{self} returned status #{shell.exitstatus}"
         end
       end
 
-      # Stream an IO, specifically handling \r line continuations.
-      def stream(io, prefix)
-        buffer = ""
-        while char = io.gets(1)
-          buffer << char
-          if char == "\n" || char == "\r"
-            log.verbatim "#{prefix} #{buffer}"
-            buffer.clear
-          end
-        end
+      def on_stdout
+        -> line { log.verbatim log.colorize("[o]", :cyan) + " " + line }
       end
+
+      def on_stderr
+        -> line { log.verbatim log.colorize("[e]", :white) + " " + line }
+      end
+
     end
   end
 end
