@@ -45,8 +45,8 @@ describe "filesystem", Config::Patterns::Bash do
     it "runs a bash script with good defaults" do
       patterns = call_pattern
       patterns.size.must_equal 1
-      patterns.first.open.must_equal "bash"
-      patterns.first.args.must_equal ["-e", "-u"]
+      patterns.first.code_exec.must_equal "bash"
+      patterns.first.code_args.must_equal ["-e", "-u"]
     end
   end
 end

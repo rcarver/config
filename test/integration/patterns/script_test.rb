@@ -86,30 +86,30 @@ describe "filesystem", Config::Patterns::Script do
       let(:shell_command) { subject.send(:not_if_shell_command) }
 
       before do
-        subject.open = "bash"
-        subject.args = "-e"
+        subject.code_exec = "bash"
+        subject.code_args = "-e"
       end
 
-      it "uses the open command and args by default" do
+      it "uses code_exec and code_args by default" do
         shell_command.command.must_equal "bash"
         shell_command.args.must_equal "-e"
       end
 
       it "can use its own command and args" do
-        subject.open_not_if = "ruby"
-        subject.args_not_if = "-I lib"
+        subject.not_if_exec = "ruby"
+        subject.not_if_args = "-I lib"
         shell_command.command.must_equal "ruby"
         shell_command.args.must_equal "-I lib"
       end
 
       it "uses no args if a not_if command is given but no args" do
-        subject.open_not_if = "ruby"
+        subject.not_if_exec = "ruby"
         shell_command.command.must_equal "ruby"
         shell_command.args.must_equal nil
       end
 
-      it "uses reverse args if given" do
-        subject.args_not_if = "-e -u"
+      it "uses not_if args if given" do
+        subject.not_if_args = "-e -u"
         shell_command.command.must_equal "bash"
         shell_command.args.must_equal "-e -u"
       end
@@ -143,30 +143,30 @@ describe "filesystem", Config::Patterns::Script do
       let(:shell_command) { subject.send(:reverse_shell_command) }
 
       before do
-        subject.open = "bash"
-        subject.args = "-e"
+        subject.code_exec = "bash"
+        subject.code_args = "-e"
       end
 
-      it "uses the open command and args by default" do
+      it "uses code_exec and code_args by default" do
         shell_command.command.must_equal "bash"
         shell_command.args.must_equal "-e"
       end
 
       it "can use its own command and args" do
-        subject.open_reverse = "ruby"
-        subject.args_reverse = "-I lib"
+        subject.reverse_exec = "ruby"
+        subject.reverse_args = "-I lib"
         shell_command.command.must_equal "ruby"
         shell_command.args.must_equal "-I lib"
       end
 
       it "uses no args if a reverse command is given but no args" do
-        subject.open_reverse = "ruby"
+        subject.reverse_exec = "ruby"
         shell_command.command.must_equal "ruby"
         shell_command.args.must_equal nil
       end
 
       it "uses reverse args if given" do
-        subject.args_reverse = "-e -u"
+        subject.reverse_args = "-e -u"
         shell_command.command.must_equal "bash"
         shell_command.args.must_equal "-e -u"
       end
@@ -258,8 +258,8 @@ describe "filesystem", Config::Patterns::Script do
     end
 
     it "shows the command and options that are used to run the code" do
-      subject.open = "ruby"
-      subject.args = "-r open3"
+      subject.code_exec = "ruby"
+      subject.code_args = "-r open3"
       subject.code = <<-STR.dent
         puts Open3.class
       STR
@@ -275,7 +275,7 @@ describe "filesystem", Config::Patterns::Script do
 
     it "logs control characters" do
       # NOTE: this is not complete but \b, \c and \n are weird.
-      subject.open = "bash"
+      subject.code_exec = "bash"
       subject.code = <<-STR.dent
         test -n '\a'
         test -n '\f'
@@ -297,7 +297,7 @@ describe "filesystem", Config::Patterns::Script do
     end
 
     it "handles \r line continuations" do
-      subject.open = "bash"
+      subject.code_exec = "bash"
       subject.code = <<-STR.dent
         echo -ne '#\r'
         echo -ne '##\r'

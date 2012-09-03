@@ -5,32 +5,39 @@ module Config
       desc "Name of the script"
       key :name
 
-      desc "Command to open"
-      attr :open, "sh"
-
-      desc "Arguments passed to the command"
-      attr :args, nil
+      # Execute code
 
       desc "The code to execute"
       attr :code
 
-      desc "The reverse command to open"
-      attr :open_reverse, nil
+      desc "The command used to execute code"
+      attr :code_exec, "sh"
 
-      desc "Arguments passed to the reverse command"
-      attr :args_reverse, nil
+      desc "Arguments passed to code_exec"
+      attr :code_args, nil
+
+      # Execute reverse code
 
       desc "The reverse code to execute"
       attr :reverse, nil
 
-      desc "The not_if command to open"
-      attr :open_not_if, nil
+      desc "The command used to execute reverse"
+      attr :reverse_exec, nil
 
-      desc "Arguments passed to the not_if command"
-      attr :args_not_if, nil
+      desc "Arguments passed to reverse_exec"
+      attr :reverse_args, nil
 
-      desc "The sh code to determine if this script should be run"
+      # Execute to determine if `code` should execute.
+
+      desc "Code to determine if this script should be run"
       attr :not_if, nil
+
+      desc "The not_if used command to execute not_if"
+      attr :not_if_exec, nil
+
+      desc "Arguments passed to not_if_exec"
+      attr :not_if_args, nil
+
 
       def describe
         "Script #{name.inspect}"
@@ -50,7 +57,7 @@ module Config
             log << log.colorize("not_if #{not_if_shell_command}", :cyan)
             log << sanitize_for_logging(not_if)
           end
-          log << log.colorize(">>> #{shell_command}", :cyan)
+          log << log.colorize(">>> #{code_shell_command}", :cyan)
           log << sanitize_for_logging(code)
           log << log.colorize("<<<", :cyan)
         end
@@ -58,7 +65,7 @@ module Config
 
       def create
         if should_run?
-          execute!(shell_command)
+          execute!(code_shell_command)
         end
       end
 
@@ -70,10 +77,10 @@ module Config
 
     protected
 
-      def shell_command
+      def code_shell_command
         Config::Core::ShellCommand.new do |s|
-          s.command = open
-          s.args = args
+          s.command = code_exec
+          s.args = code_args
           s.stdin_data = code
           s.on_stdout = on_stdout
           s.on_stderr = on_stderr
@@ -82,12 +89,12 @@ module Config
 
       def reverse_shell_command
         Config::Core::ShellCommand.new do |s|
-          if open_reverse
-            s.command = open_reverse
-            s.args = args_reverse
+          if reverse_exec
+            s.command = reverse_exec
+            s.args = reverse_args
           else
-            s.command = open
-            s.args = args_reverse || args
+            s.command = code_exec
+            s.args = reverse_args || code_args
           end
           s.stdin_data = reverse
           s.on_stdout = on_stdout
@@ -97,12 +104,12 @@ module Config
 
       def not_if_shell_command
         Config::Core::ShellCommand.new do |s|
-          if open_not_if
-            s.command = open_not_if
-            s.args = args_not_if
+          if not_if_exec
+            s.command = not_if_exec
+            s.args = not_if_args
           else
-            s.command = open
-            s.args = args_not_if || args
+            s.command = code_exec
+            s.args = not_if_args || code_args
           end
           s.stdin_data = not_if
           s.on_stdout = on_stdout

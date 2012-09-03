@@ -5,7 +5,7 @@ module Config
       desc { Config::Patterns::Script[:name].desc }
       key :name
 
-      desc { Config::Patterns::Script[:args].desc }
+      desc { Config::Patterns::Script[:code_args].desc }
       attr :args, ["-e", "-u"]
 
       desc { Config::Patterns::Script[:code].desc }
@@ -24,9 +24,9 @@ module Config
       def call
         add Config::Patterns::Script do |s|
           s.name = name
-          s.open = "bash"
-          s.args = args
           s.code = code
+          s.code_exec = "bash"
+          s.code_args = args
           s.reverse = reverse
           s.not_if = not_if
         end
