@@ -21,6 +21,8 @@ require 'config/core/git_repo'
 require 'config/core/marshalable'
 require 'config/core/validation_error'
 require 'config/core/remotes'
+require 'config/core/shell_command'
+
 require 'config/core/ssh_config'
 require 'config/core/git_config'
 
