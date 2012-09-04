@@ -75,14 +75,16 @@ describe Config::Patterns do
 
     let(:pattern) { Config::Patterns::Script }
 
-    it "sets the name and adds the pattern" do
+    it "sets the name and adds the pattern, and sets the interpreter to sh" do
       mock.expect(:name=, nil, ["the test"])
+      mock.expect(:code_exec=, nil, ["sh"])
       subject.script "the test"
     end
 
     it "calls the block" do
       mock.expect(:name=, nil, ["the test"])
       mock.expect(:other=, nil, ["value"])
+      mock.expect(:code_exec=, nil, ["sh"])
       subject.script "the test" do |s|
         s.other = "value"
       end

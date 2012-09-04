@@ -77,10 +77,12 @@ module Config
       def buffer_output(script)
         buffer = ""
         env[:vm].channel.sudo(script) do |s, data|
-          buffer << data
-          if buffer =~ /\n/
-            env[:ui].info buffer.chomp, :prefix => false
-            buffer = ""
+          data.each_char do |char|
+            buffer << char
+            if char == "\r" || char == "\n"
+              env[:ui].info buffer, :new_line => false, :prefix => false
+              buffer.clear
+            end
           end
         end
       end
