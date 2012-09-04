@@ -10,18 +10,18 @@ module Config
       # system_dir  - String path to the system-installed project
       #               (typically /etc/config).
       # current_dir - String path to the current working directory
-      #               (default: same as system_dir).
+      #               (default: none).
       #
       def initialize(system_dir, current_dir = nil)
         @system_dir = Pathname.new(system_dir)
-        @current_dir = Pathname.new(current_dir || system_dir)
+        @current_dir = Pathname.new(current_dir) if current_dir
       end
 
       # The directory where the current project lives.
       #
       # Returns a Pathname.
       def project_dir
-        if @system_dir.exist?
+        if system_only?
           @system_dir + "project"
         else
           @current_dir
@@ -32,7 +32,7 @@ module Config
       #
       # Returns a Pathname.
       def private_data_dir
-        if @system_dir.exist?
+        if system_only?
           @system_dir
         else
           @current_dir + ".data"
@@ -43,7 +43,7 @@ module Config
       #
       # Returns a Pathname.
       def database_dir
-        if @system_dir.exist?
+        if system_only?
           @system_dir + "database"
         else
           private_data_dir + "database"
@@ -54,7 +54,7 @@ module Config
       #
       # Returns a Pathname.
       def run_dir
-        if @system_dir.exist?
+        if system_only?
           @system_dir + "run"
         else
           @current_dir
@@ -67,10 +67,16 @@ module Config
       #
       # Returns nothing.
       def create_run_dir!
-        if @system_dir.exist?
+        if system_only?
           ::FileUtils.rm_rf(run_dir) if ::File.exist?(run_dir)
           ::FileUtils.mkdir_p(run_dir)
         end
+      end
+
+    protected
+
+      def system_only?
+        @current_dir.nil? or @system_dir.exist?
       end
     end
   end

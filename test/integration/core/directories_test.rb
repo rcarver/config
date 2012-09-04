@@ -9,69 +9,85 @@ describe "filesystem", Config::Core::Directories do
     current_dir.mkdir
   end
 
-  subject { Config::Core::Directories.new(system_dir, current_dir) }
+  describe "when constructed with two directories" do
 
-  def create_system_dir
-    system_dir.mkdir
+    subject { Config::Core::Directories.new(system_dir, current_dir) }
+
+    describe "and the system dir exists" do
+
+      before do
+        system_dir.mkdir
+      end
+
+      specify "#project_dir" do
+        subject.project_dir.must_equal system_dir + "project"
+      end
+
+      specify "#private_data_dir" do
+        subject.private_data_dir.must_equal system_dir
+      end
+
+      specify "#database_dir" do
+        subject.database_dir.must_equal system_dir + "database"
+      end
+
+      specify "#run_dir" do
+        subject.run_dir.must_equal system_dir + "run"
+      end
+    end
+
+    describe "and the system dir does not exist" do
+
+      specify "#project_dir" do
+        subject.project_dir.must_equal current_dir
+      end
+
+      specify "#private_data_dir" do
+        subject.private_data_dir.must_equal current_dir + ".data"
+      end
+
+      specify "#database_dir" do
+        subject.database_dir.must_equal current_dir + ".data/database"
+      end
+
+      specify "#run_dir" do
+        subject.run_dir.must_equal current_dir
+      end
+    end
   end
 
-  describe "#project_dir" do
+  describe "when constructed with only one directory" do
 
-    it "loads from the system dir" do
-      create_system_dir
+    subject { Config::Core::Directories.new(system_dir) }
+
+    specify "#project_dir" do
       subject.project_dir.must_equal system_dir + "project"
     end
 
-    it "loads from the current dir" do
-      subject.project_dir.must_equal current_dir
-    end
-  end
-
-  describe "#private_data_dir" do
-
-    it "loads from the system dir" do
-      create_system_dir
+    specify "#private_data_dir" do
       subject.private_data_dir.must_equal system_dir
     end
 
-    it "loads from the current dir" do
-      subject.private_data_dir.must_equal current_dir + ".data"
-    end
-  end
-
-  describe "#database_dir" do
-
-    it "loads from the system dir" do
-      create_system_dir
+    specify "#database_dir" do
       subject.database_dir.must_equal system_dir + "database"
     end
 
-    it "loads from the current dir" do
-      subject.database_dir.must_equal current_dir + ".data" + "database"
-    end
-  end
-
-  describe "#run_dir" do
-
-    it "runs from the system dir" do
-      create_system_dir
+    specify "#run_dir" do
       subject.run_dir.must_equal system_dir + "run"
-    end
-
-    it "loads from the current dir" do
-      subject.run_dir.must_equal current_dir
     end
   end
 
   describe "#create_run_dir!" do
 
-    describe "the system dir" do
+    subject { Config::Core::Directories.new(system_dir, current_dir) }
+
+    describe "when the system dir exists" do
 
       before do
-        create_system_dir
+        system_dir.mkdir
       end
 
-      it "creates the system dir" do
+      it "creates the dir" do
         subject.create_run_dir!
         subject.run_dir.must_be :exist?
       end
@@ -85,7 +101,7 @@ describe "filesystem", Config::Core::Directories do
       end
     end
 
-    describe "the current dir" do
+    describe "when the system dir does not exist" do
 
       it "does nothing" do
         (subject.run_dir + "file").open("w") { |f| f.print "yay" }
@@ -93,16 +109,6 @@ describe "filesystem", Config::Core::Directories do
         subject.run_dir.must_be :exist?
         (subject.run_dir + "file").must_be :exist?
       end
-    end
-  end
-
-  describe "when constructed with only one directory" do
-
-    subject { Config::Core::Directories.new(system_dir) }
-
-    it "uses the system dir even if it doesn't exist" do
-      system_dir.wont_be :exist?
-      subject.project_dir.must_equal system_dir
     end
   end
 end
