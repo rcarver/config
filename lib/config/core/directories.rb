@@ -9,11 +9,12 @@ module Config
       #
       # system_dir  - String path to the system-installed project
       #               (typically /etc/config).
-      # current_dir - String path to the current working directory.
+      # current_dir - String path to the current working directory
+      #               (default: same as system_dir).
       #
-      def initialize(system_dir, current_dir)
+      def initialize(system_dir, current_dir = nil)
         @system_dir = Pathname.new(system_dir)
-        @current_dir = Pathname.new(current_dir)
+        @current_dir = Pathname.new(current_dir || system_dir)
       end
 
       # The directory where the current project lives.

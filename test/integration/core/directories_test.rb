@@ -95,5 +95,15 @@ describe "filesystem", Config::Core::Directories do
       end
     end
   end
+
+  describe "when constructed with only one directory" do
+
+    subject { Config::Core::Directories.new(system_dir) }
+
+    it "uses the system dir even if it doesn't exist" do
+      system_dir.wont_be :exist?
+      subject.project_dir.must_equal system_dir
+    end
+  end
 end
 
