@@ -98,7 +98,11 @@ module Config
     #
     def script(name, &block)
       add Config::Patterns::Script do |p|
+        # NOTE: this is a pretty weak deprecation system. Improve it as
+        # as needed.
+        deprecate "The 'script' has been deprecated. Use 'bash' instead."
         p.name = name
+        p.code_exec = "sh"
         yield p if block_given?
       end
     end
@@ -137,5 +141,12 @@ module Config
     autoload :Package, 'config/patterns/package'
     autoload :Script, 'config/patterns/script'
 
+  protected
+
+    def deprecate(msg)
+      if defined?(log)
+        log << log.colorize(msg, :red)
+      end
+    end
   end
 end
