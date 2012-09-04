@@ -11,6 +11,8 @@ set -o errtrace
 if [ -n "${INIT}" ]; then
   NOVAGRANT=1
   NOCLEANUP=1
+else
+  INIT=''
 fi
 
 # Boot vagrant by default.
