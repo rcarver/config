@@ -12,6 +12,7 @@ describe Config::Patterns::Script do
   specify "validity" do
     subject.name = "say ok"
     subject.code = "echo ok"
+    subject.code_exec = "sh"
     subject.attribute_errors.must_be_empty
   end
 
@@ -35,6 +36,7 @@ describe "filesystem", Config::Patterns::Script do
 
   before do
     subject.name = "test it out"
+    subject.code_exec = "sh"
   end
 
   describe "#create" do

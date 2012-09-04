@@ -23,10 +23,10 @@ module Config
     #   status it is considered an error and the Config execution will
     #   abort.
     #
-    # By default, everything is executed with the `sh` interpreter with
-    # no arguments. It is recommended to use a higher level pattern such
-    # as `Config::Patterns::Bash` for shell scripts, or a
-    # language-specific pattern for executing other types of code.
+    # No `code_exec` interpreter is defined by default. It is
+    # recommended to use a higher level pattern such as
+    # `Config::Patterns::Bash` for shell scripts, or a language-specific
+    # pattern for executing other types of code.
     #
     # Note that the interpeter set via `code_exec` will also determine
     # the intepreter for `not_if_exec` and `reverse_exec` if they are
@@ -58,7 +58,7 @@ module Config
       attr :code
 
       desc "The command used to execute code"
-      attr :code_exec, "sh"
+      attr :code_exec
 
       desc "Arguments passed to code_exec"
       attr :code_args, nil
