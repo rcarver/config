@@ -33,18 +33,30 @@ describe Config::Patterns::Package do
     it "installs without a version" do
       subject.name = "nginx"
       patterns = call_pattern
-      patterns.size.must_equal 1
-      patterns.first.code.must_equal "apt-get install nginx -y -q"
-      patterns.first.reverse.must_equal "apt-get remove nginx -y -q"
+      patterns.size.must_equal 2
+
+      bash = patterns.find { |p| p.is_a? Config::Patterns::Bash }
+      bash.name.must_equal "install nginx"
+
+      script = patterns.find { |p| p.is_a? Config::Patterns::Script }
+      script.name.must_equal "install nginx"
+      script.code.must_equal "apt-get install nginx -y -q"
+      script.reverse.must_equal "apt-get remove nginx -y -q"
     end
 
     it "installs with a version" do
       subject.name = "nginx"
       subject.version = "1.1"
       patterns = call_pattern
-      patterns.size.must_equal 1
-      patterns.first.code.must_equal "apt-get install nginx --version=1.1 -y -q"
-      patterns.first.reverse.must_equal "apt-get remove nginx -y -q"
+      patterns.size.must_equal 2
+
+      bash = patterns.find { |p| p.is_a? Config::Patterns::Bash }
+      bash.name.must_equal "install nginx at 1.1"
+
+      script = patterns.find { |p| p.is_a? Config::Patterns::Script }
+      script.name.must_equal "install nginx at 1.1"
+      script.code.must_equal "apt-get install nginx --version=1.1 -y -q"
+      script.reverse.must_equal "apt-get remove nginx -y -q"
     end
   end
 end
