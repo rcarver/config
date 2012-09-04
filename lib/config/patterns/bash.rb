@@ -5,7 +5,7 @@ module Config
       desc { Config::Patterns::Script[:name].desc }
       key :name
 
-      desc { Config::Patterns::Script[:code_args].desc }
+      desc { "Arguments for the bash interpreter" }
       attr :args, ["-e", "-u"]
 
       desc { Config::Patterns::Script[:code].desc }
