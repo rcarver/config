@@ -42,31 +42,11 @@ describe "filesystem", Config::Patterns::Bash do
       STR
     end
 
-    it "adds sensible defaults" do
+    it "runs a bash script with good defaults" do
       patterns = call_pattern
       patterns.size.must_equal 1
-      patterns.first.code.must_equal <<-STR.dent
-        set -o nounset
-        set -o errexit
-        echo 123
-      STR
-      patterns.first.reverse.must_equal <<-STR.dent
-        set -o nounset
-        set -o errexit
-        echo 321
-      STR
-    end
-
-    it "doesn't add sensible defaults" do
-      subject.set_sensible_defaults = false
-      patterns = call_pattern
-      patterns.size.must_equal 1
-      patterns.first.code.must_equal <<-STR.dent
-        echo 123
-      STR
-      patterns.first.reverse.must_equal <<-STR.dent
-        echo 321
-      STR
+      patterns.first.code_exec.must_equal "bash"
+      patterns.first.code_args.must_equal ["-e", "-u"]
     end
   end
 end

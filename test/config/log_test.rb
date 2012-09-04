@@ -15,6 +15,11 @@ describe Config::Log do
     STR
   end
 
+  it "appends verbatim" do
+    subject.verbatim "one\ntwo"
+    stream.string.must_equal "one\ntwo"
+  end
+
   it "indents" do
     subject << "a"
     subject.indent do
@@ -49,6 +54,13 @@ describe Config::Log do
       one
       two
     STR
+  end
+
+  it "does nothing special for multiline indent verbatim" do
+    subject.indent do
+      subject.verbatim "one\ntwo"
+    end
+    stream.string.must_equal "  one\ntwo"
   end
 
   it "colorizes" do

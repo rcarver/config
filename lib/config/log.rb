@@ -1,7 +1,7 @@
 module Config
   class Log
 
-    def initialize(stream=StringIO.new)
+    def initialize(stream = StringIO.new)
       @stream = stream
       @indent_level = 0
       @indent_string = " " * 2
@@ -21,6 +21,15 @@ module Config
       input.to_s.split("\n").each do |line|
         @stream.puts "#{current_indent}#{line}"
       end
+    end
+
+    # Public: Write to the log with no extra handling.
+    #
+    # input - String to write.
+    #
+    # Returns nothing.
+    def verbatim(input)
+      @stream.print "#{current_indent}#{input}"
     end
 
     # Public: Increase the current indent level for the life of a block
