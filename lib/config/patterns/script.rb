@@ -31,6 +31,22 @@ module Config
     # Note that the interpeter set via `code_exec` will also determine
     # the intepreter for `not_if_exec` and `reverse_exec` if they are
     # not explicitly set.
+    #
+    # Examples
+    #
+    #   # This script manages an empty file at /tmp/file by running
+    #   # bash scripts. To create, check for existence, and delete.
+    #   add Config::Pattern::Script do |s|
+    #     s.code_exec = "bash"
+    #     s.code_args = "-e"
+    #     s.code = <<-STR.dent
+    #       cd /tmp
+    #       touch file  
+    #     STR
+    #     s.not_if = "test -f /tmp/file"
+    #     s.reverse = "rm /tmp/file"
+    #   end
+    #
     class Script < Config::Pattern
 
       desc "Name of the script"
