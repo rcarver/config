@@ -81,6 +81,9 @@ set -o xtrace
 # The current version of ruby.
 rbenv_version=`rbenv version | awk '{ print $1 }'`
 
+# The directory of this script.
+script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+
 # The code under test.
 local_config_dir=`pwd`
 
@@ -192,6 +195,12 @@ STR
 
 git add Vagrantfile
 git commit -m 'add Vagrantfile'
+
+# Add more patterns for testing.
+cat $script_dir/fixtures/streaming.rb >> blueprints/devbox.rb
+
+git add .
+git commit -m 'add fixtures'
 
 # Push to the remote so we can execute the project.
 git push
