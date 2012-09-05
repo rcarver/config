@@ -11,6 +11,8 @@ module Config
     CONFIG_ORIGINAL_PATH = 'CONFIG_ORIGINAL_PATH'
 
     def self.exec
+      STDOUT.sync = true
+      STDERR.sync = true
       cli = self.new(File.basename($0), STDIN, STDOUT, STDERR)
       cli.run(ARGV, ENV)
     end
