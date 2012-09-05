@@ -11,6 +11,7 @@ module Config
       def initialize
         @command = nil
         @args = nil
+        @env = nil
         @on_stdout = -> line { }
         @on_stderr = -> line { }
         @status = nil
@@ -22,6 +23,9 @@ module Config
 
       # String or Array - Arguments to the command.
       attr_accessor :args
+
+      # Hash - Environment for the command.
+      attr_accessor :env
 
       # String - Passed to STDIN of the executed command.
       attr_accessor :stdin_data
@@ -39,7 +43,7 @@ module Config
       def execute
         @status = nil
 
-        Open3.popen3(spawn) do |stdin, stdout, stderr, thread|
+        Open3.popen3(*spawn) do |stdin, stdout, stderr, thread|
 
           if @stdin_data
             stdin.print @stdin_data
@@ -76,14 +80,32 @@ module Config
 
       # Returns a String the command and args that will be executed.
       def to_s
-        Array(spawn).join(" ")
+        env = spawn_env
+        command, args = spawn_command
+        env_str = env.map { |k, v| "#{k}=#{v}" }.join(" ") if env
+        [env_str, command, args].compact.join(" ")
       end
 
     protected
 
+      def spawn
+        args = []
+        args << spawn_env
+        args << spawn_command
+        args.compact
+      end
+
+      def spawn_env
+        case @env
+        when NilClass then nil
+        when Hash     then @env
+        else raise ArgumentError, "Cannot handle env: #{@env.inspect}"
+        end
+      end
+
       # Translate `command` and `args` into what Process.spawn expects.
       # http://www.ruby-doc.org/core-1.9.3/Process.html#method-c-spawn
-      def spawn
+      def spawn_command
         raise ArgumentError, "No command" if @command.nil?
         parts = [@command]
         case @args
@@ -92,7 +114,7 @@ module Config
         when String then parts << @args
         else raise ArgumentError, "Cannot handle args: #{@args.inspect}"
         end
-        parts.size == 1 ? parts.first : parts
+        parts.size == 1 ? @command : parts
       end
 
       # Stream an IO, specifically handling \r line continuations.
