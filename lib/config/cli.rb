@@ -166,6 +166,12 @@ module Config
       end
       attr_writer :subcommand_builder
 
+      # Returns a Config::Core::Directories
+      def directories
+        @directories ||= Config.directories
+      end
+      attr_writer :directories
+
       # Returns a Config::Project.
       def project
         @project ||= Config.project

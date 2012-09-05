@@ -51,7 +51,8 @@ module Config
         project_file = Tempfile.new("project")
 
         # Configure data storage on the node.
-        remote_private_data = Config::PrivateData.new(Config.system_dir)
+        remote_directories = Config::Core::Directories.new("/etc/config")
+        remote_private_data = Config::PrivateData.new(remote_directories.private_data_dir)
 
         # Configure remotes for the node.
         settings = project.cluster_settings(cluster_name)

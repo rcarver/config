@@ -21,9 +21,14 @@ module Config
         # Public: Describe a key or attr. The description is applied to
         # the next key or attr to be defined.
         #
+        # msg    - String message.
+        # &block - Block to evaluate for the message.
+        #
         # Returns nothing.
-        def desc(msg)
-          @_current_desc = msg
+        # Raises an ArgumentError if both a String and Block are given.
+        def desc(msg = nil, &block)
+          raise ArgumentError, "Pass only a String or Block" if msg && block
+          @_current_desc = msg || block
         end
 
         # Public: Define a key attribute.
@@ -52,7 +57,23 @@ module Config
           _define_attr(name)
         end
 
-        class Attr < Struct.new(:name, :default_value, :description)
+        # Public: Get an attribute definition.
+        #
+        # Returns a Config::Attributes::ClassMethods::Attr.
+        def [](name)
+          all_attrs[name]
+        end
+
+        class Attr < Struct.new(:name, :default_value, :_description)
+
+          def description
+            if _description.respond_to?(:call)
+              self._description = _description.call
+            end
+            _description
+          end
+
+          alias_method :desc, :description
 
           # Internal: Check the validity of this attribute.
           #
@@ -156,7 +177,7 @@ module Config
         errors = []
         self.class.all_attrs.values.each do |attr|
           attr.error_messages(attributes[attr.name]).each do |message|
-            errors << "#{to_s} #{message}"
+            errors << "[#{to_s}] #{message}"
           end
         end
         errors

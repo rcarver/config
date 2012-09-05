@@ -98,6 +98,23 @@ module Config
     #
     def script(name, &block)
       add Config::Patterns::Script do |p|
+        # NOTE: this is a pretty weak deprecation system. Improve it as
+        # as needed.
+        deprecate "The 'script' has been deprecated. Use 'bash' instead."
+        p.name = name
+        p.code_exec = "sh"
+        yield p if block_given?
+      end
+    end
+
+    # Public: Add a bash script.
+    #
+    # name - String name of the script.
+    #
+    # Yields a Config::Patterns::Bash.
+    #
+    def bash(name, &block)
+      add Config::Patterns::Bash do |p|
         p.name = name
         yield p if block_given?
       end
@@ -105,23 +122,33 @@ module Config
 
     # Public: Add a package.
     #
-    # name - String name of the package.
+    # name    - String name of the package.
+    # version - String version of the package (default: any version).
     #
     # Yields a Config::Patterns::Package.
     #
-    def package(name, &block)
+    def package(name, version = nil, &block)
       add Config::Patterns::Package do |p|
         p.name = name
+        p.version = version if version
         yield p if block_given?
       end
     end
 
     # Autoload builtin patterns.
 
+    autoload :Bash, 'config/patterns/bash'
     autoload :Directory, 'config/patterns/directory'
     autoload :File, 'config/patterns/file'
     autoload :Package, 'config/patterns/package'
     autoload :Script, 'config/patterns/script'
 
+  protected
+
+    def deprecate(msg)
+      if defined?(log)
+        log << log.colorize(msg, :red)
+      end
+    end
   end
 end

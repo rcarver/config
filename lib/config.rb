@@ -14,6 +14,7 @@ require 'config/core/accumulation'
 require 'config/core/attributes'
 require 'config/core/changeable'
 require 'config/core/conflict_error'
+require 'config/core/directories'
 require 'config/core/executable'
 require 'config/core/executor'
 require 'config/core/file'
@@ -21,6 +22,8 @@ require 'config/core/git_repo'
 require 'config/core/marshalable'
 require 'config/core/validation_error'
 require 'config/core/remotes'
+require 'config/core/shell_command'
+
 require 'config/core/ssh_config'
 require 'config/core/git_config'
 
@@ -116,74 +119,25 @@ module Config
     Config::Project.new(project_loader, nodes)
   end
 
-  # Internal: The directory where system-installed projects live.
-  #
-  # Returns a Pathname.
-  def self.system_dir
-    @system_dir ||= Pathname.new("/etc/config")
-  end
-
-  # Internal: Change the directory where system-installed projects live.
-  #
-  # dir - String or Pathname.
-  #
-  # Returns nothing.
-  def self.system_dir=(dir)
-    @system_dir = Pathname.new(dir)
-  end
-
-  # Internal: The directory where the current project lives.
-  #
-  # Returns a Pathname.
-  def self.project_dir
-    if system_dir.exist?
-      system_dir + "project"
-    else
-      Pathname.pwd
-    end
-  end
-
-  # Internal: The directory where the current private data lives.
-  #
-  # Returns a Pathname.
-  def self.private_data_dir
-    if system_dir.exist?
-      system_dir
-    else
-      Pathname.pwd + ".data"
-    end
-  end
-
-  # Internal: The directory where the database lives.
-  #
-  # Returns a Pathname.
-  def self.database_dir
-    if system_dir.exist?
-      system_dir + "database"
-    else
-      private_data_dir + "database"
-    end
-  end
-
   # Internal: Get the project loader.
   #
   # Returns a Config::ProjectLoader.
   def self.project_loader
-    Config::ProjectLoader.new(project_dir)
+    Config::ProjectLoader.new(directories.project_dir)
   end
 
   # Internal: Get the project data.
   #
   # Returns a Config::PrivateData.
   def self.private_data
-    Config::PrivateData.new(private_data_dir)
+    Config::PrivateData.new(directories.private_data_dir)
   end
 
   # Internal: Get the project database.
   #
   # Returns a Config::Database.
   def self.database
-    Config::Database.new(database_dir, Config::Core::GitRepo.new(database_dir))
+    Config::Database.new(directories.database_dir, Config::Core::GitRepo.new(directories.database_dir))
   end
 
   # Internal: Get the project nodes.
@@ -191,6 +145,18 @@ module Config
   # Returns a Config::Nodes.
   def self.nodes
     Config::Nodes.new(database)
+  end
+
+  # Internal: The directories where config accesses everything.
+  #
+  # Returns a Config::Core::Directories.
+  def self.directories
+    @directories ||= Config::Core::Directories.new("/etc/config", Dir.pwd)
+  end
+
+  # Internal: Set the directories.
+  def self.directories=(directories)
+    @directories = directories
   end
 
   # Internal: Get a cipher to encrypt or decrypt secrets.
@@ -232,15 +198,15 @@ module Config
     project_git_config = Config::Core::GitConfig.new
     database_git_config = Config::Core::GitConfig.new
 
-    if project_dir.exist?
-      Dir.chdir(project_dir) do
+    if directories.project_dir.exist?
+      Dir.chdir(directories.project_dir) do
         repo = `git config --get remote.origin.url`
         project_git_config.url = repo.chomp unless repo.empty?
       end
     end
 
-    if database_dir.exist?
-      Dir.chdir(database_dir) do
+    if directories.database_dir.exist?
+      Dir.chdir(directories.database_dir) do
         repo = `git config --get remote.origin.url`
         database_git_config.url = repo.chomp unless repo.empty?
       end

@@ -8,7 +8,7 @@ module Config
     include Config::Patterns
 
     def to_s
-      "[#{describe}]"
+      "#{describe}"
     end
 
     def describe

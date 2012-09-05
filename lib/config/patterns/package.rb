@@ -18,13 +18,13 @@ module Config
 
       def call
         if version
-          add Config::Patterns::Script do |s|
+          add Config::Patterns::Bash do |s|
             s.name = "install #{name} at #{version}"
             s.code = "apt-get install #{name} --version=#{version} -y -q"
             s.reverse = "apt-get remove #{name} -y -q"
           end
         else
-          add Config::Patterns::Script do |s|
+          add Config::Patterns::Bash do |s|
             s.name = "install #{name}"
             s.code = "apt-get install #{name} -y -q"
             s.reverse = "apt-get remove #{name} -y -q"

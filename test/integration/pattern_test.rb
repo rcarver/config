@@ -42,7 +42,7 @@ module PatternIntegrationTest
     end
 
     it "has a useful #to_s" do
-      subject.to_s.must_equal %{[TestPattern:test]}
+      subject.to_s.must_equal %{TestPattern:test}
     end
 
     it "has a useful #inspect" do
@@ -86,7 +86,7 @@ module PatternIntegrationTest
       it "logs the patterns that are added" do
         log_string.must_equal <<-STR.dent
           + PatternIntegrationTest::TestPattern
-            [TestPattern:sub-name]
+            TestPattern:sub-name
         STR
       end
     end

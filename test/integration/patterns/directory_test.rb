@@ -15,7 +15,7 @@ describe Config::Patterns::Directory do
 
   specify "#to_s" do
     subject.path = "/tmp//foo/"
-    subject.to_s.must_equal "[Directory /tmp/foo]"
+    subject.to_s.must_equal "Directory /tmp/foo"
   end
 end
 

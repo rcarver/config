@@ -16,11 +16,11 @@ describe Config::Patterns::File do
 
   specify "#to_s" do
     subject.path = "/tmp//file.rb"
-    subject.to_s.must_equal "[File /tmp/file.rb]"
+    subject.to_s.must_equal "File /tmp/file.rb"
   end
 
   specify "#to_s without a path" do
-    subject.to_s.must_equal "[File]"
+    subject.to_s.must_equal "File"
   end
 
   describe "#validate" do
@@ -147,11 +147,11 @@ describe "filesystem", Config::Patterns::File do
         path.open("w") { |f| f.print subject.content }
         execute :create
         subject.changes.must_be_empty
-        log_string.must_equal <<-STR.dent(2)
-            >>>
-            hello world
-            <<<
-          identical
+        log_string.must_equal <<-STR.dent
+          >>>
+          hello world
+          <<<
+          IDENTICAL
         STR
       end
     end
@@ -199,12 +199,12 @@ describe "filesystem", Config::Patterns::File do
 
       it "logs the file content" do
         execute :create
-        log_string.must_equal <<-STR.dent(2)
-            >>>
-            hello
-            world
-            <<<
-          created
+        log_string.must_equal <<-STR.dent
+          >>>
+          hello
+          world
+          <<<
+          CREATED
         STR
       end
     end
@@ -239,22 +239,22 @@ describe "filesystem", Config::Patterns::File do
 
       it "logs a debug template" do
         execute :create
-        log_string.must_equal <<-STR.dent(2)
-            >>>
-            Hello [name:bob]
-            <<<
-          created
+        log_string.must_equal <<-STR.dent
+          >>>
+          Hello [name:bob]
+          <<<
+          CREATED
         STR
       end
 
       it "colorizes the debug template" do
         log.color = true
         execute :create
-        log_string.must_equal <<-STR.dent(2)
-            >>>
-            Hello \e[34mname:\e[0m\e[31mbob\e[0m
-            <<<
-          created
+        log_string.must_equal <<-STR.dent
+          \e[36m>>>\e[0m
+          Hello \e[34mname:\e[0m\e[31mbob\e[0m
+          \e[36m<<<\e[0m
+          \e[33mCREATED\e[0m
         STR
       end
     end

@@ -75,15 +75,35 @@ describe Config::Patterns do
 
     let(:pattern) { Config::Patterns::Script }
 
-    it "sets the name and adds the pattern" do
+    it "sets the name and adds the pattern, and sets the interpreter to sh" do
       mock.expect(:name=, nil, ["the test"])
+      mock.expect(:code_exec=, nil, ["sh"])
       subject.script "the test"
     end
 
     it "calls the block" do
       mock.expect(:name=, nil, ["the test"])
       mock.expect(:other=, nil, ["value"])
+      mock.expect(:code_exec=, nil, ["sh"])
       subject.script "the test" do |s|
+        s.other = "value"
+      end
+    end
+  end
+
+  describe "#bash" do
+
+    let(:pattern) { Config::Patterns::Bash }
+
+    it "sets the name and adds the pattern" do
+      mock.expect(:name=, nil, ["the test"])
+      subject.bash "the test"
+    end
+
+    it "calls the block" do
+      mock.expect(:name=, nil, ["the test"])
+      mock.expect(:other=, nil, ["value"])
+      subject.bash "the test" do |s|
         s.other = "value"
       end
     end
@@ -96,6 +116,12 @@ describe Config::Patterns do
     it "sets the name and adds the pattern" do
       mock.expect(:name=, nil, ["nginx"])
       subject.package "nginx"
+    end
+
+    it "sets the name, version and adds the pattern" do
+      mock.expect(:name=, nil, ["nginx"])
+      mock.expect(:version=, nil, ["1.0"])
+      subject.package "nginx", "1.0"
     end
 
     it "calls the block" do
