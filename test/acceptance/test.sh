@@ -108,7 +108,12 @@ for dir in $project_repo_dir $database_repo_dir; do
 done
 
 # Initialize the test project directory.
-[ -d $project_dir ] && rm -rf $project_dir
+if [ -d $project_dir ]; then
+  if [ -f "$project_dir/.vagrant" ]; then
+    (cd $project_dir && bin/vagrant destroy -f)
+  fi
+  rm -rf $project_dir
+fi
 mkdir $project_dir
 cleanup "rm -rf $project_dir"
 cd $project_dir
