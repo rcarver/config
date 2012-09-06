@@ -107,14 +107,18 @@ module Config
 
       def spawn_command
         raise ArgumentError, "No command" if @command.nil?
-        parts = [@command]
-        case @args
-        when NilClass
-        when Array  then parts << @args.join(" ")
-        when String then parts << @args
-        else raise ArgumentError, "Cannot handle args: #{@args.inspect}"
+        if @args
+          args = [@command]
+          case @args
+          when NilClass
+          when Array  then args << @args.join(" ")
+          when String then args << @args
+          else raise ArgumentError, "Cannot handle args: #{@args.inspect}"
+          end
+          args
+        else
+          @command
         end
-        parts.size == 1 ? @command : parts
       end
 
       # Stream an IO, specifically handling \r line continuations.
