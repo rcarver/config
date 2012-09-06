@@ -61,6 +61,23 @@ describe "filesystem", Config::Patterns::Script do
       path.open("w") { |f| f.print "here" }
       proc { execute :create }.must_raise Config::Error
     end
+
+    describe "the shell command" do
+
+      let(:shell_command) { subject.send(:code_shell_command) }
+
+      before do
+        subject.code_exec = "bash"
+        subject.code_args = "-e"
+        subject.code_env = { "FOO" => "bar" }
+      end
+
+      it "uses code_exec, code_args and code_env" do
+        shell_command.command.must_equal "bash"
+        shell_command.args.must_equal "-e"
+        shell_command.env.must_equal "FOO" => "bar"
+      end
+    end
   end
 
   describe "#create with not_if" do

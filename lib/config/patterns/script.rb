@@ -138,6 +138,7 @@ module Config
         Config::Core::ShellCommand.new do |s|
           s.command = code_exec
           s.args = code_args
+          s.env = code_env
           s.stdin_data = code
           s.on_stdout = on_stdout
           s.on_stderr = on_stderr
