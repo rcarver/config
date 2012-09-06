@@ -88,6 +88,8 @@ module Config
 
     protected
 
+      # Translate `env`, `command` and `args` into what Process.spawn expects.
+      # http://www.ruby-doc.org/core-1.9.3/Process.html#method-c-spawn
       def spawn
         args = []
         args << spawn_env
@@ -103,8 +105,6 @@ module Config
         end
       end
 
-      # Translate `command` and `args` into what Process.spawn expects.
-      # http://www.ruby-doc.org/core-1.9.3/Process.html#method-c-spawn
       def spawn_command
         raise ArgumentError, "No command" if @command.nil?
         parts = [@command]
