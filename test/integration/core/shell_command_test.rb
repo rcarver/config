@@ -13,7 +13,6 @@ describe Config::Core::ShellCommand do
   end
 
   it "executes a simple command, capturing STDOUT and STDERR output" do
-    puts `ruby -v`
     subject.command = "ruby"
     subject.args = "-r open3"
     subject.env = { "HELLO" => "hello" }
