@@ -81,6 +81,9 @@ set -o xtrace
 # The current version of ruby.
 rbenv_version=`rbenv version | awk '{ print $1 }'`
 
+# The directory of this script.
+script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+
 # The code under test.
 local_config_dir=`pwd`
 
@@ -108,7 +111,12 @@ for dir in $project_repo_dir $database_repo_dir; do
 done
 
 # Initialize the test project directory.
-[ -d $project_dir ] && rm -rf $project_dir
+if [ -d $project_dir ]; then
+  if [ -f "$project_dir/.vagrant" ]; then
+    (cd $project_dir && bin/vagrant destroy -f)
+  fi
+  rm -rf $project_dir
+fi
 mkdir $project_dir
 cleanup "rm -rf $project_dir"
 cd $project_dir
@@ -187,6 +195,12 @@ STR
 
 git add Vagrantfile
 git commit -m 'add Vagrantfile'
+
+# Add more patterns for testing.
+cat $script_dir/fixtures/streaming.rb >> blueprints/devbox.rb
+
+git add .
+git commit -m 'add fixtures'
 
 # Push to the remote so we can execute the project.
 git push

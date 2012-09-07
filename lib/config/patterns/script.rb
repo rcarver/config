@@ -39,12 +39,13 @@ module Config
     #   add Config::Pattern::Script do |s|
     #     s.code_exec = "bash"
     #     s.code_args = "-e"
+    #     s.code_env = { "FILE_NAME" => "file" }
     #     s.code = <<-STR.dent
     #       cd /tmp
-    #       touch file  
+    #       touch $FILE_NAME
     #     STR
-    #     s.not_if = "test -f /tmp/file"
-    #     s.reverse = "rm /tmp/file"
+    #     s.not_if = "test -f /tmp/$FILE_NAME"
+    #     s.reverse = "rm /tmp/$FILE_NAME"
     #   end
     #
     class Script < Config::Pattern
@@ -63,6 +64,9 @@ module Config
       desc "Arguments passed to code_exec"
       attr :code_args, nil
 
+      desc "ENV passed to code_exec"
+      attr :code_env, nil
+
       # Execute reverse code
 
       desc "The reverse code to execute"
@@ -74,6 +78,9 @@ module Config
       desc "Arguments passed to reverse_exec"
       attr :reverse_args, nil
 
+      desc "ENV passed to reverse_exec"
+      attr :reverse_env, nil
+
       # Execute to determine if `code` should execute.
 
       desc "Code to determine if this script should be run"
@@ -84,6 +91,9 @@ module Config
 
       desc "Arguments passed to not_if_exec"
       attr :not_if_args, nil
+
+      desc "ENV passed to not_if_exec"
+      attr :not_if_env, nil
 
 
       def describe
@@ -128,6 +138,7 @@ module Config
         Config::Core::ShellCommand.new do |s|
           s.command = code_exec
           s.args = code_args
+          s.env = code_env
           s.stdin_data = code
           s.on_stdout = on_stdout
           s.on_stderr = on_stderr
@@ -139,9 +150,11 @@ module Config
           if reverse_exec
             s.command = reverse_exec
             s.args = reverse_args
+            s.env = reverse_env
           else
             s.command = code_exec
             s.args = reverse_args || code_args
+            s.env = reverse_env || code_env
           end
           s.stdin_data = reverse
           s.on_stdout = on_stdout
@@ -154,9 +167,11 @@ module Config
           if not_if_exec
             s.command = not_if_exec
             s.args = not_if_args
+            s.env = not_if_env
           else
             s.command = code_exec
             s.args = not_if_args || code_args
+            s.env = not_if_env || code_env
           end
           s.stdin_data = not_if
           s.on_stdout = on_stdout

@@ -61,6 +61,23 @@ describe "filesystem", Config::Patterns::Script do
       path.open("w") { |f| f.print "here" }
       proc { execute :create }.must_raise Config::Error
     end
+
+    describe "the shell command" do
+
+      let(:shell_command) { subject.send(:code_shell_command) }
+
+      before do
+        subject.code_exec = "bash"
+        subject.code_args = "-e"
+        subject.code_env = { "FOO" => "bar" }
+      end
+
+      it "uses code_exec, code_args and code_env" do
+        shell_command.command.must_equal "bash"
+        shell_command.args.must_equal "-e"
+        shell_command.env.must_equal "FOO" => "bar"
+      end
+    end
   end
 
   describe "#create with not_if" do
@@ -90,30 +107,37 @@ describe "filesystem", Config::Patterns::Script do
       before do
         subject.code_exec = "bash"
         subject.code_args = "-e"
+        subject.code_env = { "FOO" => "bar" }
       end
 
-      it "uses code_exec and code_args by default" do
+      it "uses code_exec, code_args and code_env by default" do
         shell_command.command.must_equal "bash"
         shell_command.args.must_equal "-e"
+        shell_command.env.must_equal "FOO" => "bar"
       end
 
-      it "can use its own command and args" do
+      it "can use its own command, args, and env" do
         subject.not_if_exec = "ruby"
         subject.not_if_args = "-I lib"
+        subject.not_if_env = { "BAR" => "baz" }
         shell_command.command.must_equal "ruby"
         shell_command.args.must_equal "-I lib"
+        shell_command.env.must_equal "BAR" => "baz"
       end
 
-      it "uses no args if a not_if command is given but no args" do
+      it "uses no args if a not_if command is given but no args or env" do
         subject.not_if_exec = "ruby"
         shell_command.command.must_equal "ruby"
         shell_command.args.must_equal nil
+        shell_command.env.must_equal nil
       end
 
-      it "uses not_if args if given" do
+      it "uses not_if args or env if given" do
         subject.not_if_args = "-e -u"
+        subject.not_if_env = { "BAR" => "baz" }
         shell_command.command.must_equal "bash"
         shell_command.args.must_equal "-e -u"
+        shell_command.env.must_equal "BAR" => "baz"
       end
     end
   end
@@ -147,30 +171,37 @@ describe "filesystem", Config::Patterns::Script do
       before do
         subject.code_exec = "bash"
         subject.code_args = "-e"
+        subject.code_env = { "FOO" => "bar" }
       end
 
       it "uses code_exec and code_args by default" do
         shell_command.command.must_equal "bash"
         shell_command.args.must_equal "-e"
+        shell_command.env.must_equal "FOO" => "bar"
       end
 
       it "can use its own command and args" do
         subject.reverse_exec = "ruby"
         subject.reverse_args = "-I lib"
+        subject.reverse_env = { "BAR" => "baz" }
         shell_command.command.must_equal "ruby"
         shell_command.args.must_equal "-I lib"
+        shell_command.env.must_equal "BAR" => "baz"
       end
 
       it "uses no args if a reverse command is given but no args" do
         subject.reverse_exec = "ruby"
         shell_command.command.must_equal "ruby"
         shell_command.args.must_equal nil
+        shell_command.env.must_equal nil
       end
 
       it "uses reverse args if given" do
         subject.reverse_args = "-e -u"
+        subject.reverse_env = { "BAR" => "baz" }
         shell_command.command.must_equal "bash"
         shell_command.args.must_equal "-e -u"
+        shell_command.env.must_equal "BAR" => "baz"
       end
     end
   end

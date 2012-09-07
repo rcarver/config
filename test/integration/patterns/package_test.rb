@@ -33,13 +33,13 @@ describe Config::Patterns::Package do
     it "installs without a version" do
       subject.name = "nginx"
       patterns = call_pattern
-      patterns.size.must_equal 2
-
-      bash = patterns.find { |p| p.is_a? Config::Patterns::Bash }
-      bash.name.must_equal "install nginx"
+      patterns.size.must_equal 1
 
       script = patterns.find { |p| p.is_a? Config::Patterns::Script }
       script.name.must_equal "install nginx"
+      script.code_exec.must_equal "sh"
+      script.code_args.must_equal "-e"
+      script.code_env.must_equal "DEBIAN_FRONTEND" => "noninteractive"
       script.code.must_equal "apt-get install nginx -y -q"
       script.reverse.must_equal "apt-get remove nginx -y -q"
     end
@@ -48,13 +48,13 @@ describe Config::Patterns::Package do
       subject.name = "nginx"
       subject.version = "1.1"
       patterns = call_pattern
-      patterns.size.must_equal 2
-
-      bash = patterns.find { |p| p.is_a? Config::Patterns::Bash }
-      bash.name.must_equal "install nginx at 1.1"
+      patterns.size.must_equal 1
 
       script = patterns.find { |p| p.is_a? Config::Patterns::Script }
       script.name.must_equal "install nginx at 1.1"
+      script.code_exec.must_equal "sh"
+      script.code_args.must_equal "-e"
+      script.code_env.must_equal "DEBIAN_FRONTEND" => "noninteractive"
       script.code.must_equal "apt-get install nginx --version=1.1 -y -q"
       script.reverse.must_equal "apt-get remove nginx -y -q"
     end
