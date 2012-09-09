@@ -138,6 +138,7 @@ module Config
     # Autoload builtin patterns.
 
     autoload :Bash, 'config/patterns/bash'
+    autoload :Chown, 'config/patterns/chown'
     autoload :Directory, 'config/patterns/directory'
     autoload :File, 'config/patterns/file'
     autoload :Package, 'config/patterns/package'
