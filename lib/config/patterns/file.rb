@@ -99,6 +99,16 @@ module Config
         log << log.colorize("<<<", :cyan)
       end
 
+      def call
+        if owner || group
+          add Config::Patterns::Chown do |p|
+            p.path = path
+            p.owner = owner
+            p.group = group
+          end
+        end
+      end
+
       def create
         change_status = nil
 
@@ -134,8 +144,6 @@ module Config
         end
 
         #stat = Config::Core::Stat.new(self, path)
-        #stat.owner = owner if owner
-        #stat.group = group if group
         #stat.mode = mode if mode
         #stat.touch if touch
       end

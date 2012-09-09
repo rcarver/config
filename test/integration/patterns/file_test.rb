@@ -90,6 +90,49 @@ describe Config::Patterns::File do
       subject.instance_variable_get(:@new_content).must_equal "123"
     end
   end
+
+  describe "#call" do
+
+    before do
+      subject.path = "/tmp/file"
+      subject.content = "ok"
+    end
+
+    def call_pattern
+      subject.accumulation = Config::Core::Accumulation.new
+      subject.validate
+      subject.prepare
+      subject.call
+      subject.accumulation.to_a
+    end
+
+    it "does nothing" do
+      patterns = call_pattern
+      patterns.size.must_equal 0
+    end
+
+    it "sets the file owner" do
+      subject.owner = "root"
+
+      patterns = call_pattern
+      patterns.size.must_equal 1
+
+      chmod = patterns.find { |p| p.is_a? Config::Patterns::Chown }
+      chmod.path.must_equal "/tmp/file"
+      chmod.owner.must_equal "root"
+    end
+
+    it "sets the file group" do
+      subject.group = "admin"
+
+      patterns = call_pattern
+      patterns.size.must_equal 1
+
+      chmod = patterns.find { |p| p.is_a? Config::Patterns::Chown }
+      chmod.path.must_equal "/tmp/file"
+      chmod.group.must_equal "admin"
+    end
+  end
 end
 
 describe "filesystem", Config::Patterns::File do
