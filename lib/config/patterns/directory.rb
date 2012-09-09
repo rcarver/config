@@ -18,6 +18,16 @@ module Config
         "Directory #{pn}"
       end
 
+      def call
+        if owner || group
+          add Config::Patterns::Chown do |p|
+            p.path = path
+            p.owner = owner
+            p.group = group
+          end
+        end
+      end
+
       def create
         unless pn.exist?
           pn.mkdir

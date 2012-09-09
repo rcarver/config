@@ -17,6 +17,48 @@ describe Config::Patterns::Directory do
     subject.path = "/tmp//foo/"
     subject.to_s.must_equal "Directory /tmp/foo"
   end
+
+  describe "#call" do
+
+    before do
+      subject.path = "/tmp/dir"
+    end
+
+    def call_pattern
+      subject.accumulation = Config::Core::Accumulation.new
+      subject.validate
+      subject.prepare
+      subject.call
+      subject.accumulation.to_a
+    end
+
+    it "does nothing" do
+      patterns = call_pattern
+      patterns.size.must_equal 0
+    end
+
+    it "sets the directory owner" do
+      subject.owner = "root"
+
+      patterns = call_pattern
+      patterns.size.must_equal 1
+
+      chmod = patterns.find { |p| p.is_a? Config::Patterns::Chown }
+      chmod.path.must_equal "/tmp/dir"
+      chmod.owner.must_equal "root"
+    end
+
+    it "sets the directory group" do
+      subject.group = "admin"
+
+      patterns = call_pattern
+      patterns.size.must_equal 1
+
+      chmod = patterns.find { |p| p.is_a? Config::Patterns::Chown }
+      chmod.path.must_equal "/tmp/dir"
+      chmod.group.must_equal "admin"
+    end
+  end
 end
 
 describe "filesystem", Config::Patterns::Directory do
