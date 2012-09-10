@@ -58,6 +58,17 @@ describe Config::Patterns::Directory do
       chmod.path.must_equal "/tmp/dir"
       chmod.group.must_equal "admin"
     end
+
+    it "sets the directory mode" do
+      subject.mode = 0755
+
+      patterns = call_pattern
+      patterns.size.must_equal 1
+
+      chmod = patterns.find { |p| p.is_a? Config::Patterns::Chmod }
+      chmod.path.must_equal "/tmp/dir"
+      chmod.mode.must_equal 0755
+    end
   end
 end
 

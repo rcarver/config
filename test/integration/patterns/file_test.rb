@@ -132,6 +132,17 @@ describe Config::Patterns::File do
       chmod.path.must_equal "/tmp/file"
       chmod.group.must_equal "admin"
     end
+
+    it "sets the file mode" do
+      subject.mode = 0755
+
+      patterns = call_pattern
+      patterns.size.must_equal 1
+
+      chmod = patterns.find { |p| p.is_a? Config::Patterns::Chmod }
+      chmod.path.must_equal "/tmp/file"
+      chmod.mode.must_equal 0755
+    end
   end
 end
 

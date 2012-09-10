@@ -26,6 +26,12 @@ module Config
             p.group = group
           end
         end
+        if mode
+          add Config::Patterns::Chmod do |p|
+            p.path = path
+            p.mode = mode
+          end
+        end
       end
 
       def create
