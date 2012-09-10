@@ -83,7 +83,7 @@ describe "filesystem", Config::Patterns::Chown do
         subject.owner = @user
         subject.recursive = true
 
-        fu.expect(:chown_r, nil, [@uid, nil, path.to_s])
+        fu.expect(:chown_R, nil, [@uid, nil, path.to_s])
 
         execute :create
         subject.changes.to_a.must_equal ["Set owner to #{@user}"]
@@ -120,7 +120,7 @@ describe "filesystem", Config::Patterns::Chown do
         subject.group = @group
         subject.recursive = true
 
-        fu.expect(:chown_r, nil, [nil, @gid, path.to_s])
+        fu.expect(:chown_R, nil, [nil, @gid, path.to_s])
 
         execute :create
         subject.changes.to_a.must_equal ["Set group to #{@group}"]

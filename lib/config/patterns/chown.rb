@@ -54,7 +54,7 @@ module Config
 
       def chown(uid, gid)
         if recursive
-          fu.chown_r(uid, gid, path)
+          fu.chown_R(uid, gid, path)
         else
           fu.chown(uid, gid, path)
         end
