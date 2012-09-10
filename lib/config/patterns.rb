@@ -119,6 +119,27 @@ module Config
       end
     end
 
+    # Public: Set file or directory bits.
+    #
+    # path - String path.
+    # mode - Integer or String bits to set.
+    #
+    # Yields a Config::Patterns::Chmod.
+    #
+    # Examples
+    #
+    #     chmod "/tmp/file", 0755   # Octal
+    #     chmod "/tmp/file", "755"  # String
+    #     chmod "/tmp/file", 01755  # Octal with sticky bit.
+    #
+    def chmod(path, mode = nil, &block)
+      add Config::Patterns::Chmod do |p|
+        p.path = path
+        p.mode = mode if mode
+        yield p if block_given?
+      end
+    end
+
     # Public: Add a script.
     #
     # name - String name of the script.

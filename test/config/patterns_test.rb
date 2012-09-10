@@ -96,6 +96,29 @@ describe Config::Patterns do
     end
   end
 
+  describe "#chmod" do
+
+    let(:pattern) { Config::Patterns::Chmod }
+
+    it "sets the path and adds the pattern" do
+      mock.expect(:path=, nil, ["/tmp"])
+      subject.chmod "/tmp"
+    end
+
+    it "sets the path and applies the mode" do
+      mock.expect(:path=, nil, ["/tmp"])
+      mock.expect(:mode=, nil, [0755])
+      subject.chmod "/tmp", 0755
+    end
+
+    it "calls the block" do
+      mock.expect(:path=, nil, ["/tmp"])
+      mock.expect(:other=, nil, ["value"])
+      subject.chmod "/tmp" do |d|
+        d.other = "value"
+      end
+    end
+  end
 
   describe "#script" do
 
