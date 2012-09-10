@@ -167,6 +167,7 @@ module Config
     # Autoload builtin patterns.
 
     autoload :Bash, 'config/patterns/bash'
+    autoload :Chmod, 'config/patterns/chmod'
     autoload :Chown, 'config/patterns/chown'
     autoload :Directory, 'config/patterns/directory'
     autoload :File, 'config/patterns/file'
