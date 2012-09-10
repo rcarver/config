@@ -71,6 +71,32 @@ describe Config::Patterns do
     end
   end
 
+  describe "#chown" do
+
+    let(:pattern) { Config::Patterns::Chown }
+
+    it "sets the path and adds the pattern" do
+      mock.expect(:path=, nil, ["/tmp"])
+      subject.chown "/tmp"
+    end
+
+    it "sets the path and applies owner and group options" do
+      mock.expect(:path=, nil, ["/tmp"])
+      mock.expect(:owner=, nil, ["root"])
+      mock.expect(:group=, nil, ["admin"])
+      subject.chown "/tmp", "root", "admin"
+    end
+
+    it "calls the block" do
+      mock.expect(:path=, nil, ["/tmp"])
+      mock.expect(:other=, nil, ["value"])
+      subject.chown "/tmp" do |d|
+        d.other = "value"
+      end
+    end
+  end
+
+
   describe "#script" do
 
     let(:pattern) { Config::Patterns::Script }

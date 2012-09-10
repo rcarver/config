@@ -90,6 +90,35 @@ module Config
       end
     end
 
+    # Public: Set file or directory ownership.
+    #
+    # path  - String path.
+    # owner - String name of the owner (default: don't set the owner).
+    # group - String name of the group (default: don't set the group).
+    #
+    # Yields a Config::Patterns::Chown.
+    #
+    # Examples
+    #
+    #     # Set all available options.
+    #     chown "/tmp/file" do |c|
+    #       c.owner = "root"
+    #     end
+    #
+    #     # Shorthand to set owner and/or group.
+    #     chown "/tmp/file", "root"
+    #     chown "/tmp/file", nil, "admin"
+    #     chown "/tmp/file", "root", "admin"
+    #
+    def chown(path, owner = nil, group = nil, &block)
+      add Config::Patterns::Chown do |p|
+        p.path = path
+        p.owner = owner if owner
+        p.group = group if group
+        yield p if block_given?
+      end
+    end
+
     # Public: Add a script.
     #
     # name - String name of the script.
