@@ -16,9 +16,6 @@ module Config
       desc "The octal mode of the file, such as 0755"
       attr :mode, nil
 
-      desc "Set the mtime of the file to now"
-      attr :touch, false
-
       desc "Specify the literal file content"
       attr :content, nil
 
@@ -148,10 +145,6 @@ module Config
             log << log.colorize("IDENTICAL", :cyan)
           end
         end
-
-        #stat = Config::Core::Stat.new(self, path)
-        #stat.mode = mode if mode
-        #stat.touch if touch
       end
 
       def destroy
