@@ -165,6 +165,15 @@ describe Config::Core::Executable do
     end
   end
 
+  describe "#create?" do
+
+    it "is true when the run_mode is create" do
+      subject.must_be :create?
+      subject.run_mode = :destroy
+      subject.wont_be :create?
+    end
+  end
+
   describe "#destroy?" do
 
     it "is true when the run_mode is destroy" do
