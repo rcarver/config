@@ -63,10 +63,8 @@ git add clusters
 git commit -m 'create vagrant cluster'
 
 # Add more patterns for testing.
-cat $fixtures_dir/streaming.rb >> blueprints/devbox.rb
-
-git add .
-git commit -m 'add fixtures'
+$script_dir/add-fixture streaming
+$script_dir/add-fixture stat
 
 # Test that we can create a bootstrap script before firing up Vagrant.
 bin/config-create-bootstrap vagrant devbox 1 > /dev/null
@@ -87,6 +85,4 @@ STR
 
 git add Vagrantfile
 git commit -m 'add Vagrantfile'
-
-# Push to the remote so we can execute the project.
 git push
