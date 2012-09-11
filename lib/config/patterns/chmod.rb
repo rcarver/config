@@ -50,7 +50,7 @@ module Config
     protected
 
       def fu
-        @fu ||= ::FiltUtils
+        @fu ||= ::FileUtils
       end
 
     end
