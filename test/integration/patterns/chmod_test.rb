@@ -20,19 +20,15 @@ describe Config::Patterns::Chmod do
       subject.path = "/tmp/file"
     end
 
-    specify "without a mode" do
-      subject.to_s.must_equal "chmod /tmp/file"
-    end
-
     specify "normally" do
       subject.mode = 0755
-      subject.to_s.must_equal "chmod 0755 /tmp/file"
+      subject.to_s.must_equal "Chmod /tmp/file to 0755"
     end
 
     specify "recursively" do
       subject.mode = 0755
       subject.recursive = true
-      subject.to_s.must_equal "chmod -R 0755 /tmp/file"
+      subject.to_s.must_equal "Chmod /tmp/file to 0755 (recursively)"
     end
   end
 
@@ -96,7 +92,10 @@ describe "filesystem", Config::Patterns::Chmod do
       fu.expect(:chmod, nil, [0755, path.to_s])
 
       execute :create
-      subject.changes.to_a.must_equal ["Set mode to 0755"]
+      subject.changes.to_a.must_equal ["set mode"]
+      log_string.must_equal <<-STR.dent
+        Set mode to 0755
+      STR
     end
 
     it "sets the mode recursively" do
@@ -106,7 +105,10 @@ describe "filesystem", Config::Patterns::Chmod do
       fu.expect(:chmod_R, nil, [0755, path.to_s])
 
       execute :create
-      subject.changes.to_a.must_equal ["Set mode to 0755"]
+      subject.changes.to_a.must_equal ["set mode"]
+      log_string.must_equal <<-STR.dent
+        Set mode to 0755
+      STR
     end
 
     it "does nothing if the correct mode is already set" do
@@ -116,6 +118,7 @@ describe "filesystem", Config::Patterns::Chmod do
 
       execute :create
       subject.changes.to_a.must_equal []
+      log_string.must_equal ""
     end
   end
 end

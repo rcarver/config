@@ -19,8 +19,8 @@ module Config
 
       def describe
         chown = [owner, group].compact.join(":")
-        recurse = "-R" if recursive
-        ["chown", chown, recurse, path].compact.join(" ")
+        recurse = "(recursive)" if recursive
+        ["Chown", path, "to", chown, recurse].compact.join(" ")
       end
 
       def create
@@ -30,7 +30,8 @@ module Config
           uid = ::Etc.getpwnam(owner).uid
           unless stat.uid == uid
             chown(uid, nil)
-            changes << "Set owner to #{owner}"
+            changes << "set owner"
+            log << log.colorize("Set owner to #{owner}", :brown)
           end
         end
 
@@ -38,7 +39,8 @@ module Config
           gid = ::Etc.getgrnam(group).gid
           unless stat.gid == gid
             chown(nil, gid)
-            changes << "Set group to #{group}"
+            changes << "set group"
+            log << log.colorize("Set group to #{group}", :brown)
           end
         end
       end

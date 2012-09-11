@@ -14,8 +14,8 @@ module Config
       attr :recursive, false
 
       def describe
-        recurse = "-R" if recursive
-        ["chmod", recurse, mode_string, path].compact.join(" ")
+        recurse = "(recursively)" if recursive
+        ["Chmod", path, "to", mode_string, recurse].compact.join(" ")
       end
 
       def create
@@ -27,7 +27,8 @@ module Config
           else
             fu.chmod(mode_octal, path)
           end
-          changes << "Set mode to #{mode_string}"
+          changes << "set mode"
+          log << log.colorize("Set mode to #{mode_string}", :brown)
         end
       end
 

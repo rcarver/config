@@ -21,24 +21,24 @@ describe Config::Patterns::Chown do
 
     specify "with an owner" do
       subject.owner = "www"
-      subject.to_s.must_equal "chown www /tmp/file"
+      subject.to_s.must_equal "Chown /tmp/file to www"
     end
 
     specify "with a group" do
       subject.group = "admin"
-      subject.to_s.must_equal "chown admin /tmp/file"
+      subject.to_s.must_equal "Chown /tmp/file to admin"
     end
 
     specify "with an owner and a group" do
       subject.owner = "www"
       subject.group = "admin"
-      subject.to_s.must_equal "chown www:admin /tmp/file"
+      subject.to_s.must_equal "Chown /tmp/file to www:admin"
     end
 
     specify "recursively" do
       subject.owner = "www"
       subject.recursive = true
-      subject.to_s.must_equal "chown www -R /tmp/file"
+      subject.to_s.must_equal "Chown /tmp/file to www (recursive)"
     end
   end
 end
@@ -76,7 +76,10 @@ describe "filesystem", Config::Patterns::Chown do
         fu.expect(:chown, nil, [@uid, nil, path.to_s])
 
         execute :create
-        subject.changes.to_a.must_equal ["Set owner to #{@user}"]
+        subject.changes.to_a.must_equal ["set owner"]
+        log_string.must_equal <<-STR.dent
+          Set owner to #{@user}
+        STR
       end
 
       it "sets the owner recursively" do
@@ -86,7 +89,10 @@ describe "filesystem", Config::Patterns::Chown do
         fu.expect(:chown_R, nil, [@uid, nil, path.to_s])
 
         execute :create
-        subject.changes.to_a.must_equal ["Set owner to #{@user}"]
+        subject.changes.to_a.must_equal ["set owner"]
+        log_string.must_equal <<-STR.dent
+          Set owner to #{@user}
+        STR
       end
 
       it "does nothing if the correct owner is already set" do
@@ -113,7 +119,10 @@ describe "filesystem", Config::Patterns::Chown do
         fu.expect(:chown, nil, [nil, @gid, path.to_s])
 
         execute :create
-        subject.changes.to_a.must_equal ["Set group to #{@group}"]
+        subject.changes.to_a.must_equal ["set group"]
+        log_string.must_equal <<-STR.dent
+          Set group to #{@group}
+        STR
       end
 
       it "sets the group recursively" do
@@ -123,7 +132,10 @@ describe "filesystem", Config::Patterns::Chown do
         fu.expect(:chown_R, nil, [nil, @gid, path.to_s])
 
         execute :create
-        subject.changes.to_a.must_equal ["Set group to #{@group}"]
+        subject.changes.to_a.must_equal ["set group"]
+        log_string.must_equal <<-STR.dent
+          Set group to #{@group}
+        STR
       end
 
       it "does nothing if the correct owner is already set" do
@@ -134,6 +146,7 @@ describe "filesystem", Config::Patterns::Chown do
 
         execute :create
         subject.changes.to_a.must_equal []
+        log_string.must_equal ""
       end
     end
   end
