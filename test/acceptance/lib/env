@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# This script sets variables for use by other scripts.
+
+: ${script_dir?}
+
+# The current version of ruby.
+rbenv_version=`rbenv version | awk '{ print $1 }'`
+
+# The code under test.
+local_config_dir="$(cd "${script_dir}/../.." && pwd)"
+
+# A place to test the code on the local machine.
+project_dir=/tmp/config-test-project
+database_dir=/tmp/config-test-database
+
+# Everything that's accessed on both the local and remote system needs
+# to be mapped into the VM. Storing these under /tmp lets us use the
+# same path on both machines.
+project_repo_dir=/tmp/config-test-project-repo
+database_repo_dir=/tmp/config-test-database-repo
+config_dir=/tmp/config
+
+# Location of supporting files.
+fixtures_dir="$script_dir/fixtures"
+
+# Trap certain errors on exit.
+trap errexit 1 2 3 15 ERR
+
+# Catch errors and exit with non-zero status.
+function errexit() {
+  exit 1
+}

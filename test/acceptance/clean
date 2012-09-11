@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+set -u
+
+script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+
+. $script_dir/lib/env
+
+[ -L "$config_dir" ] && rm -f "$config_dir"
+[ -d "$project_repo_dir" ] && rm -rf "$project_repo_dir"
+[ -d "$database_repo_dir" ] && rm -rf "$database_repo_dir"
+
+[ -f "$project_dir"/.vagrant ] && (cd "$project_dir" && bin/vagrant destroy -f)
+[ -d "$project_dir" ] && rm -rf "$project_dir"

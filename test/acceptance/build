@@ -1,0 +1,29 @@
+#!/bin/bash
+set -e
+set -u
+
+script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+
+. $script_dir/lib/env
+
+if [ -d $project_dir ]; then
+  echo "Project exists at $project_dir" >&2
+  exit 0
+fi
+
+# Symlink the config codebase.
+ln -sf $local_config_dir $config_dir
+
+# Initialize the repos.
+for dir in $project_repo_dir $database_repo_dir; do
+  mkdir $dir
+  (cd $dir && git init --bare)
+done
+
+# Initialize the project directory.
+mkdir $project_dir
+
+# Build the project.
+. $script_dir/lib/build_project
+
+echo "Built project at $project_dir"

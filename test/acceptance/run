@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+set -u
+
+script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+
+$script_dir/clean
+$script_dir/build
+$script_dir/boot
+$script_dir/test
+$script_dir/clean

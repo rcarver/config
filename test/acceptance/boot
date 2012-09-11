@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+set -u
+
+script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+
+$script_dir/build
+
+. $script_dir/lib/env
+
+cd $project_dir
+
+if [ -n "$(bin/vagrant status | grep ^default | grep running)" ]; then
+  echo "Vagrant is running." >&2
+else
+  bin/vagrant up
+fi

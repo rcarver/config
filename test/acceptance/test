@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+set -u
+
+script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+
+$script_dir/boot
+
+. $script_dir/lib/env
+. $script_dir/lib/run_tests
