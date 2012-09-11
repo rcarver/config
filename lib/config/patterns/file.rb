@@ -84,19 +84,21 @@ module Config
       end
 
       def prepare
-        if content
-          @new_content = String(content)
-          log_content = @new_content
-        else
-          template = ::File.read(template_path)
-          log_template = ColorizingEruby.new(template)
-          log_content = log_template.result(template_context.get_binding)
-          new_template = Erubis::Eruby.new(template)
-          @new_content = new_template.result(template_context.get_binding)
+        if create?
+          if content
+            @new_content = String(content)
+            log_content = @new_content
+          else
+            template = ::File.read(template_path)
+            log_template = ColorizingEruby.new(template)
+            log_content = log_template.result(template_context.get_binding)
+            new_template = Erubis::Eruby.new(template)
+            @new_content = new_template.result(template_context.get_binding)
+          end
+          log << log.colorize(">>>", :cyan)
+          log << log_content
+          log << log.colorize("<<<", :cyan)
         end
-        log << log.colorize(">>>", :cyan)
-        log << log_content
-        log << log.colorize("<<<", :cyan)
       end
 
       def create

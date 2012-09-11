@@ -113,6 +113,7 @@ describe "filesystem", Config::Patterns::File do
   end
 
   def execute(run_mode)
+    subject.run_mode = run_mode
     subject.prepare
     subject.public_send(run_mode)
   end
@@ -278,6 +279,11 @@ describe "filesystem", Config::Patterns::File do
       path.wont_be :exist?
       tmpdir.must_be :exist?
       subject.changes.must_include "deleted"
+    end
+
+    it "logs nothing" do
+      execute :destroy
+      log_string.must_equal ""
     end
   end
 end
