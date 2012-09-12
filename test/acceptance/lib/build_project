@@ -63,6 +63,7 @@ git add clusters
 git commit -m 'create vagrant cluster'
 
 # Add more patterns for testing.
+$script_dir/add-fixture roundup
 $script_dir/add-fixture streaming
 $script_dir/add-fixture stat
 
