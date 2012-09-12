@@ -15,3 +15,5 @@ if [ -n "$(bin/vagrant status | grep ^default | grep running)" ]; then
 else
   bin/vagrant up
 fi
+
+exit 0

@@ -9,3 +9,5 @@ $script_dir/build
 $script_dir/boot
 $script_dir/test
 $script_dir/clean
+
+exit 0

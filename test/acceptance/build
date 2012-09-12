@@ -27,3 +27,5 @@ mkdir $project_dir
 . $script_dir/lib/build_project
 
 echo "Built project at $project_dir"
+
+exit 0

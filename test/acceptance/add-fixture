@@ -38,3 +38,5 @@ cat $fixture_file >> blueprints/devbox.rb
 git add .
 git commit -m "add $fixture fixture"
 git push
+
+exit 0

@@ -10,5 +10,7 @@ script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
 [ -d "$project_repo_dir" ] && rm -rf "$project_repo_dir"
 [ -d "$database_repo_dir" ] && rm -rf "$database_repo_dir"
 
-[ -f "$project_dir"/.vagrant ] && (cd "$project_dir" && bin/vagrant destroy -f)
+[ -f "$project_dir/.vagrant" ] && (cd "$project_dir" && bin/vagrant destroy -f)
 [ -d "$project_dir" ] && rm -rf "$project_dir"
+
+exit 0
