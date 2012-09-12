@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# This script builds a sample config project.
-
-: ${project_dir?}
-

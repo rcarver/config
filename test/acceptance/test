@@ -7,4 +7,9 @@ script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
 $script_dir/boot
 
 . $script_dir/lib/env
-. $script_dir/lib/run_tests
+
+cd $project_dir
+
+# For some reason vagrant hangs unless we exit. But, it does return the exit
+# status for us, which results in this script's exit status.
+bin/vagrant ssh -c '/home/vagrant/run-tests; exit $?'
