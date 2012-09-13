@@ -3,13 +3,13 @@
 describe "Files and directories have the correct owner, group and mode"
 
 it_sets_mode_on_file() {
-  value=$(stat -c %a /tmp/test-file-chmod)
-  test $value = 777
+  mode=$(stat -c %a /tmp/test-file-chmod)
+  test $mode = 777
 }
 
 it_sets_mode_on_dir() {
-  value=$(stat -c %a /tmp/test-dir-chmod)
-  test $value = 1777
+  mode=$(stat -c %a /tmp/test-dir-chmod)
+  test $mode = 1777
 }
 
 it_sets_owner_on_file() {
