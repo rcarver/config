@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+#/ Run unit tests to verify that the vagrant box has been put into the expected
+#/ state by the config bootstrap and provisioning process. If no project has
+#/ been built or booted, that will be done first.
+#
+if [ "$1" = "-h" -o "$1" = "--help" -o "$1" = "help" ]; then
+  grep '^#/' <"$0" | cut -c4-
+  exit 0;
+fi
+
+set -e
+set -u
+
+script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+
+$script_dir/boot
+
+. $script_dir/lib/env
+
+cd $project_dir
+
+# For some reason vagrant hangs unless we exit. But, it does return the exit
+# status for us, which results in this script's exit status.
+bin/vagrant ssh -c '/home/vagrant/run-tests; exit $?'
