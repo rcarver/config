@@ -1,4 +1,12 @@
 #!/bin/bash
+#
+#/ Clean up the remains of a previously built and/or booted project.
+#
+if [ "$1" = "-h" -o "$1" = "--help" -o "$1" = "help" ]; then
+  grep '^#/' <"$0" | cut -c4-
+  exit 0;
+fi
+
 set -e
 set -u
 

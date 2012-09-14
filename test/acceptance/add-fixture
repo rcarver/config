@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+#/ Add sample patterns to the current test project.
+#/
+#/ usage: add-fixture <name>
+#/
+#/ Fixtures are stored in fixtures/*.rb. If the fixture has already been added
+#/ to the project it will not be added again.
+#
+if [ "$1" = "-h" -o "$1" = "--help" -o "$1" = "help" ]; then
+  grep '^#/' <"$0" | cut -c4-
+  exit 0;
+fi
+
 set -e
 
 fixture=$1

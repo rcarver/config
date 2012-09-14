@@ -1,4 +1,15 @@
 #!/bin/bash
+#
+#/ Build a project for testing the config code under development The live
+#/ codebase will be used as a dependency. The project is built with a small set
+#/ of patterns that exercise overall functionality. The project can be executed
+#/ by booting and provisioning a vagrant box.
+#
+if [ "$1" = "-h" -o "$1" = "--help" -o "$1" = "help" ]; then
+  grep '^#/' <"$0" | cut -c4-
+  exit 0;
+fi
+
 set -e
 set -u
 

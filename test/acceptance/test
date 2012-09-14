@@ -1,4 +1,14 @@
 #!/bin/bash
+#
+#/ Run unit tests to verify that the vagrant box has been put into the expected
+#/ state by the config bootstrap and provisioning process. If no project has
+#/ been built or booted, that will be done first.
+#
+if [ "$1" = "-h" -o "$1" = "--help" -o "$1" = "help" ]; then
+  grep '^#/' <"$0" | cut -c4-
+  exit 0;
+fi
+
 set -e
 set -u
 

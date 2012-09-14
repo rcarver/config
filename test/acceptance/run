@@ -1,4 +1,14 @@
 #!/bin/bash
+#
+#/ Run a full stack acceptance test by building, booting and then testing a
+#/ sample project. If the test exits cleanly, everything will be cleaned up.
+#/ If it does not, the project and vagrant box will be left intact.
+#
+if [ "$1" = "-h" -o "$1" = "--help" -o "$1" = "help" ]; then
+  grep '^#/' <"$0" | cut -c4-
+  exit 0;
+fi
+
 set -e
 set -u
 
