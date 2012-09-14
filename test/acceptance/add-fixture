@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+#/ Add sample patterns to the current test project.
+#/
+#/ usage: add-fixture <name>
+#/
+#/ Fixtures are stored in fixtures/*.rb. If the fixture has already been added
+#/ to the project it will not be added again.
+#
+if [ "$1" = "-h" -o "$1" = "--help" -o "$1" = "help" ]; then
+  grep '^#/' <"$0" | cut -c4-
+  exit 0;
+fi
+
+set -e
+
+fixture=$1
+
+set -u
+
+script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+
+. $script_dir/lib/env
+
+if [ -z "$fixture" ]; then
+  echo "No fixture given."
+  exit 1
+fi
+
+fixture_file="$fixtures_dir/$fixture.rb"
+
+if [ ! -f "$fixture_file" ]; then
+  echo "Unknown fixture: $fixture"
+  exit 1
+fi
+
+if [ ! -d $project_dir ]; then
+  echo "Project does not exist" >&2
+  exit 1
+fi
+
+cd $project_dir
+
+if [ -n "$(cat blueprints/devbox.rb | grep "FIXTURE $fixture")" ]; then
+  echo "Fixture is already included." >&2
+  exit 1
+fi
+
+echo "# FIXTURE $fixture" >> blueprints/devbox.rb
+cat $fixture_file >> blueprints/devbox.rb
+git add .
+git commit -m "add $fixture fixture"
+git push
+
+exit 0
