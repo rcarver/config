@@ -15,7 +15,7 @@ file "/home/vagrant/run-tests" do |f|
     #!/bin/bash
     sudo su root
     cd /tmp/config/test/acceptance/tests
-    /usr/src/roundup/roundup
+    color=always /usr/src/roundup/roundup
   STR
   f.mode = "755"
 end
