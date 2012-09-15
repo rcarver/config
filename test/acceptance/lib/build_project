@@ -79,7 +79,9 @@ Vagrant::Config.run do |config|
   config.vm.share_folder "config-code", "$config_dir", "$config_dir"
   config.vm.share_folder "project-repo", "$project_repo_dir", "$project_repo_dir"
   config.vm.share_folder "database-repo", "$database_repo_dir", "$database_repo_dir"
-  config.vm.provision Config::Vagrant::Provisioner
+  config.vm.provision Config::Vagrant::Provisioner do |c|
+    c.identity = "acceptance"
+  end
 end
 STR
 ) > Vagrantfile
