@@ -1,7 +1,8 @@
 #!/usr/bin/env roundup
-
-# tests: fixtures/roundup.rb
-# This file has nothing useful to do.
+# test: fixtures/roundup.rb
+#
+# This file has nothing useful to do, but it's good practice to have a test
+# for each fixture.
 
 describe "Roundup runs"
 

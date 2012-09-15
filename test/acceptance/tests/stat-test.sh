@@ -1,4 +1,5 @@
 #!/usr/bin/env roundup
+# test: fixtures/stat.rb
 
 describe "Files and directories have the correct owner, group and mode"
 
