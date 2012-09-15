@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+#/ Clean up the remains of a previously built and/or booted project.
+#
+if [ "$1" = "-h" -o "$1" = "--help" -o "$1" = "help" ]; then
+  grep '^#/' <"$0" | cut -c4-
+  exit 0;
+fi
+
+set -e
+set -u
+
+script_dir="$(cd "$(dirname "$BASH_SOURCE")" && pwd)"
+
+. $script_dir/lib/env
+
+[ -f "$project_dir/.vagrant" ] && (cd "$project_dir" && bin/vagrant destroy -f)
+[ -d "$project_dir" ] && rm -rf "$project_dir"
+[ -d "$project_repo_dir" ] && rm -rf "$project_repo_dir"
+[ -d "$database_repo_dir" ] && rm -rf "$database_repo_dir"
+[ -L "$config_dir" ] && rm -f "$config_dir"
+
+exit 0

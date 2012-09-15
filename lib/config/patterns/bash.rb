@@ -8,6 +8,9 @@ module Config
       desc { "Arguments for the bash interpreter" }
       attr :args, ["-e", "-u"]
 
+      desc { "Enviroment for the bash interpreter" }
+      attr :env, nil
+
       desc { Config::Patterns::Script[:code].desc }
       attr :code
 
@@ -27,6 +30,7 @@ module Config
           s.code = code
           s.code_exec = "bash"
           s.code_args = args
+          s.code_env = env
           s.reverse = reverse
           s.not_if = not_if
         end

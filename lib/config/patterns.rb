@@ -90,6 +90,56 @@ module Config
       end
     end
 
+    # Public: Set file or directory ownership.
+    #
+    # path  - String path.
+    # owner - String name of the owner (default: don't set the owner).
+    # group - String name of the group (default: don't set the group).
+    #
+    # Yields a Config::Patterns::Chown.
+    #
+    # Examples
+    #
+    #     # Set all available options.
+    #     chown "/tmp/file" do |c|
+    #       c.owner = "root"
+    #     end
+    #
+    #     # Shorthand to set owner and/or group.
+    #     chown "/tmp/file", "root"
+    #     chown "/tmp/file", nil, "admin"
+    #     chown "/tmp/file", "root", "admin"
+    #
+    def chown(path, owner = nil, group = nil, &block)
+      add Config::Patterns::Chown do |p|
+        p.path = path
+        p.owner = owner if owner
+        p.group = group if group
+        yield p if block_given?
+      end
+    end
+
+    # Public: Set file or directory bits.
+    #
+    # path - String path.
+    # mode - Integer or String bits to set.
+    #
+    # Yields a Config::Patterns::Chmod.
+    #
+    # Examples
+    #
+    #     chmod "/tmp/file", 0755   # Octal
+    #     chmod "/tmp/file", "755"  # String
+    #     chmod "/tmp/file", 01755  # Octal with sticky bit.
+    #
+    def chmod(path, mode = nil, &block)
+      add Config::Patterns::Chmod do |p|
+        p.path = path
+        p.mode = mode if mode
+        yield p if block_given?
+      end
+    end
+
     # Public: Add a script.
     #
     # name - String name of the script.
@@ -138,6 +188,8 @@ module Config
     # Autoload builtin patterns.
 
     autoload :Bash, 'config/patterns/bash'
+    autoload :Chmod, 'config/patterns/chmod'
+    autoload :Chown, 'config/patterns/chown'
     autoload :Directory, 'config/patterns/directory'
     autoload :File, 'config/patterns/file'
     autoload :Package, 'config/patterns/package'

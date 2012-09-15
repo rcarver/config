@@ -24,7 +24,7 @@ end
 
 desc "Run the acceptance tests"
 task :test_acceptance do
-  sh "test/acceptance/test.sh"
+  sh "test/acceptance/run"
 end
 
 # desc "Run the server"
