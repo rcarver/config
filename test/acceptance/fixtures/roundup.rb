@@ -13,9 +13,8 @@ end
 file "/home/vagrant/run-tests" do |f|
   f.content = <<-STR.dent
     #!/bin/bash
-    sudo su root
     cd /tmp/config/test/acceptance/tests
-    color=always /usr/src/roundup/roundup
+    color=always sudo /usr/src/roundup/roundup
   STR
-  f.mode = "755"
+  f.mode = 0755
 end
