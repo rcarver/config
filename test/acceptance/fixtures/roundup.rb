@@ -1,9 +1,8 @@
 bash "install roundup" do |s|
   s.code = <<-STR.dent
     cd /usr/src
-    git clone git://github.com/bmizerany/roundup.git
-    cd roundup
-    git checkout v0.0.5
+    curl -sL https://github.com/bmizerany/roundup/tarball/v0.0.5 | tar xvzf -
+    cd bmizerany-roundup-*
     ./configure
     make && make install
   STR
