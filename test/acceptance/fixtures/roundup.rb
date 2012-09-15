@@ -1,7 +1,8 @@
 bash "install roundup" do |s|
+  s.env = { "ROUNDUP_VERSION" => "v0.0.5" }
   s.code = <<-STR.dent
     cd /usr/src
-    curl -sL https://github.com/bmizerany/roundup/tarball/v0.0.5 | tar xvzf -
+    curl -sL https://github.com/bmizerany/roundup/tarball/$ROUNDUP_VERSION | tar xvzf -
     cd bmizerany-roundup-*
     ./configure
     make && make install
