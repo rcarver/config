@@ -54,4 +54,5 @@ limited right now, but are coming soon.
 
 ## License
 
-Copyright 2012 Ryan Carver.
+Copyright 2012 Ryan Carver. MIT License, see LICENSE for details.
+
