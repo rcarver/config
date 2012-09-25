@@ -47,6 +47,7 @@ module Config
       #
       # Returns nothing.
       def write(string)
+        @path.dirname.mkpath
         @path.open("w") { |f| f.print string }
       end
     end
