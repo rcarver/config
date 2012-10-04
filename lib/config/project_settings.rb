@@ -17,6 +17,9 @@ module Config
     PROJECT_GIT_CONFIG  = :project_git_config
     DATABASE_GIT_CONFIG = :database_git_config
     SSH_CONFIGS         = :ssh_configs
+    #
+    # Secrets
+    SECRETS             = :secrets
 
     def initialize(configuration)
       @configuration = configuration
@@ -36,7 +39,17 @@ module Config
       remotes
     end
 
+    def secrets_generator
+      generator = Config::Secrets::Generator.new
+      _get(SECRETS, :hash_function) { |v| generator.hash_function = v }
+      _get(SECRETS, :iterations)    { |v| generator.iterations = v }
+      _get(SECRETS, :key_length)    { |v| generator.key_length = v }
+      _get(SECRETS, :salt)          { |v| generator.salt = v }
+      generator
+    end
+
     def fact_finder
+      # TODO: allow use of other facts-like systems.
       -> {
         ohai = ::Ohai::System.new
         ohai.all_plugins
@@ -44,20 +57,26 @@ module Config
       }
     end
 
-
   protected
 
+    # Safe reader.
+    def _get(set_name, key_name, &block)
+      _key(_set(set_name), key_name, &block)
+    end
+
     # Safe set reader.
-    def _set(name)
-      @configuration[name] if @configuration.defined?(name)
+    def _set(set_name)
+      @configuration[set_name] if @configuration.defined?(set_name)
     end
 
     # Safe key reader.
-    def _key(set, key)
-      set[key] if set && set.defined?(key)
+    def _key(set, key_name, &block)
+      value = set[key_name] if set && set.defined?(key_name)
+      yield value if value && block_given?
+      value
     end
 
-    # Used by get_remotes.
+    # Used by remotes.
     def build_git_config(name)
       git_config = Config::Core::GitConfig.new
       git_config.url = _key(_set(name), :url)
@@ -65,7 +84,7 @@ module Config
       git_config
     end
 
-    # Used by get_remotes.
+    # Used by remotes.
     def build_ssh_config(set, ssh_config = nil)
       ssh_config ||= Config::Core::SSHConfig.new
       ssh_config.host =     _key(set, :host)

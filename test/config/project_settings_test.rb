@@ -78,6 +78,13 @@ describe Config::ProjectSettings do
     end
   end
 
+  describe "#secrets_generator" do
+
+    it "configures a secrets_generator" do
+      skip
+    end
+  end
+
   describe "#fact_finder" do
 
     it "returns a lambda" do
