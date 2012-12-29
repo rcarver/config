@@ -292,7 +292,7 @@ describe "filesystem", Config::Patterns::Script do
 
     it "shows the command and options that are used to run the code" do
       subject.code_exec = "ruby"
-      subject.code_args = "-r open3"
+      subject.code_args = ["-r", "open3"]
       subject.code = <<-STR.dent
         puts Open3.class
       STR
