@@ -38,7 +38,7 @@ describe Config::Core::ShellCommand do
 
   it "executes a simple command, capturing STDOUT and STDERR output" do
     subject.command = "ruby"
-    subject.args = "-r open3"
+    subject.args = ["-r", "open3"]
     subject.env = { "HELLO" => "hello" }
     subject.stdin_data = <<-STR.dent
       STDOUT.puts Open3
