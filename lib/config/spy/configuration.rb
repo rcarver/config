@@ -10,7 +10,7 @@ module Config
       include Config::Configuration::MethodMissing
 
       # A subclass of normal merge so that it's identifiable.
-      class SpyMerged < Config::Configuration::Merged
+      class SpyMerged < Levels::Merged
         def initialize(spy, *levels)
           super levels + [spy]
         end
@@ -75,7 +75,7 @@ module Config
         def initialize(level_name, name, parent_group = nil)
           @level_name = level_name
           @name = name
-          @parent_group = parent_group || Config::Configuration::Group.new(level_name, name)
+          @parent_group = parent_group || Levels::Group.new(level_name, name)
           @keys = Set.new
         end
 
@@ -100,7 +100,7 @@ module Config
 
         def [](key)
           assert_symbol key
-          raise Config::Configuration::UnknownKey if @parent_group.defined?(key)
+          raise Levels::UnknownKey if @parent_group.defined?(key)
           @keys << key
           "spy:#{@name}.#{key}"
         end

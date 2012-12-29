@@ -62,7 +62,7 @@ describe Config::Project do
 
       describe "with a cluster" do
 
-        let(:assigned_configuration_class) { Config::Configuration::Merged }
+        let(:assigned_configuration_class) { Levels::Merged }
         let(:assigned_cluster_context_class) { Config::ClusterContext }
 
         before do
@@ -92,7 +92,7 @@ describe Config::Project do
 
       let(:node) { Config::Node.new("production", "webserver", "1") }
 
-      let(:assigned_configuration_class) { Config::Configuration::Merged }
+      let(:assigned_configuration_class) { Levels::Merged }
       let(:assigned_cluster_context_class) { Config::ClusterContext }
 
       before do

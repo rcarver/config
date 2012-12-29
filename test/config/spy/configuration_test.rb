@@ -105,10 +105,10 @@ describe Config::Spy::Configuration::Group do
   describe "with a parent" do
 
     let(:data) { { foo: 1 } }
-    let(:parent) { Config::Configuration::Group.new("parent", :parent, data) }
+    let(:parent) { Levels::Group.new("parent", :parent, data) }
 
     it "does not expose anything defined by the parent" do
-      lambda { subject[:foo] }.must_raise Config::Configuration::UnknownKey
+      lambda { subject[:foo] }.must_raise Levels::UnknownKey
       subject[:bar]
     end
 
