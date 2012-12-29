@@ -21,16 +21,15 @@ module Config
         @alt_color  = :cyan
       end
 
-      def on_values(values)
-
-        if values.size == 1
+      def on_values(values, recursing = false)
+        if values.only_final? && !values.recursive? && !recursing
           final = values.final
           log << log.colorize("Read #{values.group_key}.#{values.value_key} => #{final.inspect} from #{final.level_name}", @base_color)
         else
           log << log.colorize("Read #{values.group_key}.#{values.value_key}", @base_color)
           log.indent do
             values.each do |value|
-              values.notify(self)
+              value.notify(self)
               if value.final?
                 word = "Use "
                 color = @base_color
@@ -46,7 +45,7 @@ module Config
 
       def on_nested_values(values)
         log.indent do
-          on_values(values)
+          on_values(values, true)
         end
       end
     end
