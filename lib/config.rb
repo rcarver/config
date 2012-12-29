@@ -1,8 +1,9 @@
 require 'active_support'
 require 'active_support/inflector'
 require 'json'
-require 'pathname'
 require 'levels'
+require 'open3'
+require 'pathname'
 
 require 'config/version'
 
