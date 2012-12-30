@@ -81,9 +81,9 @@ module Config
       # Returns a String the command and args that will be executed.
       def to_s
         env = spawn_env
-        command, args = spawn_command
+        command, *args = spawn_command
         env_str = env.map { |k, v| "#{k}=#{v}" }.join(" ") if env
-        [env_str, command, args].compact.join(" ")
+        [env_str, command, args].flatten.compact.join(" ")
       end
 
     protected
@@ -93,7 +93,7 @@ module Config
       def spawn
         args = []
         args << spawn_env
-        args << spawn_command
+        args.concat spawn_command
         args.compact
       end
 
@@ -111,13 +111,13 @@ module Config
           args = [@command]
           case @args
           when NilClass
-          when Array  then args << @args.join(" ")
+          when Array  then args.concat @args
           when String then args << @args
           else raise ArgumentError, "Cannot handle args: #{@args.inspect}"
           end
           args
         else
-          @command
+          [@command]
         end
       end
 

@@ -12,9 +12,33 @@ describe Config::Core::ShellCommand do
     subject.on_stderr = -> line { stderrs << line }
   end
 
+  it "accepts string args" do
+    subject.command = "echo"
+    subject.args = "one two three"
+
+    subject.execute
+
+    stderrs.must_equal []
+    stdouts.must_equal ["one two three\n"]
+
+    subject.to_s.must_equal "echo one two three"
+  end
+
+  it "accepts array args" do
+    subject.command = "echo"
+    subject.args = ["one", "two", "three"]
+
+    subject.execute
+
+    stderrs.must_equal []
+    stdouts.must_equal ["one two three\n"]
+
+    subject.to_s.must_equal "echo one two three"
+  end
+
   it "executes a simple command, capturing STDOUT and STDERR output" do
     subject.command = "ruby"
-    subject.args = "-r open3"
+    subject.args = ["-r", "open3"]
     subject.env = { "HELLO" => "hello" }
     subject.stdin_data = <<-STR.dent
       STDOUT.puts Open3
