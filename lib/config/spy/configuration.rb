@@ -6,119 +6,80 @@ module Config
     #
     # Spies can be used to inspect the execution of your Blueprint or
     # Pattern.
-    class Configuration
-      include Config::Configuration::MethodMissing
+    class Configuration < Levels::Configuration
 
-      # A subclass of normal merge so that it's identifiable.
-      class SpyMerged < Levels::Configuration
-        def initialize(spy, *levels)
-          super levels + [spy]
-        end
+      def self.spy_and_merge(level_name, *levels)
+        spy_level = Config::Spy::Configuration::Level.new(level_name)
+        config = self.new([spy_level] + levels)
+        config.event_handler = Config::Spy::Configuration::EventHandler.new
+        config
       end
 
-      # Initialize a spy configuration as part of a merged configuration.
-      def self.merge_and_spy(level_name, *levels)
-        parent = Config::Configuration.merge(*levels)
-        spy = Config::Spy::Configuration.new(level_name, parent)
-        SpyMerged.new(spy, *levels)
-      end
-
-      def initialize(level_name, parent = nil)
-        @level_name = level_name
-        @parent = parent || Config::Configuration.merge
-        @groups = {}
-      end
-
-      # Internal: Retrieve the groups that have been accessed. Use this
-      # to find out what happened.
-      #
-      # Returns an Array of Config::Spy::Configuration::Group.
       def get_accessed_groups
-        @groups.values
+        @event_handler.accesses
       end
 
-      def to_s
-        "<Spy Configuration #{_level_name}>"
-      end
+      class EventHandler
 
-      def _level_name
-        @level_name
-      end
+        def initialize
+          @accesses = Hash.new { |h, k| h[k] = [] }
+        end
 
-      def [](group_name)
-        assert_symbol group_name
-        parent_group = @parent.defined?(group_name) ? @parent[group_name] : nil
-        @groups[group_name] ||= Group.new(@level_name, group_name, parent_group)
-      end
+        attr_reader :accesses
 
-      def defined?(group_name)
-        assert_symbol group_name
-        true
-      end
+        def on_values(values)
+          @accesses[values.group_key] << values.value_key
+          @accesses[values.group_key].uniq!
+        end
 
-      def ==(other)
-        _level_name == other._level_name &&
-          get_accessed_groups == other.get_accessed_groups
-      end
-
-    protected
-
-      def assert_symbol(group_name)
-        unless group_name.is_a?(Symbol)
-          raise ArgumentError, "Group Name must be a Symbol, got #{group_name.inspect}"
+        def on_nested_values(values)
+          on_values(values)
         end
       end
 
-      class Group
-        include Config::Configuration::MethodMissing
+      class Level < Levels::Level
 
-        def initialize(level_name, name, parent_group = nil)
-          @level_name = level_name
-          @name = name
-          @parent_group = parent_group || Levels::Group.new(level_name, name)
-          @keys = Set.new
+        def to_s
+          "Spy:#{super}"
+        end
+
+        # All groups are defined.
+        def [](group_key)
+          key = Levels::Key.new(group_key)
+          Group.new(key)
+        end
+
+        # All keys are defined.
+        def defined?(group_name)
+          true
+        end
+      end
+
+      class Group < Levels::Group
+
+        def initialize(group_key)
+          @group_key = group_key
         end
 
         def to_s
-          "spy:#{@name}"
+          "Spy:#{super}"
         end
 
         # Behave like a String.
         alias to_str to_s
 
-        def _level_name
-          @level_name
+        # All keys exist.
+        def [](value_key)
+          key = Levels::Key.new(value_key)
+          "spy:#{@group_key.to_sym}.#{key.to_sym}"
         end
 
-        # Internal: Retrieve the keys that have been accessed. Use this
-        # to find out what happened.
-        #
-        # Returns an Array of Symbol.
-        def get_accessed_keys
-          @keys.to_a
+        # All keys are defined.
+        def defined?(value_key)
+          true
         end
-
-        def [](key)
-          assert_symbol key
-          raise Levels::UnknownKey if @parent_group.defined?(key)
-          @keys << key
-          "spy:#{@name}.#{key}"
-        end
-
-        def defined?(key)
-          assert_symbol key
-          !@parent_group.defined?(key)
-        end
-
-      protected
-
-        def assert_symbol(key)
-          unless key.is_a?(Symbol)
-            raise ArgumentError, "Key must be a Symbol, got #{key.inspect}"
-          end
-        end
-
       end
+
     end
   end
 end
