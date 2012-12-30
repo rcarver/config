@@ -10,7 +10,7 @@ module Config
       include Config::Configuration::MethodMissing
 
       # A subclass of normal merge so that it's identifiable.
-      class SpyMerged < Levels::Merged
+      class SpyMerged < Levels::Configuration
         def initialize(spy, *levels)
           super levels + [spy]
         end

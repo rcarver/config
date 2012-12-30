@@ -8,7 +8,7 @@ module Config
 
     # Internal: Create a merge from one or more configuration levels.
     def self.merge(*levels)
-      merged = Levels::Merged.new(levels)
+      merged = Levels::Configuration.new(levels)
       merged.event_handler = EventHandler.new
       merged
     end

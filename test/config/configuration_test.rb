@@ -7,7 +7,7 @@ describe Config::Configuration do
   end
 
   specify ".merge" do
-    Config::Configuration.merge([]).must_be_instance_of Levels::Merged
+    Config::Configuration.merge([]).must_be_instance_of Levels::Configuration
   end
 
   describe "logging" do
