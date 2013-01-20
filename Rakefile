@@ -24,7 +24,9 @@ end
 
 desc "Run the acceptance tests"
 task :test_acceptance do
-  sh "test/acceptance/run"
+  Bundler.with_clean_env do
+    sh "test/acceptance/run"
+  end
 end
 
 # desc "Run the server"
