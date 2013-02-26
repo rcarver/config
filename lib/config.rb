@@ -1,6 +1,7 @@
 require 'active_support'
 require 'active_support/inflector'
 require 'json'
+require 'levels'
 require 'open3'
 require 'pathname'
 
@@ -28,10 +29,6 @@ require 'config/core/ssh_config'
 require 'config/core/git_config'
 
 require 'config/configuration'
-require 'config/configuration/group'
-require 'config/configuration/level'
-require 'config/configuration/merged'
-require 'config/configuration/merged_group'
 
 require 'config/patterns'
 require 'config/log'

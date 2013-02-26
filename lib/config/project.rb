@@ -158,7 +158,7 @@ module Config
 
     def merged_spy_configuration
       levels = configuration_levels
-      Config::Spy::Configuration.merge_and_spy("Spy Cluster", *levels)
+      Config::Spy::Configuration.spy_and_merge("Spy Cluster", *levels)
     end
   end
 end
