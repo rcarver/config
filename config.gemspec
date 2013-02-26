@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport"
   s.add_dependency "erubis"
   s.add_dependency "ohai"
-  s.add_dependency "levels"
+  s.add_dependency "levels", "~>0.1"
 
   s.add_development_dependency "rake"
   s.add_development_dependency "minitest", "~>2.0"
